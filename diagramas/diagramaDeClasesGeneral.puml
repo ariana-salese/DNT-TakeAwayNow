@@ -1,0 +1,48 @@
+@startuml diagrama de clases general
+
+class Cliente {
+    - saldo: Dinero
+    - carrito: Pedido 
+    - listaDeCompras: List<Compras>
+    + cargarSaldo(monto: Dinero): void
+    + comprar(p: Producto, cantidad: int): void
+}
+
+class Producto {
+    - precio: Dinero 
+    - int: stock 
+    + puedeComprar(): 
+}
+
+class Compra {
+    - pedido: Pedido
+    - codigo: int
+}
+
+class Dinero {
+    - monto: BigDecimal
+    + plus(otro: Dinero): Dinero
+    + minus(otro: Dinero): Dinero
+    + compareTo(otro: Dinero): int
+}
+
+class FichaDeStock {
+
+}
+
+class Pedido {
+    - precio: Dinero
+    - listaDeProductos: List<Producto>
+    + agregarProducto(p: Producto)
+}
+
+class GeneradorDeCodigo {
+    
+}
+
+'Posibles clases:
+
+'- si hacemos mas de un buffet
+' class Buffet
+
+@enduml

@@ -1,0 +1,35 @@
+@startuml
+
+UI -> Buffet: clienteAgregaAPedido(cliente: Cliente, pancho: Producto, cantidad: int)
+Buffet -> FichaDeStock: hay(pancho, cantidad)
+FichaDeStock --> Buffet: true
+Buffet -> Cliente: agregarAPedido(pancho, cantidad)
+Cliente -> Pedido: agregar(pancho, cantidad)
+Pedido -> Producto: precio()
+Producto --> Pedido: 10
+
+note left: Pedido hace 10 * cantidad y actualiza su precio
+
+UI -> Buffet: nuevaCompra(cliente)
+Buffet -> Cliente: comprar()
+Cliente -> Pedido: tengoSuficiente(saldo)
+Pedido --> Cliente: true
+Cliente -> Compra: new(Pedido)
+Compra -> Pedido: generarNuevoCodigo()
+Pedido -> GeneradorDeCodigo: generar()
+GeneradorDeCodigo --> Compra: codigo: int
+Compra --> Cliente: compra
+
+note right: el cliente guarda la compra
+
+Cliente --> Buffet: compra
+
+' UI -> Cliente: agregarProductoAPedido(pancho: Producto, cantidad: int)
+' Cliente -> Pedido: agregarProducto(pancho, cantidad)
+' Pedido -> Producto: getPrecio()
+' Producto --> Pedido: precio
+' UI -> Cliente: comprar()
+' Cliente -> Pedido: ()
+' Cliente -> Compra: 
+
+@enduml
