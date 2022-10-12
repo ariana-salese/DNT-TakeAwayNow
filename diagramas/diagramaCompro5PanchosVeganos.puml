@@ -1,35 +1,25 @@
 @startuml
 
-UI -> Buffet: clienteAgregaAPedido(cliente: Cliente, pancho: Producto, cantidad: int)
-Buffet -> FichaDeStock: hay(pancho, cantidad)
-FichaDeStock --> Buffet: true
-Buffet -> Cliente: agregarAPedido(pancho, cantidad)
-Cliente -> Pedido: agregar(pancho, cantidad)
-Pedido -> Producto: precio()
-Producto --> Pedido: 10
+UI -> Cliente: agregarProductoAlPedido(pancho: Producto, cantidad: int)
 
-note left: Pedido hace 10 * cantidad y actualiza su precio
+note right: Por medio de las cookies el buffet siempre puede saber qué cliente le habla
 
-UI -> Buffet: nuevaCompra(cliente)
-Buffet -> Cliente: comprar()
-Cliente -> Pedido: tengoSuficiente(saldo)
-Pedido --> Cliente: true
-Cliente -> Compra: new(Pedido)
-Compra -> Pedido: generarNuevoCodigo()
-Pedido -> GeneradorDeCodigo: generar()
-GeneradorDeCodigo --> Compra: codigo: int
-Compra --> Cliente: compra
+Cliente -> Buffet: agregarProductoAlPedido(pedido: Pedido, pancho: Producto, cantidad: int)
+Buffet -> Almacen: retirarProducto(pancho, cantidad)
+Buffet --> Cliente: Se le agrega el producto al pedido
 
-note right: el cliente guarda la compra
+note right: En caso de haber se descuenta del stock
 
-Cliente --> Buffet: compra
+Almacen --> Buffet: true
 
-' UI -> Cliente: agregarProductoAPedido(pancho: Producto, cantidad: int)
-' Cliente -> Pedido: agregarProducto(pancho, cantidad)
-' Pedido -> Producto: getPrecio()
-' Producto --> Pedido: precio
-' UI -> Cliente: comprar()
-' Cliente -> Pedido: ()
-' Cliente -> Compra: 
+UI -> Cliente: comprar()
+Cliente -> Buffet: nuevaCompra(pedido: Pedido)
+Buffet-> Compra: new(Pedido)
+Compra --> Buffet: compra
+Buffet -> GeneradorDeCodigo: generarCodigo()
+GeneradorDeCodigo --> Buffet: codigo
+Buffet --> Cliente: compra, codigo
+
+note right: el cliente guarda la compra con su codigo
 
 @enduml
