@@ -1,20 +1,21 @@
-@startuml diagrama de clases general
-
+@startuml
 class Cliente {
     - saldo: Dinero
-    - carrito: Pedido 
-    - listaDeCompras: List<Compras>
+    - pedido: Pedido 
+    - comprasHechas: List<Compra>
+    - buffet: Buffet
     + cargarSaldo(monto: Dinero): void
-    + comprar(p: Producto, cantidad: int): void
+    + agregarProductoAlPedido(producto: Producto, cantidad: int): void
+    + comprar(): void
 }
 
-class Producto {
+Struct Producto {
     - precio: Dinero 
-    - int: stock 
-    + puedeComprar(): 
+    - nombre: String
+    - stock: int
 }
 
-class Compra {
+Struct Compra {
     - pedido: Pedido
     - codigo: int
 }
@@ -26,23 +27,32 @@ class Dinero {
     + compareTo(otro: Dinero): int
 }
 
-class FichaDeStock {
-
+class Almacen{
+    -productos: Map<nombre: String, Producto>
+    +retirarProducto(producto:Producto, cantidad:int): Boolean
 }
 
-class Pedido {
-    - precio: Dinero
-    - listaDeProductos: List<Producto>
-    + agregarProducto(p: Producto)
+Struct Pedido {
+    - precioTotal: Dinero
+    - productos: Map<Producto, cantidad>
 }
 
 class GeneradorDeCodigo {
-    
+    +generarCodigo()
 }
 
-'Posibles clases:
+class Buffet {
+    -clientes: Set<Cliente>
+    -almacen: Almacen
+    -historialDeCompras: List<Compra>
+    +agregarProductoAlPedido(pedido:Pedido, producto: Producto, cantidad: int)
+    +comprar(pedido:Pedido): Compra
+}
 
-'- si hacemos mas de un buffet
-' class Buffet
-
+Cliente -> Buffet
+Cliente -down->Pedido
+Buffet -> Almacen
+Buffet -down-> Compra
+Buffet -down-> GeneradorDeCodigo
+Almacen -> Producto
 @enduml
