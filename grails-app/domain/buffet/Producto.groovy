@@ -8,15 +8,17 @@ class Producto {
     static embedded = ['precio']
 
     Dinero precio
-    int stock
+    Int stock
+    String nombreDelProducto
 
     // Set<Movimiento> movimientos = []
 
-    Producto(Dinero precio, int stock) {
+    Producto(Dinero precio, Int stock, String nombreDelProducto) {
         assert stock >= 0
 
         this.precio = precio
         this.stock = stock
+        this.nombreDelProducto = nombreDelProducto
     }
 
     boolean puedeComprar(Cliente cliente) {
