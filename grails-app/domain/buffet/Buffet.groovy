@@ -10,21 +10,35 @@ class Buffet {
     Almacen almacen = new Almacen()
     Map<String, BigDecimal> listadoDePrecios = [:]
 
+    Buffet() {
+        
+    }
+
     void registrarProducto(Producto producto, BigDecimal precio, int stock) {
         actualizarStock(producto.getNombreDelProducto(), stock)
         actualizarPrecio(producto.getNombreDelProducto(), precio)
     }
 
     void actualizarPrecio(Producto producto, BigDecimal nuevoPrecio) {
+        if (nuevoPrecio <= 0) {
+            throw new IllegalStateException()
+        }
         listadoDePrecios[producto.getNombreDelProducto()] = nuevoPrecio
     }
 
     void actualizarStock(Producto producto, int nuevoStock) {
-        almacen.agregar(producto, nuevoStock)
+        if (nuevoStock <= 0) {
+            throw new IllegalStateException()
+        }
+        this.almacen.agregar(producto, nuevoStock)
+    }
+
+    boolean hayStock(String nombreDelProducto) {
+        this.almacen.hayStock(nombreDelProducto)
     }
 
     boolean agregarAlPedido(String nombreProducto, int cantidad, Pedido pedido) {
-        almacen.retirarProducto(nombreProducto, cantidad, pedido)
+        this.almacen.retirarProducto(nombreProducto, cantidad, pedido)
     }
     
 }

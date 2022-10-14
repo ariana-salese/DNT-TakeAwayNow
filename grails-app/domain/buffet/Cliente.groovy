@@ -23,6 +23,10 @@ class Cliente {
         buffet.agregarAlPedido(nombreProducto, cantidad, this.pedido)
     }
 
+    int cantidadDeProductos() {
+        this.pedido.cantidadDeProductos()
+    }
+
 //     void comprar(Producto producto, int cantidad = 1) {
 //         if (this.saldo < producto.precio) throw new IllegalStateException("no te alcanza papá")
 //         this.setSaldo(this.saldo - producto.precio)

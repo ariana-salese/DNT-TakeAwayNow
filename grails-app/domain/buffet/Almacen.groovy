@@ -11,6 +11,13 @@ class Almacen {
         this.inventario[producto.getNombreDelProducto()] = nuevoStock
     }
 
+    boolean hayStock(String nombreDelProducto) {
+        if (this.inventario[nombreDelProducto] > 0) {
+            return true
+        }
+        return false
+    }
+
     boolean retirarProducto(String nombreProducto, int cantidadARetirar, Pedido pedido) {
         int stock = this.inventario[nombreProducto]
 
