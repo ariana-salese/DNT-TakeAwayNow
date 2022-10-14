@@ -5,20 +5,23 @@ class Almacen {
     static constraints = {
     }
     
-    Map<String, Producto> productos = []
+    Map<String, int> inventario = [:]
+
+    void agregar(Producto producto, int nuevoStock) {
+        this.inventario[producto.getNombreDelProducto()] = nuevoStock
+    }
 
     boolean retirarProducto(String nombreProducto, int cantidadARetirar, Pedido pedido) {
-        Producto producto = productos[nombreProducto]
+        int stock = this.inventario[nombreProducto]
 
-        if (producto.cantidad >= cantidadARetirar) {
-            pedido.agregar(new Producto(producto, cantidadARetirar, producto.nombreDelProducto))
-            producto.setCantidad(producto.cantidad - cantidadARetirar)
+        if (stock >= cantidadARetirar) {
+            for (int i = 0; i < cantidadARetirar; i++) {
+                pedido.agregar(new Producto(nombreProducto))
+            }
+            inventario[nombreProducto] -= cantidadARetirar
             return true
         }
-        false
+        return false
     }
 
-    void agregar(Producto producto) {
-        this.productos.add(producto.nombre, producto)
-    }
 }

@@ -10,9 +10,4 @@ class ProductoSpec extends Specification implements DomainUnitTest<Producto> {
 
     def cleanup() {
     }
-
-    void "test something"() {
-        expect:"fix me"
-            true == true //TODO
-    }
 }

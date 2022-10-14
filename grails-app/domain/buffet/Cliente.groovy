@@ -5,16 +5,11 @@ class Cliente {
     static constraints = {
     }
 
-    static embedded = ['saldo']
+    static embedded = ['saldo', 'pedido', 'buffet']
 
     Dinero saldo = new Dinero(0)
     Pedido pedido = new Pedido()
     Buffet buffet 
-
-    //Set<Compra> compras = []
-
-    Cliente() {
-    }
 
     void cargarSaldo(Dinero monto) {
         this.setSaldo(this.saldo + monto)
@@ -25,7 +20,7 @@ class Cliente {
     }
 
     void agregarAlPedido(String nombreProducto, int cantidad) {
-        buffet.agregarAlPedido(producto, cantidad, pedido)
+        buffet.agregarAlPedido(nombreProducto, cantidad, this.pedido)
     }
 
 //     void comprar(Producto producto, int cantidad = 1) {

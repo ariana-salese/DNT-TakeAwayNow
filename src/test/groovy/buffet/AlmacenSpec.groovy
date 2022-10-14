@@ -10,9 +10,4 @@ class AlmacenSpec extends Specification implements DomainUnitTest<Almacen> {
 
     def cleanup() {
     }
-
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

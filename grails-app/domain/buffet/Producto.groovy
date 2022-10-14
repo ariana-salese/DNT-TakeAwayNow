@@ -7,17 +7,9 @@ class Producto {
 
     static embedded = ['precio']
 
-    Dinero precio
-    Int stock
     String nombreDelProducto
 
-    // Set<Movimiento> movimientos = []
-
-    Producto(Dinero precio, Int stock, String nombreDelProducto) {
-        assert stock >= 0
-
-        this.precio = precio
-        this.stock = stock
+    Producto(String nombreDelProducto) {
         this.nombreDelProducto = nombreDelProducto
     }
 

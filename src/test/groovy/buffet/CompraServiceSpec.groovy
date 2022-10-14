@@ -10,9 +10,4 @@ class CompraServiceSpec extends Specification implements ServiceUnitTest<CompraS
 
     def cleanup() {
     }
-
-    void "test something"() {
-        expect:"fix me"
-            true == true //TODO
-    }
 }

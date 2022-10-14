@@ -10,9 +10,4 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
 
     def cleanup() {
     }
-
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

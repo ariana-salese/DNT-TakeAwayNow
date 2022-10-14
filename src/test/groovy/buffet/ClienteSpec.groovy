@@ -15,16 +15,30 @@ class ClienteSpec extends Specification implements DomainUnitTest<Cliente> {
         given: "un cliente que quiere un producto con stock"
             def cliente = new Cliente()
             def buffet = new Buffet()
-            def pancho = new Producto(new Dinero(5), 10, "pancho")
+            def pancho = new Producto("Pancho")
 
         when: "el cliente agrega el producto al carrito"
-            buffet.actualizarStock(pancho)
+            buffet.registrarProducto(pancho, 10, 1)
             cliente.ingresarBuffet(buffet)
-            cliente.agregarAlPedido("pancho", 1)
+            cliente.agregarAlPedido("Pancho", 1)
 
         then: "el carrito tiene un producto"
-            cliente.pedido.cantidadDeProductos() == 1
+            cliente.cantidadDeProductos() == 1
     }
+
+    //void "un cliente no puede agregar un producto sin stock al carrito"() {
+    //    given: "un cliente que quiere un producto sin stock"
+    //        def cliente = new Cliente()
+    //        def buffet = new Buffet()
+    //        def pancho = new Producto(new Dinero(5), 10, "pancho")
+    
+    //    when: "el cliente intenta agrega el producto al carrito"
+    //        cliente.ingresarBuffet(buffet)
+    //        cliente.agregarAlPedido("pancho", 1)
+
+    //    then: "el carrito no tiene productos"
+    //        cliente.pedido.cantidadDeProductos() == 1
+    //}
 
     // void "dado un cliente que tiene 10 pesos de saldo y compro un pancho de 5 pesos me terminan quedando de saldo 5 pesos"() {
     //     given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"

@@ -5,19 +5,26 @@ class Buffet {
     static constraints = {
     }
 
-    Almacen almacen = new Almacen()
-    Map<String, Dinero> listadoDePrecios
+    static embedded = ['almacen']
 
-    void registrarProducto(Producto producto, Dinero precio) {
-        listadoDePrecios[producto.nombre] = precio
+    Almacen almacen = new Almacen()
+    Map<String, BigDecimal> listadoDePrecios = [:]
+
+    void registrarProducto(Producto producto, BigDecimal precio, int stock) {
+        actualizarStock(producto.getNombreDelProducto(), stock)
+        actualizarPrecio(producto.getNombreDelProducto(), precio)
     }
 
-    void actualizarStock(Producto producto) {
-        almacen.agregar(producto)
+    void actualizarPrecio(Producto producto, BigDecimal nuevoPrecio) {
+        listadoDePrecios[producto.getNombreDelProducto()] = nuevoPrecio
+    }
+
+    void actualizarStock(Producto producto, int nuevoStock) {
+        almacen.agregar(producto, nuevoStock)
     }
 
     boolean agregarAlPedido(String nombreProducto, int cantidad, Pedido pedido) {
-        almacen.retirarProducto(producto, cantidad, pedido)
+        almacen.retirarProducto(nombreProducto, cantidad, pedido)
     }
     
 }
