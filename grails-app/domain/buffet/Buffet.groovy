@@ -10,13 +10,9 @@ class Buffet {
     Almacen almacen = new Almacen()
     Map<String, BigDecimal> listadoDePrecios = [:]
 
-    Buffet() {
-        
-    }
-
     void registrarProducto(Producto producto, BigDecimal precio, int stock) {
-        actualizarStock(producto.getNombreDelProducto(), stock)
-        actualizarPrecio(producto.getNombreDelProducto(), precio)
+        actualizarStock(producto, stock)
+        actualizarPrecio(producto, precio)
     }
 
     void actualizarPrecio(Producto producto, BigDecimal nuevoPrecio) {

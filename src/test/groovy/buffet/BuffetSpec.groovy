@@ -22,8 +22,10 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
             buffet.registrarProducto(dona, 5, 2)
 
         then: "el listado de precios contiene los precios indicados y el almacén los stocks indicados"
-            buffet.getListadoDePrecios()["Dona"] == 5
-            buffet.getListadoDePrecios()["Pancho"] == 10
+            def lista = buffet.getListadoDePrecios()
+            lista.size() == 2
+            lista["Dona"] == 5
+            lista["Pancho"] == 10
             buffet.hayStock("Dona") == true
             buffet.hayStock("Pancho") == true
             buffet.hayStock("Alfajor") == false

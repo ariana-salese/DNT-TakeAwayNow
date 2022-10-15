@@ -5,17 +5,14 @@ class Almacen {
     static constraints = {
     }
     
-    Map<String, int> inventario = [:]
+    def inventario = [:]
 
     void agregar(Producto producto, int nuevoStock) {
         this.inventario[producto.getNombreDelProducto()] = nuevoStock
     }
 
     boolean hayStock(String nombreDelProducto) {
-        if (this.inventario[nombreDelProducto] > 0) {
-            return true
-        }
-        return false
+        return (this.inventario[nombreDelProducto] > 0)
     }
 
     boolean retirarProducto(String nombreProducto, int cantidadARetirar, Pedido pedido) {
