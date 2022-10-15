@@ -9,14 +9,15 @@ class Cliente {
 
     Dinero saldo = new Dinero(0)
     Pedido pedido = new Pedido()
-    Buffet buffet 
+    Buffet buffet
+    List<Compra> historialDeCompras = []
 
     void cargarSaldo(Dinero monto) {
         this.setSaldo(this.saldo + monto)
     }
 
     void ingresarBuffet(Buffet buffet) {
-        this.buffet = buffet
+        this.setBuffet(buffet)
     }
 
     void agregarAlPedido(String nombreProducto, int cantidad) {
@@ -27,15 +28,15 @@ class Cliente {
         this.pedido.cantidadDeProductos()
     }
 
-//     void comprar(Producto producto, int cantidad = 1) {
-//         if (this.saldo < producto.precio) throw new IllegalStateException("no te alcanza papá")
-//         this.setSaldo(this.saldo - producto.precio)
-//         //producto.reducirStock(cantidad, cliente)
-//         producto.reducirStock(cantidad, this)
+    void comprar() {
+        if (this.saldo < pedido.precioTotal()) throw new IllegalStateException("no te alcanza papá")
+        this.setSaldo(this.saldo - pedido.precioTotal())
+        //producto.reducirStock(cantidad, cliente)
+        // producto.reducirStock(cantidad, this)
 
-//         // Compra c = new Compra(producto, this)
-//         // this.compras << c
-//         // c
-//         //TODO retornar compra
-//     }
+        // Compra c = new Compra(producto, this)
+        // this.compras << c
+        // c
+        //TODO retornar compra
+    }
 }

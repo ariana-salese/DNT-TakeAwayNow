@@ -25,4 +25,8 @@ class Dinero implements Comparable<Dinero> {
         this.monto <=> otro.monto
         // this.monto.compareTo(otro.monto)
     }
+
+    Dinero multiply(Dinero otro) {
+        new Dinero(this.monto * otro.monto)
+    }
 }
