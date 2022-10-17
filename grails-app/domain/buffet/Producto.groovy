@@ -25,7 +25,7 @@ class Producto {
     }
 
     Producto retirar(int cantidad) {
-        if (this.cantidad < cantidad) { throw new IllegalStateException() }
+        if (this.cantidad < cantidad) throw new IllegalStateException()
         this.cantidad -= cantidad
         new Producto(this.nombre, cantidad, this.precio)
     }

@@ -15,8 +15,7 @@ class Buffet {
     }
 
     void actualizarPrecio(String nombreDelProducto, Dinero nuevoPrecio) {
-        if (nuevoPrecio <= new Dinero(0)) throw new IllegalStateException()
-        
+        if (nuevoPrecio <= new Dinero(0)) throw new IllegalStateException() 
         this.almacen.actualizarPrecio(nombreDelProducto, nuevoPrecio)
     }
 
@@ -31,8 +30,6 @@ class Buffet {
 
     boolean agregarAlPedido(String nombreProducto, int cantidad, Pedido pedido) {
         this.almacen.retirarProducto(nombreProducto, cantidad, pedido) 
-        //Idealmente, no tengo que pasarle el precio.
-        //Es algo que podría saber el almacen?
     }
     
 }

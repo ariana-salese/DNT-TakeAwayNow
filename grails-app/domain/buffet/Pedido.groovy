@@ -12,7 +12,11 @@ class Pedido {
     }
 
     int cantidadDeProductos() {
-        this.productos.size()
+        int cantidad = 0
+
+        this.productos.each{ _, producto -> cantidad = cantidad + producto.cantidad }
+
+        cantidad
     }
 
     Dinero precio() {

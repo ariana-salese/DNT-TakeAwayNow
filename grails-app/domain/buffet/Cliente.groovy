@@ -31,7 +31,7 @@ class Cliente {
     void comprar() {
         Dinero precioPedido = pedido.precio()
 
-        if (this.saldo < precioPedido) throw new IllegalStateException("no te alcanza papá") 
+        if (this.saldo < precioPedido) throw new IllegalStateException() 
         this.setSaldo(this.saldo - precioPedido)
         this.pedido = new Pedido()
     }
