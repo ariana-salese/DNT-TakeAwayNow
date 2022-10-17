@@ -29,14 +29,10 @@ class Cliente {
     }
 
     void comprar() {
-        if (this.saldo < pedido.precioTotal()) throw new IllegalStateException("no te alcanza papá")
-        this.setSaldo(this.saldo - pedido.precioTotal())
-        //producto.reducirStock(cantidad, cliente)
-        // producto.reducirStock(cantidad, this)
+        Dinero precioPedido = pedido.precio()
 
-        // Compra c = new Compra(producto, this)
-        // this.compras << c
-        // c
-        //TODO retornar compra
+        if (this.saldo < precioPedido) throw new IllegalStateException("no te alcanza papá") 
+        this.setSaldo(this.saldo - precioPedido)
+        this.pedido = new Pedido()
     }
 }

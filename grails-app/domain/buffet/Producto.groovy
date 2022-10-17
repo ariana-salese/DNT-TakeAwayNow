@@ -7,23 +7,26 @@ class Producto {
 
     static embedded = ['precio']
 
-    String nombreDelProducto
+    String nombre
+    Dinero precio
+    int cantidad
 
-    Producto(String nombreDelProducto) {
-        this.nombreDelProducto = nombreDelProducto
+    Producto(String nombre, int cantidad, Dinero precio) {
+        if (cantidad <= 0) throw new IllegalStateException() 
+        if (precio == 0) throw new IllegalStateException() 
+
+        this.nombre = nombre
+        this.precio = precio
+        this.cantidad = cantidad
     }
 
-    boolean puedeComprar(Cliente cliente) {
-        this.stock > 0
+    Dinero precioSegunCantidad() {
+        this.precio * this.cantidad
     }
 
-    void reducirStock(int cantidad, Cliente cliente) {
-        // throw new exception si el stock es 0
-        // if (!puedeComprar) throw new .....
-        this.setStock(this.stock - cantidad)
-        // Movimiento m = new Movimiento(VENTA, cantidad, cliente)
-        // this.movimientos << m
-        // m    
-        // TODO Retornar movimieto?
+    Producto retirar(int cantidad) {
+        if (this.cantidad < cantidad) { throw new IllegalStateException() }
+        this.cantidad -= cantidad
+        new Producto(this.nombre, cantidad, this.precio)
     }
 }

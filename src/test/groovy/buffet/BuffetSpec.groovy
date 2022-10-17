@@ -10,66 +10,75 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
 
     def cleanup() {
     }
-    
-    void "un buffet puede agregar un productos y listar sus respectivos precios"() {
-        given: "un buffet que quiere agregar productos a su almacén y listar sus precios"
+
+    void "un buffet puede agregar una serie de productos"() {
+        given: "un buffet que quiere agregar productos"
             def buffet = new Buffet()
-            def pancho = new Producto("Pancho")
-            def dona = new Producto("Dona")
-            def cincoPesos = new Dinero(5)
-            def diezPesos = new Dinero(10)
+            def precioPancho = new Dinero(10)
+            def pancho = new Producto("pancho", 1, precioPancho)
+            def precioDona = new Dinero(5)
+            def dona = new Producto("dona", 5, precioDona)
 
-        when: "el buffet registra los productos con su precio y stock"
-            buffet.registrarProducto(pancho, diezPesos, 1)
-            buffet.registrarProducto(dona, cincoPesos, 5)
+        when: "el buffet registra los productos"
+            buffet.registrarProducto(pancho)
+            buffet.registrarProducto(dona)
 
-        then: "el listado de precios contiene los precios indicados y el almacén los stocks indicados"
-            def precios = buffet.getListadoDePrecios()
-            precios.size() == 2
-            precios["Dona"] == cincoPesos
-            precios["Pancho"] == diezPesos
-            buffet.hayStock("Dona") == true
-            buffet.hayStock("Pancho") == true
-            buffet.hayStock("Alfajor") == false
+        then: "hay stock del productos registrados y sus precios don correctos"
+            def inventario = buffet.almacen.inventario
+            //chequea precio
+            inventario["dona"].precio == precioDona
+            inventario["pancho"].precio == precioPancho
+            //chequea stock
+            buffet.hayStock("dona") == true
+            buffet.hayStock("pancho") == true
+            inventario.size() == 2
     }
 
-    void "un buffet no puede registrar productos con stock igual a cero"() {
-        when: "un buffet registra los productos con un stock igual a cero"
-            def buffet = new Buffet()
-            def pancho = new Producto("Pancho")
-            buffet.registrarProducto(pancho, new Dinero(5), 0)
+    void "un buffet puede actualizar el precio de un producto"() {
 
-        then: "se lanza una excepción"
-            IllegalStateException exception = thrown()
     }
 
-    void "un buffet no puede registrar productos con stock negativo"() {
-        when: "un buffet registra los productos con un stock negativo"
-            def buffet = new Buffet()
-            def pancho = new Producto("Pancho")
-            buffet.registrarProducto(pancho, new Dinero(5), -1)
+    void "un buffet no puede actualizar el precio de un producto como menor a cero"() {
 
-        then: "se lanza una excepción"
-            IllegalStateException exception = thrown()
     }
 
-    void "un buffet no puede registrar productos con precio igual a cero"() {
-        when: "un buffet registra los productos con un precio igual a cero"
-            def buffet = new Buffet()
-            def pancho = new Producto("Pancho")
-            buffet.registrarProducto(pancho, new Dinero(0), 10)
+    void "un buffet no puede actualizar el precio de un producto como igual a cero"() {
 
-        then: "se lanza una excepción"
-            IllegalStateException exception = thrown()
     }
 
-    void "un buffet no puede registrar productos con precio negativo"() {
-        when: "un buffet registra los productos con un precio negativo"
-            def buffet = new Buffet()
-            def pancho = new Producto("Pancho")
-            buffet.registrarProducto(pancho, new Dinero(-1), 10)
+    void "un buffet no puede actualizar el precio de un producto que no tiene"() {
+        
+    }
 
-        then: "se lanza una excepción"
-            IllegalStateException exception = thrown()
+    void "un buffet puede ingresar nuevo stock de un producto"() {
+
+    }
+
+    void "un buffet no puede ingresar nuevo stock de un producto que no tiene"() {
+        
+    }
+
+    void "un buffet no puede ingresar stock de un producto que no tiene"() {
+        
+    }
+
+    void "un buffet no puede ingresar stock negativo de un producto"() {
+        
+    }
+
+    void "un buffet no puede ingresar stock igual a cero de un producto"() {
+        
+    }
+
+    void "un buffet puede agregar un producto a un pedido si hay stock"() {
+
+    }
+
+    void "un buffet no puede agregar un producto a un pedido si no hay suficiente stock"() {
+
+    }
+
+    void "un buffet no puede agregar un producto a un pedido si no lo tiene"() {
+
     }
 }

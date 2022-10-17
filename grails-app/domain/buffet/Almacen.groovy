@@ -7,25 +7,29 @@ class Almacen {
     
     def inventario = [:]
 
-    void agregar(Producto producto, int nuevoStock) {
-        this.inventario[producto.getNombreDelProducto()] = nuevoStock
+    void agregar(Producto producto) {
+        this.inventario[producto.getNombre()] = producto
     }
 
     boolean hayStock(String nombreDelProducto) {
-        return (this.inventario[nombreDelProducto] > 0)
+        def producto = this.inventario[nombreDelProducto]
+
+        if (producto == null) return false
+
+        this.inventario[nombreDelProducto].cantidad > 0
     }
 
-    boolean retirarProducto(String nombreProducto, int cantidadARetirar, Pedido pedido, Dinero precio) {
-        Integer stock = this.inventario[nombreProducto]
+    void retirarProducto(String nombreProducto, int cantidadARetirar, Pedido pedido) {
+        Producto productoARetirar = this.inventario[nombreProducto]
+        pedido.agregar(productoARetirar.retirar(cantidadARetirar))
+    }
 
-        if (stock >= cantidadARetirar) {
-            for (int i = 0; i < cantidadARetirar; i++) {
-                pedido.agregar(new Producto(nombreProducto), precio, cantidadARetirar)
-            }
-            inventario[nombreProducto] -= cantidadARetirar
-            return true
-        }
-        return false
+    void actualizarPrecio(String nombreDelProducto, Dinero nuevoPrecio) {
+        this.inventario[nombreDelProducto].precio = nuevoPrecio
+    }
+
+    void actulizarStock(String nombreDelProducto, int nuevoStock) {
+        this.inventario[nombreDelProducto].cantidad = this.inventario[nombreDelProducto].cantidad + nuevoStock
     }
 
 }

@@ -5,25 +5,21 @@ class Pedido {
     static constraints = {
     }
 
-    List<Producto> productosDeseados = []
-    List<Dinero> precioProducto = []
-    List<Integer> cantidadProducto = []
+    def productos = [:]
 
-    void agregar(Producto producto, Dinero precio, int cantidad) {
-        this.productosDeseados.add(producto)
-        this.precioProducto.add(precio)
-        this.cantidadProducto.add(cantidad)
+    void agregar(Producto producto) {
+        this.productos[producto.nombre] = producto
     }
 
     int cantidadDeProductos() {
-        this.productosDeseados.size()
+        this.productos.size()
     }
 
-    Dinero precioTotal() {
+    Dinero precio() {
         Dinero precioTotal = new Dinero(0)
-        for (int i = 0; i < this.productosDeseados.size(); i++) {
-            precioTotal += this.precioProducto[i] * new Dinero(this.cantidadProducto[i]) //TODO No debería tener que crear un Dinero para multiplicarlo
-        }
+    
+        this.productos.each{ _, producto -> precioTotal = precioTotal + producto.precioSegunCantidad() }
+
         precioTotal
     }
 }

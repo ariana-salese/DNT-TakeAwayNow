@@ -15,42 +15,44 @@ class ClienteSpec extends Specification{
         given: "un cliente que quiere un producto con stock"
             def cliente = new Cliente()
             def buffet = new Buffet()
-            def pancho = new Producto("Pancho")
+            def pancho = new Producto("pancho", 1, new Dinero(10))
 
         when: "el cliente agrega el producto al carrito"
-            buffet.registrarProducto(pancho, new Dinero(10), 1)
+            buffet.registrarProducto(pancho)
             cliente.ingresarBuffet(buffet)
-            cliente.agregarAlPedido("Pancho", 1)
+            cliente.agregarAlPedido("pancho", 1)
 
         then: "el carrito tiene un producto"
             cliente.cantidadDeProductos() == 1
     }
 
-    void "un cliente no puede agregar un producto sin stock al carrito"() {
+    void "un cliente no puede agregar un producto sin stock sufuciente al carrito"() {
        given: "un cliente que quiere un producto sin stock"
-           def cliente = new Cliente()
-           def buffet = new Buffet()
-           def pancho = new Producto("Pancho")
+            def cliente = new Cliente()
+            def buffet = new Buffet()
+            def pancho = new Producto("pancho", 1, new Dinero(10))
     
        when: "el cliente intenta agrega el producto sin stock al carrito"
-           cliente.ingresarBuffet(buffet)
-           cliente.agregarAlPedido("Pancho", 1)
+            buffet.registrarProducto(pancho)
+            cliente.ingresarBuffet(buffet)
+            cliente.agregarAlPedido("pancho", 2)
 
        then: "el carrito no tiene productos"
-           cliente.pedido.cantidadDeProductos() == 0
+            IllegalStateException exception = thrown()
+            cliente.pedido.cantidadDeProductos() == 0
     }
 
     void "dado un cliente que tiene 10 pesos de saldo y compro un pancho de 5 pesos me terminan quedando de saldo 5 pesos"() {
         given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
             def cliente = new Cliente()
-            def buffet = new Buffet()
             cliente.cargarSaldo(new Dinero(10))
-            def pancho = new Producto("Pancho")
+            def buffet = new Buffet()
+            def pancho = new Producto("pancho", 10, new Dinero(5))
 
         when: "el cliente compra el pancho"
-            buffet.registrarProducto(pancho, new Dinero(5), 1)
+            buffet.registrarProducto(pancho)
             cliente.ingresarBuffet(buffet)
-            cliente.agregarAlPedido("Pancho", 1)
+            cliente.agregarAlPedido("pancho", 1)
             cliente.comprar()
 
         then: "el saldo del cliente es de 5 pesos"
