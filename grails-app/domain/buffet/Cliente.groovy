@@ -28,6 +28,10 @@ class Cliente {
         this.pedido.cantidadDeProductos()
     }
 
+    Dinero valorDelPedido(){
+        this.pedido.precio()
+    }
+
     void comprar() {
         Dinero precioPedido = pedido.precio()
 
