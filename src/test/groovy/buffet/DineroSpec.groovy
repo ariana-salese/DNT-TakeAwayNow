@@ -23,6 +23,39 @@ class DineroSpec extends Specification {
             cincoPesos.monto == 5
     }
 
+    void "tengo dos pesos, lo multiplico por cinco y obtengo diez pesos"() {
+        given: "dos pesos"
+            def dosPesos = new Dinero(2)
+
+        when: "lo multiplico por cinco"
+            def diezPesos = dosPesos * 5
+
+        then: "obtengo diez pesos"
+            diezPesos.monto == 10
+    }
+
+    void "no puedo multiplicar dinero por cero"() {
+        given: "dos pesos"
+            def dosPesos = new Dinero(2)
+
+        when: "lo multiplico por cero"
+            def ceroPesos = dosPesos * 0
+
+        then: "obtengo cero pesos"
+            IllegalStateException exception = thrown()
+    }
+
+    void "no puedo multiplicar dinero por un número negativo"() {
+        given: "dos pesos"
+            def dosPesos = new Dinero(2)
+
+        when: "lo multiplico por menos uno"
+            def menosDosPesos = dosPesos * -1
+
+        then: "obtengo menos dos pesos"
+            IllegalStateException exception = thrown()
+    }
+
     void "no puedo tener dinero negativo"() {
         given: "dado dos pesos y tres pesos"
             def dosPesos = new Dinero(2)
