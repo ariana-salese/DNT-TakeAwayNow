@@ -5,13 +5,21 @@ class Pedido {
     static constraints = {
     }
 
-    List<Producto> productosDeseados = []
+    def productos = [:]
 
     void agregar(Producto producto) {
-        this.productosDeseados.add(producto)
+        this.productos[producto.nombre] = producto
     }
 
     int cantidadDeProductos() {
-        this.productosDeseados.size()
+        this.productos.size()
+    }
+
+    Dinero precio() {
+        Dinero precioTotal = new Dinero(0)
+    
+        this.productos.each{ _, producto -> precioTotal = precioTotal + producto.precioSegunCantidad() }
+
+        precioTotal
     }
 }

@@ -4,9 +4,6 @@ class Dinero implements Comparable<Dinero> {
 
     BigDecimal monto
 
-    private Dinero() {
-    }
-
     Dinero(BigDecimal monto) {
         if (monto < 0) throw new IllegalStateException()
         this.monto = monto
@@ -21,8 +18,10 @@ class Dinero implements Comparable<Dinero> {
     }
 
     int compareTo(Dinero otro) {
-        // one liner
         this.monto <=> otro.monto
-        // this.monto.compareTo(otro.monto)
+    }
+
+    Dinero multiply(int cantidad) {
+        new Dinero(this.monto * cantidad)
     }
 }

@@ -24,10 +24,14 @@ class DineroSpec extends Specification {
     }
 
     void "no puedo tener dinero negativo"() {
-        when: "al sumarlos"
-            new Dinero(-1)
+        given: "dado dos pesos y tres pesos"
+            def dosPesos = new Dinero(2)
+            def tresPesos = new Dinero(3)
 
-        then: "obtengo 5 pesos"
+        when: "al restarlos"
+            def resultado = dosPesos - tresPesos
+
+        then: "lanza exepcion"
             IllegalStateException exception = thrown()
     }
 }
