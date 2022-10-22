@@ -31,5 +31,9 @@ class Buffet {
     boolean agregarAlPedido(String nombreProducto, int cantidad, Pedido pedido) {
         this.almacen.retirarProducto(nombreProducto, cantidad, pedido) 
     }
+
+    Compra comprar(Pedido pedido) {
+        new Compra(pedido)
+    }
     
 }

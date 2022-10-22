@@ -34,9 +34,15 @@ class Cliente {
 
     void comprar() {
         Dinero precioPedido = pedido.precio()
-
         if (this.saldo < precioPedido) throw new IllegalStateException() 
+
         this.setSaldo(this.saldo - precioPedido)
+        Compra compra = buffet.comprar(this.pedido)
+        this.historialDeCompras.add(compra)
         this.pedido = new Pedido()
     }
+
+    List<Compra> historialDeCompras() {
+        this.historialDeCompras
+    } 
 }

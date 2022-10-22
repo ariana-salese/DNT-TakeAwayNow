@@ -59,29 +59,70 @@ class ClienteSpec extends Specification{
             cliente.saldo == new Dinero(5)
     }
 
-    // void "dado un cliente que tiene 10 pesos de saldo y compro un pancho de 15 pesos no puede comprarlo xq no tiene saldo suficiente"() {
-    //     given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
-    //         def cliente = new Cliente()
-    //         cliente.cargarSaldo(new Dinero(10))
-    //         def pancho = new Producto(new Dinero(15), 10)
+    void "dado un cliente que tiene 10 pesos de saldo y compro un pancho de 15 pesos no puede comprarlo porque no tiene saldo suficiente"() {
+        given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
+            def cliente = new Cliente()
+            cliente.cargarSaldo(new Dinero(10))
+            def buffet = new Buffet()
+            def pancho = new Producto("pancho", 10, new Dinero(15))
 
-    //     when: "el cliente intenta compra el pancho"
-    //         cliente.comprar(pancho)
+        when: "el cliente intenta compra el pancho"
+            buffet.registrarProducto(pancho)
+            cliente.ingresarBuffet(buffet)
+            cliente.agregarAlPedido("pancho", 1)
+            cliente.comprar()
 
-    //     then: "se lanza una excepcion ya que no le alcanza el saldo"
-    //         IllegalStateException exception = thrown()
-    // }
+        then: "se lanza una excepcion ya que no le alcanza el saldo"
+            IllegalStateException exception = thrown()
+    }
 
-    // void "dado un cliente que compra un pancho y habia 10 panchos de stock luego quedan 9 panchos"() {
-    //     given: ""
-    //         def cliente = new Cliente()
-    //         cliente.cargarSaldo(new Dinero(20))
-    //         def pancho = new Producto(new Dinero(15), 10)
+    void "dado un cliente que realizó una compra, luego puede verla"() {
+        given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
+            def cliente = new Cliente()
+            cliente.cargarSaldo(new Dinero(10))
+            def buffet = new Buffet()
+            def pancho = new Producto("pancho", 10, new Dinero(5))
 
-    //     when: ""
-    //         cliente.comprar(pancho)
+        when: "el cliente compra el pancho"
+            buffet.registrarProducto(pancho)
+            cliente.ingresarBuffet(buffet)
+            cliente.agregarAlPedido("pancho", 1)
+            cliente.comprar()
 
-    //     then: ""
-    //         pancho.stock == 9
-    // }
+        then: "el cliente puede ver su compra"
+            List<Compra> historial = cliente.historialDeCompras()
+            Pedido compraPancho = historial.first().pedido()
+
+            compraPancho.cantidadDeProductos() == 1
+            compraPancho.precio() == new Dinero(5)
+    }
+
+
+    void "dado un cliente que realizó varias compras, luego puede ver las que compras"() {
+        given: "dado un cliente que tiene 10 pesos de saldo, un producto pancho de 5 pesos y un producto coca de 6 pesos"
+            def cliente = new Cliente()
+            cliente.cargarSaldo(new Dinero(11))
+            def buffet = new Buffet()
+            def pancho = new Producto("pancho", 10, new Dinero(5))
+            def coca = new Producto("coca", 10, new Dinero(6))
+
+        when: "el cliente compra el pancho y luego la coca"
+            buffet.registrarProducto(pancho)
+            buffet.registrarProducto(coca)
+            cliente.ingresarBuffet(buffet)
+            cliente.agregarAlPedido("pancho", 1)
+            cliente.comprar()
+            cliente.agregarAlPedido("coca", 1)
+            cliente.comprar()
+
+        then: "el cliente puede ver sus compras"
+            List<Compra> historial = cliente.historialDeCompras()
+            Pedido compraPancho = historial.first().pedido()
+            Pedido compraCoca = historial.last().pedido()
+
+            compraPancho.cantidadDeProductos() == 1
+            compraPancho.precio() == new Dinero(5)
+            compraCoca.cantidadDeProductos() == 1
+            compraCoca.precio() == new Dinero(6)
+    }
 }
