@@ -1,6 +1,6 @@
 # BUFFET-FIUBA
 
-Trabajo Práctico para la materia 95.68 Desarrollo con nuevas tecnologias
+Trabajo Práctico para la materia 95.68 Desarrollo con nuevas tecnologias.[Ingresar al informe](https://docs.google.com/document/d/1NUL26zoWPJfrKXPsdT5i_bUEeCybPvfwQjPZx1HMw8g/edit?usp=sharing)
 
 ## Integrantes:
 
