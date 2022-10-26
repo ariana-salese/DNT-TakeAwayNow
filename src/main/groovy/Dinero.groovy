@@ -22,9 +22,7 @@ class Dinero implements Comparable<Dinero> {
     }
 
     Dinero multiply(int cantidad) {
-        if (cantidad <= 0) {
-            throw new IllegalStateException()
-        }
+        if (cantidad <= 0) throw new IllegalStateException()
         new Dinero(this.monto * cantidad)
     }
 }

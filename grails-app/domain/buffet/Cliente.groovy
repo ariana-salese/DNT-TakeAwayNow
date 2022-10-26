@@ -5,23 +5,23 @@ class Cliente {
     static constraints = {
     }
 
-    static embedded = ['saldo', 'pedido', 'buffet']
+    static embedded = ['saldo', 'pedido', 'buffetIngresado']
 
     Dinero saldo = new Dinero(0)
     Pedido pedido = new Pedido()
-    Buffet buffet
+    Buffet buffetIngresado
     List<Compra> historialDeCompras = []
+
+    void ingresarBuffet(Buffet buffet) {
+        this.setBuffetIngresado(buffet)
+    }
 
     void cargarSaldo(Dinero monto) {
         this.setSaldo(this.saldo + monto)
     }
 
-    void ingresarBuffet(Buffet buffet) {
-        this.setBuffet(buffet)
-    }
-
     void agregarAlPedido(String nombreProducto, int cantidad) {
-        buffet.agregarAlPedido(nombreProducto, cantidad, this.pedido)
+        buffetIngresado.agregarAlPedido(nombreProducto, cantidad, this.pedido)
     }
 
     int cantidadDeProductos() {
@@ -37,12 +37,8 @@ class Cliente {
         if (this.saldo < precioPedido) throw new IllegalStateException() 
 
         this.setSaldo(this.saldo - precioPedido)
-        Compra compra = buffet.registrarCompra(this.pedido)
+        Compra compra = buffetIngresado.registrarCompra(this.pedido)
         this.historialDeCompras.add(compra)
         this.pedido = new Pedido()
     }
-
-    List<Compra> historialDeCompras() {
-        this.historialDeCompras
-    } 
 }

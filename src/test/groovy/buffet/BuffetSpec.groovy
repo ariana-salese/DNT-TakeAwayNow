@@ -202,7 +202,7 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
             LocalDateTime fechaDeCompraCliente2 = LocalDateTime.now()
 
         then: "el buffet puede verlas y sus ids son los correctos"
-            List<Compra> historial = buffet.comprasRegistradas()
+            List<Compra> historial = buffet.getComprasRegistradas()
             Pedido compraCliente1 = historial.first().pedido()
             Pedido compraCliente2 = historial.last().pedido()
             historial.size() == 2
@@ -214,7 +214,11 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
             compraCliente2.cantidadDeProductos() == 1
             compraCliente2.precio() == new Dinero(5)
 
-            historial.first().fecha() == fechaDeCompraCliente1
-            historial.last().fecha() == fechaDeCompraCliente2
+
+            historial.first().fecha().getHour() == fechaDeCompraCliente1.getHour()
+            historial.first().fecha().getMinute() == fechaDeCompraCliente1.getMinute()
+            
+            historial.last().fecha().getHour() == fechaDeCompraCliente2.getHour()
+            historial.last().fecha().getMinute() == fechaDeCompraCliente2.getMinute()
     }
 }

@@ -91,7 +91,7 @@ class ClienteSpec extends Specification{
             cliente.comprar()
 
         then: "el cliente puede ver su compra"
-            List<Compra> historial = cliente.historialDeCompras()
+            List<Compra> historial = cliente.getHistorialDeCompras()
             Pedido compraPancho = historial.first().pedido()
 
             compraPancho.cantidadDeProductos() == 1
@@ -118,7 +118,7 @@ class ClienteSpec extends Specification{
             LocalDateTime fechaDeCompra = LocalDateTime.now()
 
         then: "el cliente puede ver sus compras y los ids son los correctos"
-            List<Compra> historial = cliente.historialDeCompras()
+            List<Compra> historial = cliente.getHistorialDeCompras()
             Pedido compraPancho = historial.first().pedido()
             Pedido compraCoca = historial.last().pedido()
 
@@ -126,7 +126,8 @@ class ClienteSpec extends Specification{
             compraPancho.precio() == new Dinero(5)
             compraCoca.cantidadDeProductos() == 1
             compraCoca.precio() == new Dinero(6)
-            historial.first().fecha() == fechaDeCompra
+            historial.first().fecha().getHour() == fechaDeCompra.getHour()
+            historial.first().fecha().getMinute() == fechaDeCompra.getMinute()
             historial.first().id_compra == 0
             historial.last().id_compra == 1
     }

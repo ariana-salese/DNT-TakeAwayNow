@@ -39,8 +39,4 @@ class Buffet {
         this.comprasRegistradas.add(compra)
         compra
     }
-
-    List<Compra> comprasRegistradas() {
-        this.comprasRegistradas
-    } 
 }

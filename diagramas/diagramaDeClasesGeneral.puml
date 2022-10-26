@@ -2,22 +2,30 @@
 class Cliente {
     - saldo: Dinero
     - pedido: Pedido 
-    - comprasHechas: List<Compra>
-    - buffet: Buffet
-    + cargarSaldo(monto: Dinero): void
-    + agregarProductoAlPedido(producto: Producto, cantidad: int): void
-    + comprar(): void
+    - historialDeCompras: List<Compra>
+    - buffetIngresado: Buffet
+    + ingresarBuffet(Buffet buffet)
+    + cargarSaldo(monto: Dinero)
+    + agregarAlPedido(String nombreProducto, int cantidad)
+    + cantidadDeProductos(): int
+    + valorDelPedido(): Dinero
+    + comprar()
+    + historialDeCompras(): List<Compra>
+    + confirmarCompraDelPedido()
 }
 
-Struct Producto {
+class Producto {
     - precio: Dinero 
     - nombre: String
-    - stock: int
+    - cantidad: int
+    + precioSegunCantidad(): Dinero
+    + retirar(cantidad: int): Producto
 }
 
-Struct Compra {
+class Compra {
     - pedido: Pedido
-    - codigo: int
+    - fecha: LocalDateTime
+    - id_compra: int
 }
 
 class Dinero {
@@ -25,34 +33,54 @@ class Dinero {
     + plus(otro: Dinero): Dinero
     + minus(otro: Dinero): Dinero
     + compareTo(otro: Dinero): int
+    + multiply(int cantidad): Dinero
 }
 
 class Almacen{
-    -productos: Map<nombre: String, Producto>
-    +retirarProducto(producto:Producto, cantidad:int): Boolean
+    -inventario: Map<nombre: String, Producto>
+    +estaRegistrado(String nombreDelProducto): boolean
+    +hayStock(String nombreDelProducto): boolean
+    +retirarProducto(String nombreDelProducto, int cantidadARetirar, Pedido pedido)
+    +actualizarPrecio(String nombreDelProducto, Dinero nuevoPrecio)
+    +actulizarStock(String nombreDelProducto, int nuevoStock)
 }
 
-Struct Pedido {
-    - precioTotal: Dinero
-    - productos: Map<Producto, cantidad>
-}
-
-class GeneradorDeCodigo {
-    +generarCodigo()
+class Pedido {
+    - productos: Map<String, Producto>
+    + agregar(Producto producto)
+    + cantidadDeProductos(): int
+    + precio(): Dinero
 }
 
 class Buffet {
-    -clientes: Set<Cliente>
     -almacen: Almacen
-    -historialDeCompras: List<Compra>
-    +agregarProductoAlPedido(pedido:Pedido, producto: Producto, cantidad: int)
-    +comprar(pedido:Pedido): Compra
+    -comprasRegistradas: List<Compra>
+    -ids_compras: int
+    +registrarProducto(Producto producto)
+    +actualizarPrecio(String nombreDelProducto, Dinero nuevoPrecio)
+    +ingresarStock(String nombreDelProducto, int nuevoStock)
+    +hayStock(String nombreDelProducto): boolean
+    +agregarAlPedido(String nombreProducto, int cantidad, Pedido pedido)
+    +registrarCompra(Pedido pedido): Compra
+    +comprasRegistradas(): List<Compra> comprasRegistradas
 }
 
-Cliente -> Buffet
-Cliente -down->Pedido
-Buffet -> Almacen
-Buffet -down-> Compra
-Buffet -down-> GeneradorDeCodigo
-Almacen -> Producto
+Cliente o-right- "1" Buffet
+Cliente o-- "1" Pedido
+Cliente o-- "*" Compra
+Cliente o- "1" Dinero
+
+Producto o-- "1" Dinero
+
+Pedido o- Producto
+
+Almacen o-- "*" Producto
+'Almacen ..> Dinero
+'Almacen ..> Pedido
+
+Buffet *-- "1" Almacen
+Buffet o-- "*" Compra
+'Buffet ..> Dinero
+'Buffet ..> Pedido
+
 @enduml
