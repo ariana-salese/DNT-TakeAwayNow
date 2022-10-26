@@ -2,6 +2,7 @@ package buffet
 
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
+import java.time.LocalDateTime
 
 class ClienteSpec extends Specification{
 
@@ -114,8 +115,9 @@ class ClienteSpec extends Specification{
             cliente.comprar()
             cliente.agregarAlPedido("coca", 1)
             cliente.comprar()
+            LocalDateTime fechaDeCompra = LocalDateTime.now()
 
-        then: "el cliente puede ver sus compras"
+        then: "el cliente puede ver sus compras y los ids son los correctos"
             List<Compra> historial = cliente.historialDeCompras()
             Pedido compraPancho = historial.first().pedido()
             Pedido compraCoca = historial.last().pedido()
@@ -124,5 +126,8 @@ class ClienteSpec extends Specification{
             compraPancho.precio() == new Dinero(5)
             compraCoca.cantidadDeProductos() == 1
             compraCoca.precio() == new Dinero(6)
+            historial.first().fecha() == fechaDeCompra
+            historial.first().id_compra == 0
+            historial.last().id_compra == 1
     }
 }

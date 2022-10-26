@@ -9,10 +9,12 @@ class Compra {
 
     Pedido pedido
     LocalDateTime fecha
+    int id_compra
 
-    Compra (Pedido pedido) {
+    Compra (Pedido pedido, id_compra) {
         this.pedido = pedido
         this.fecha = LocalDateTime.now()
+        this.id_compra = id_compra
     }
 
     LocalDateTime fecha() {

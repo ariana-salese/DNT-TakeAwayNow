@@ -8,6 +8,8 @@ class Buffet {
     static embedded = ['almacen']
 
     Almacen almacen = new Almacen()
+    List<Compra> comprasRegistradas = []
+    int ids_compras = 0
 
     void registrarProducto(Producto producto) {
         if (producto.cantidad == 0) throw new IllegalStateException()
@@ -32,8 +34,13 @@ class Buffet {
         this.almacen.retirarProducto(nombreProducto, cantidad, pedido) 
     }
 
-    Compra comprar(Pedido pedido) {
-        new Compra(pedido)
+    Compra registrarCompra(Pedido pedido) {
+        Compra compra = new Compra(pedido, ids_compras++)
+        this.comprasRegistradas.add(compra)
+        compra
     }
-    
+
+    List<Compra> comprasRegistradas() {
+        this.comprasRegistradas
+    } 
 }
