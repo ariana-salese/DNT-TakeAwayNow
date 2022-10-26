@@ -4,8 +4,10 @@ class Pedido {
 
     static constraints = {
     }
+    
+    static embedded = ['productos']
 
-    def productos = [:]
+    Map<String, Producto> productos = [:]
 
     void agregar(Producto producto) {
         this.productos[producto.nombre] = producto

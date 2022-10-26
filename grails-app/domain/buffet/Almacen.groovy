@@ -5,7 +5,7 @@ class Almacen {
     static constraints = {
     }
     
-    def inventario = [:]
+    Map<String, Producto> inventario = [:]
 
     void agregar(Producto producto) {
         this.inventario[producto.getNombre()] = producto

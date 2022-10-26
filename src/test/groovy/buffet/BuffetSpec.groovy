@@ -2,6 +2,7 @@ package buffet
 
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
+import java.time.LocalDateTime
 
 class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
 
@@ -175,5 +176,45 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
 
         then: "se lanza error"
             IllegalStateException exception = thrown()
+    }
+
+    void "un buffet puede ver las compras realizadas correctamente"() {
+        given: "varios clientes y varios productos"
+            def buffet = new Buffet()
+            def cliente_1 = new Cliente()
+            def cliente_2 = new Cliente()
+            cliente_1.cargarSaldo(new Dinero(16))
+            cliente_2.cargarSaldo(new Dinero(16))
+            cliente_1.ingresarBuffet(buffet)
+            cliente_2.ingresarBuffet(buffet)
+            def pancho = new Producto("pancho", 10, new Dinero(5))
+            def coca = new Producto("coca", 10, new Dinero(6))
+            buffet.registrarProducto(coca)
+            buffet.registrarProducto(pancho)
+
+        when: "los clientes realizan compras"
+            cliente_1.agregarAlPedido("pancho", 2)
+            cliente_1.agregarAlPedido("coca", 1)
+            cliente_2.agregarAlPedido("pancho", 1)
+            cliente_1.comprar()
+            LocalDateTime fechaDeCompraCliente1 = LocalDateTime.now()
+            cliente_2.comprar()
+            LocalDateTime fechaDeCompraCliente2 = LocalDateTime.now()
+
+        then: "el buffet puede verlas y sus ids son los correctos"
+            List<Compra> historial = buffet.comprasRegistradas()
+            Pedido compraCliente1 = historial.first().pedido()
+            Pedido compraCliente2 = historial.last().pedido()
+            historial.size() == 2
+            historial.first().id_compra == 0
+            historial.last().id_compra == 1
+
+            compraCliente1.cantidadDeProductos() == 3
+            compraCliente1.precio() == new Dinero(16)
+            compraCliente2.cantidadDeProductos() == 1
+            compraCliente2.precio() == new Dinero(5)
+
+            historial.first().fecha() == fechaDeCompraCliente1
+            historial.last().fecha() == fechaDeCompraCliente2
     }
 }
