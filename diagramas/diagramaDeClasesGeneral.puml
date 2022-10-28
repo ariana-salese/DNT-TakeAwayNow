@@ -14,12 +14,25 @@ class Cliente {
     + confirmarCompraDelPedido()
 }
 
-class Producto {
-    - precio: Dinero 
+abstract Producto {
     - nombre: String
     - cantidad: int
-    + precioSegunCantidad(): Dinero
     + retirar(cantidad: int): Producto
+}
+
+class ProductoCanjeable {
+    - puntos: Puntos
+    + puntosSegunCantidad(): Puntos
+}
+
+class ProductoNoCanjeable {
+    - precio: Dinero 
+    + precioSegunCantidad(): Dinero
+}
+
+class Puntos {
+    - cantidad: int 
+    + canjear(cantidad: int): bool
 }
 
 class Compra {
@@ -65,21 +78,28 @@ class Buffet {
     +comprasRegistradas(): List<Compra> comprasRegistradas
 }
 
-Cliente o-right- "1" Buffet
+Cliente o-down- "1" Buffet
 Cliente o-- "1" Pedido
-Cliente o-- "*" Compra
+Cliente o-left- "*" Compra
 Cliente o- "1" Dinero
+Cliente o-- "1" Puntos
 
-Producto o-- "1" Dinero
+Producto o-up- "1" Dinero
 
-Pedido o- Producto
+ProductoCanjeable -up-|> Producto
+ProductoNoCanjeable -up-|> "1" Producto
+
+
+ProductoCanjeable o-up- Puntos
+
+Pedido o-down- Producto
 
 Almacen o-- "*" Producto
 'Almacen ..> Dinero
 'Almacen ..> Pedido
 
 Buffet *-- "1" Almacen
-Buffet o-- "*" Compra
+Buffet o-up- "*" Compra
 'Buffet ..> Dinero
 'Buffet ..> Pedido
 
