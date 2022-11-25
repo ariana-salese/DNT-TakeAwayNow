@@ -6,129 +6,148 @@ import java.time.LocalDateTime
 
 class ClienteSpec extends Specification{
 
+    Buffet buffet
+    Cliente cliente
+
     def setup() {
+        buffet = new Buffet()
+        cliente = new Cliente()
+        cliente.ingresarBuffet(buffet)
     }
 
     def cleanup() {
     }
 
-    void "un cliente puede agregar un producto con stock al carrito"() {
+    void "un cliente puede agregar un producto con stock al pedido"() {
         given: "un cliente que quiere un producto con stock"
-            def cliente = new Cliente()
-            def buffet = new Buffet()
             def pancho = new Producto("pancho", 1, new Dinero(10))
-
-        when: "el cliente agrega el producto al carrito"
             buffet.registrarProducto(pancho)
-            cliente.ingresarBuffet(buffet)
+
+        when: "el cliente agrega el producto al pedido"
             cliente.agregarAlPedido("pancho", 1)
 
-        then: "el carrito tiene un producto"
-            cliente.cantidadDeProductos() == 1
+        then: "el pedido tiene un producto"
+            cliente.cantidadDeProductosEnElPedido() == 1
     }
 
-    void "un cliente no puede agregar un producto sin stock sufuciente al carrito"() {
-       given: "un cliente que quiere un producto sin stock"
-            def cliente = new Cliente()
-            def buffet = new Buffet()
+    // void "un cliente puede agregar y quitar productos con stock al pedido"() {
+    //     given: "un cliente que quiere un producto con stock"
+    //         def pancho = new Producto("pancho", 1, new Dinero(10))
+    //         def coca = new Producto("coca", 2, new Dinero(10))
+    //         buffet.registrarProducto(pancho)
+    //         buffet.registrarProducto(coca)
+
+    //     when: "el cliente agrega ambos productos al pedido"
+    //         cliente.agregarAlPedido("pancho", 1)
+    //         cliente.agregarAlPedido("coca", 2)
+    //         cliente.quitarDelPedido("coca", 1)
+
+    //     then: "el pedido tiene los productos y la cantidad adecuada de cada uno de ellos"
+    //         cliente.cantidadDeProductos() == 3
+    // }
+
+    void "un cliente no puede agregar un producto sin stock sufuciente al pedido"() {
+       when: "el cliente intenta agrega el producto sin stock suficiente al pedido"
             def pancho = new Producto("pancho", 1, new Dinero(10))
-    
-       when: "el cliente intenta agrega el producto sin stock al carrito"
             buffet.registrarProducto(pancho)
-            cliente.ingresarBuffet(buffet)
             cliente.agregarAlPedido("pancho", 2)
 
-       then: "el carrito no tiene productos"
-            IllegalStateException exception = thrown()
+       then: "el pedido no tiene productos"
+            Exception e = thrown()
+            e.message == "La cantidad que se desea retirar es mayor al stock actual del producto"
             cliente.pedido.cantidadDeProductos() == 0
     }
 
-    void "dado un cliente que tiene 10 pesos de saldo y compro un pancho de 5 pesos me terminan quedando de saldo 5 pesos"() {
+    void "un cliente que no agregó productos a su pedido no puede confirmar la compra del mismo"() {
+        when: "el cliente confirma la compra de su pedido"
+            cliente.confirmarCompraDelPedido()
+
+        then: "se lanza un error"
+            Exception e = thrown()
+            e.message == "No se puede confirmar la compra del pedido ya que el mismo no tiene productos agregados."
+    }
+
+    void "dado un cliente que tiene 10 pesos de saldo y compró un pancho de 5 pesos le terminan quedando de saldo 5 pesos"() {
         given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
-            def cliente = new Cliente()
             cliente.cargarSaldo(new Dinero(10))
-            def buffet = new Buffet()
             def pancho = new Producto("pancho", 10, new Dinero(5))
+            buffet.registrarProducto(pancho)
 
         when: "el cliente compra el pancho"
-            buffet.registrarProducto(pancho)
-            cliente.ingresarBuffet(buffet)
             cliente.agregarAlPedido("pancho", 1)
-            cliente.comprar()
+            cliente.confirmarCompraDelPedido()
 
         then: "el saldo del cliente es de 5 pesos"
             cliente.saldo == new Dinero(5)
     }
 
-    void "dado un cliente que tiene 10 pesos de saldo y compro un pancho de 15 pesos no puede comprarlo porque no tiene saldo suficiente"() {
+    void "dado un cliente que tiene 10 pesos de saldo y compró un pancho de 15 pesos, no puede confirmar correctamente la compra de su pedido porque no tiene saldo suficiente"() {
         given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
-            def cliente = new Cliente()
             cliente.cargarSaldo(new Dinero(10))
-            def buffet = new Buffet()
             def pancho = new Producto("pancho", 10, new Dinero(15))
-
-        when: "el cliente intenta compra el pancho"
             buffet.registrarProducto(pancho)
-            cliente.ingresarBuffet(buffet)
+
+        when: "el cliente intenta comprar el pancho"
             cliente.agregarAlPedido("pancho", 1)
-            cliente.comprar()
+            cliente.confirmarCompraDelPedido()
 
         then: "se lanza una excepcion ya que no le alcanza el saldo"
-            IllegalStateException exception = thrown()
+            Exception e = thrown()
+            e.message == "No se puede confirmar la compra del pedido ya que el saldo es insuficiente."
     }
 
     void "dado un cliente que realizó una compra, luego puede verla"() {
         given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
-            def cliente = new Cliente()
             cliente.cargarSaldo(new Dinero(10))
-            def buffet = new Buffet()
             def pancho = new Producto("pancho", 10, new Dinero(5))
+            buffet.registrarProducto(pancho)
 
         when: "el cliente compra el pancho"
-            buffet.registrarProducto(pancho)
-            cliente.ingresarBuffet(buffet)
             cliente.agregarAlPedido("pancho", 1)
-            cliente.comprar()
+            cliente.confirmarCompraDelPedido()
 
         then: "el cliente puede ver su compra"
-            List<Compra> historial = cliente.getHistorialDeCompras()
-            Pedido compraPancho = historial.first().pedido()
+            List<Compra> historialDeComprasDelCliente = cliente.getHistorialDeCompras()
+            Pedido compraDeUnPancho = historialDeComprasDelCliente.first().pedido()
 
-            compraPancho.cantidadDeProductos() == 1
-            compraPancho.precio() == new Dinero(5)
+            compraDeUnPancho.cantidadDeProductos() == 1
+            compraDeUnPancho.precio() == new Dinero(5)
     }
 
 
-    void "dado un cliente que realizó varias compras, luego puede ver las que compras"() {
+    void "dado un cliente que realizó varias compras, luego puede verlas todas"() {
         given: "dado un cliente que tiene 10 pesos de saldo, un producto pancho de 5 pesos y un producto coca de 6 pesos"
-            def cliente = new Cliente()
             cliente.cargarSaldo(new Dinero(11))
-            def buffet = new Buffet()
             def pancho = new Producto("pancho", 10, new Dinero(5))
             def coca = new Producto("coca", 10, new Dinero(6))
-
-        when: "el cliente compra el pancho y luego la coca"
             buffet.registrarProducto(pancho)
             buffet.registrarProducto(coca)
-            cliente.ingresarBuffet(buffet)
+
+        when: "el cliente compra el pancho y luego la coca"
             cliente.agregarAlPedido("pancho", 1)
-            cliente.comprar()
+            cliente.confirmarCompraDelPedido()
+            LocalDateTime fechaDeCompraDelPancho = LocalDateTime.now()
+
             cliente.agregarAlPedido("coca", 1)
-            cliente.comprar()
-            LocalDateTime fechaDeCompra = LocalDateTime.now()
+            cliente.confirmarCompraDelPedido()
+            LocalDateTime fechaDeCompraDeLaCoca = LocalDateTime.now()
 
         then: "el cliente puede ver sus compras y los ids son los correctos"
-            List<Compra> historial = cliente.getHistorialDeCompras()
-            Pedido compraPancho = historial.first().pedido()
-            Pedido compraCoca = historial.last().pedido()
-
-            compraPancho.cantidadDeProductos() == 1
-            compraPancho.precio() == new Dinero(5)
-            compraCoca.cantidadDeProductos() == 1
-            compraCoca.precio() == new Dinero(6)
-            historial.first().fecha().getHour() == fechaDeCompra.getHour()
-            historial.first().fecha().getMinute() == fechaDeCompra.getMinute()
-            historial.first().id_compra == 0
-            historial.last().id_compra == 1
+            List<Compra> historialDeComprasDelCliente = cliente.getHistorialDeCompras()
+            
+            Pedido compraDeUnPancho = historialDeComprasDelCliente.first().pedido()
+            compraDeUnPancho.cantidadDeProductos() == 1
+            compraDeUnPancho.precio() == new Dinero(5)
+            historialDeComprasDelCliente.first().fecha().getHour() == fechaDeCompraDelPancho.getHour()
+            historialDeComprasDelCliente.first().fecha().getMinute() == fechaDeCompraDelPancho.getMinute()
+            historialDeComprasDelCliente.first().id_compra == 0
+            
+            Pedido compraDeUnaCoca = historialDeComprasDelCliente.last().pedido()
+            compraDeUnaCoca.cantidadDeProductos() == 1
+            compraDeUnaCoca.precio() == new Dinero(6)
+            historialDeComprasDelCliente.first().fecha().getHour() == fechaDeCompraDeLaCoca.getHour()
+            historialDeComprasDelCliente.first().fecha().getMinute() == fechaDeCompraDeLaCoca.getMinute()
+            historialDeComprasDelCliente.first().id_compra == 0
+            historialDeComprasDelCliente.last().id_compra == 1
     }
 }

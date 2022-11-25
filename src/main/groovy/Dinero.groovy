@@ -5,7 +5,7 @@ class Dinero implements Comparable<Dinero> {
     BigDecimal monto
 
     Dinero(BigDecimal monto) {
-        if (monto < 0) throw new IllegalStateException()
+        if (monto < 0) throw new IllegalStateException("No puede existir dinero negativo.")
         this.monto = monto
     }
 

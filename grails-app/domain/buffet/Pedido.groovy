@@ -13,19 +13,16 @@ class Pedido {
         this.productos[producto.nombre] = producto
     }
 
+    Dinero precio() {
+        Dinero precioTotal = new Dinero(0)
+        this.productos.each{ _, producto -> precioTotal = precioTotal + producto.precioSegunCantidad() }
+        precioTotal
+    }
+    
     int cantidadDeProductos() {
         int cantidad = 0
-
         this.productos.each{ _, producto -> cantidad = cantidad + producto.cantidad }
-
         cantidad
     }
 
-    Dinero precio() {
-        Dinero precioTotal = new Dinero(0)
-    
-        this.productos.each{ _, producto -> precioTotal = precioTotal + producto.precioSegunCantidad() }
-
-        precioTotal
-    }
 }
