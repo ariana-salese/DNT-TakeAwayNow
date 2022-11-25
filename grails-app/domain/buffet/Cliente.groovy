@@ -27,7 +27,9 @@ class Cliente {
     }
 
     void quitarDelPedido(String nombreProducto, int cantidad) {
-        buffetIngresado.quitarDelPedido(nombreProducto, cantidad, this.pedido)
+        if (cantidadDeProductosEnElPedido() == 0) throw new IllegalStateException("No se pueden quitar ${cantidad} ${nombreProducto}s del pedido ya que no hay productos en el mismo.")
+        pedido.quitar(nombreProducto, cantidad)
+        buffetIngresado.ingresarStock(nombreProducto, cantidad)
     }
 
     int cantidadDeProductosEnElPedido() {

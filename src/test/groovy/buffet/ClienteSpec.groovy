@@ -30,21 +30,32 @@ class ClienteSpec extends Specification{
             cliente.cantidadDeProductosEnElPedido() == 1
     }
 
-    // void "un cliente puede agregar y quitar productos con stock al pedido"() {
-    //     given: "un cliente que quiere un producto con stock"
-    //         def pancho = new Producto("pancho", 1, new Dinero(10))
-    //         def coca = new Producto("coca", 2, new Dinero(10))
-    //         buffet.registrarProducto(pancho)
-    //         buffet.registrarProducto(coca)
+    void "un cliente puede agregar y quitar productos con stock al pedido"() {
+        given: "un cliente que quiere un producto con stock"
+            def pancho = new Producto("pancho", 5, new Dinero(10))
+            buffet.registrarProducto(pancho)
 
-    //     when: "el cliente agrega ambos productos al pedido"
-    //         cliente.agregarAlPedido("pancho", 1)
-    //         cliente.agregarAlPedido("coca", 2)
-    //         cliente.quitarDelPedido("coca", 1)
+        when: "el cliente agrega dos productos al pedido"
+            cliente.agregarAlPedido("pancho", 5)
+            cliente.quitarDelPedido("pancho", 3)
 
-    //     then: "el pedido tiene los productos y la cantidad adecuada de cada uno de ellos"
-    //         cliente.cantidadDeProductos() == 3
-    // }
+        then: "el pedido tiene la cantidad de productos adecuados, y el inventario del buffet vuelve a actualizarse"
+            cliente.valorDelPedido() == new Dinero(20)
+            cliente.cantidadDeProductosEnElPedido() == 2
+            buffet.hayStock("pancho") == true
+            buffet.almacen.inventario["pancho"].cantidad == 3
+    }
+
+    void "un cliente no puede quitar productos de su pedido los cuales no haya agregado previamente"() {
+        when: "un cliente intenta quitar un producto del pedido, pero el mismo está vacío"
+            cliente.quitarDelPedido("pancho", 3)
+
+        then:
+            Exception e = thrown()
+            e.message == "No se pueden quitar 3 panchos del pedido ya que no hay productos en el mismo."
+            cliente.valorDelPedido() == new Dinero(0)
+            cliente.cantidadDeProductosEnElPedido() == 0
+    }
 
     void "un cliente no puede agregar un producto sin stock sufuciente al pedido"() {
        when: "el cliente intenta agrega el producto sin stock suficiente al pedido"

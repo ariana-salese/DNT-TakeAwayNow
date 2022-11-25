@@ -34,10 +34,6 @@ class Buffet {
         this.almacen.retirarProducto(nombreProducto, cantidad, pedido) 
     }
 
-    void quitarDelPedido(String nombreProducto, int cantidad, Pedido pedido) {
-        this.almacen.actualizarStock(nombreProducto, cantidad) 
-    }
-
     Compra registrarCompra(Pedido pedido) {
         Compra compra = new Compra(pedido, ids_compras++)
         this.comprasRegistradas.add(compra)
