@@ -24,7 +24,7 @@ cd backend
 grails test-app
 ```
 
-## Correr app
+## Correr backend
 ```
 cd backend
 grails run-app
