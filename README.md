@@ -16,6 +16,20 @@ Trabajo Práctico para la materia 95.68 Desarrollo con nuevas tecnologias.[Ingre
 * Diagrama de clases (entidades del dominio)
 * Repositorio en GitHub (código de las respectivas clases)
 
+### Instalación de dependencias
+```
+sdk install java 11.0.11-open
+sdk default java 11.0.11-open
+
+sdk install grails 5.1.7
+sdk default grails 5.1.7
+
+sdk install groovy 3.0.7
+sdk default groovy 3.0.7
+
+sdk current (para chequear que las versiones hayan sido establecidas correctamente)
+```
+
 ### Instrucciones para correr la aplicación
 
 ## Correr pruebas
