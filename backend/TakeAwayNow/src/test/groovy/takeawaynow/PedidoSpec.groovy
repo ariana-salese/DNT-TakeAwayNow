@@ -10,7 +10,7 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
     Producto alfajor, gaseosa, pancho
 
     def setup() {
-        buffet = new Buffet()
+        buffet = new Buffet("Buffet Paseo Colón")
         
         lautaro = new Cliente()
         ariana = new Cliente()

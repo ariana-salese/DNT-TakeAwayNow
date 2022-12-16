@@ -10,7 +10,7 @@ class ClienteSpec extends Specification{
     Cliente cliente
 
     def setup() {
-        buffet = new Buffet()
+        buffet = new Buffet("Buffet Paseo Colón")
         cliente = new Cliente()
         cliente.ingresarBuffet(buffet)
     }
@@ -118,13 +118,12 @@ class ClienteSpec extends Specification{
             cliente.confirmarCompraDelPedido()
 
         then: "el cliente puede ver su compra"
-            List<Compra> historialDeComprasDelCliente = cliente.getHistorialDeCompras()
-            Pedido compraDeUnPancho = historialDeComprasDelCliente.first().pedido()
+            Map<Integer, Compra> comprasRealizadasDelCliente = cliente.getComprasRealizadas()
+            Pedido compraDeUnPancho = comprasRealizadasDelCliente[0].getPedido()
 
             compraDeUnPancho.cantidadDeProductos() == 1
             compraDeUnPancho.precio() == new Dinero(5)
     }
-
 
     void "dado un cliente que realizó varias compras, luego puede verlas todas"() {
         given: "dado un cliente que tiene 10 pesos de saldo, un producto pancho de 5 pesos y un producto coca de 6 pesos"
@@ -144,21 +143,94 @@ class ClienteSpec extends Specification{
             LocalDateTime fechaDeCompraDeLaCoca = LocalDateTime.now()
 
         then: "el cliente puede ver sus compras y los ids son los correctos"
-            List<Compra> historialDeComprasDelCliente = cliente.getHistorialDeCompras()
+            Map<Integer, Compra> comprasRealizadasDelCliente = cliente.getComprasRealizadas()
             
-            Pedido compraDeUnPancho = historialDeComprasDelCliente.first().pedido()
+            Pedido compraDeUnPancho = comprasRealizadasDelCliente[0].getPedido()
             compraDeUnPancho.cantidadDeProductos() == 1
             compraDeUnPancho.precio() == new Dinero(5)
-            historialDeComprasDelCliente.first().fecha().getHour() == fechaDeCompraDelPancho.getHour()
-            historialDeComprasDelCliente.first().fecha().getMinute() == fechaDeCompraDelPancho.getMinute()
-            historialDeComprasDelCliente.first().id_compra == 0
+            comprasRealizadasDelCliente[0].getFecha().getHour() == fechaDeCompraDelPancho.getHour()
+            comprasRealizadasDelCliente[0].getFecha().getMinute() == fechaDeCompraDelPancho.getMinute()
+            comprasRealizadasDelCliente[0].getId() == 0
             
-            Pedido compraDeUnaCoca = historialDeComprasDelCliente.last().pedido()
+            Pedido compraDeUnaCoca = comprasRealizadasDelCliente[1].getPedido()
             compraDeUnaCoca.cantidadDeProductos() == 1
             compraDeUnaCoca.precio() == new Dinero(6)
-            historialDeComprasDelCliente.first().fecha().getHour() == fechaDeCompraDeLaCoca.getHour()
-            historialDeComprasDelCliente.first().fecha().getMinute() == fechaDeCompraDeLaCoca.getMinute()
-            historialDeComprasDelCliente.first().id_compra == 0
-            historialDeComprasDelCliente.last().id_compra == 1
+            comprasRealizadasDelCliente[1].getFecha().getHour() == fechaDeCompraDeLaCoca.getHour()
+            comprasRealizadasDelCliente[1].getFecha().getMinute() == fechaDeCompraDeLaCoca.getMinute()
+            comprasRealizadasDelCliente[1].getId() == 1
+    }
+
+    void "dado un cliente que no realizó compras, el mismo no puede retirar ninguna compra"() {
+        when: "el cliente quiere retirar una compra"
+            cliente.retirarCompra(0)
+
+        then: "se lanza el error correspondiente"
+            Exception e = thrown()
+            e.message == "No se encuentra una compra realizada con el ID indicado."
+    }
+
+    void "dado un cliente que realizó una compra y la misma aún no está lista para retirar, cuando el cliente intenta retirarla obtiene un error"() {
+        given: "un cliente que confirma la compra de su pedido"
+            def pancho = new Producto("pancho", 10, new Dinero(5))
+            buffet.registrarProducto(pancho)
+            
+            cliente.cargarSaldo(new Dinero(10))
+            cliente.agregarAlPedido("pancho", 2)
+            cliente.confirmarCompraDelPedido()
+
+            buffet.prepararCompra(0)
+            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+
+        when: "intenta retirar dicha compra"
+            cliente.retirarCompra(0)
+
+        then: "obtiene el error correspondiente y sus puntos de confianza siguen igual que antes"
+            Exception e = thrown()
+            e.message == "La compra aún no está lista para retirar, su estado actual es EN_PREPARACION."
+
+            cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente
+    }
+
+    void "dado un cliente que realizó una compra y la misma está lista para retirar, tras retirarla sus puntos de confianza se actualizan y el id de la compra corresponde a una compra retirada"() {
+        given: "un cliente que confirma la compra de su pedido"
+            def pancho = new Producto("pancho", 10, new Dinero(5))
+            buffet.registrarProducto(pancho)
+            
+            cliente.cargarSaldo(new Dinero(5))
+            cliente.agregarAlPedido("pancho", 1)
+            cliente.confirmarCompraDelPedido()
+
+        when: "la misma está lista para retirar y el mismo la quiere retirar"
+            buffet.prepararCompra(0)
+            buffet.marcarCompraListaParaRetirar(0)
+            cliente.retirarCompra(0)
+
+        then: "la compra se retiró con éxito, los puntos de confianza se actualizan y el id de la compra corresponde a una compra retirada"
+            cliente.getPuntosDeConfianza() == 1
+            cliente.getComprasRetiradas().contains(0) == true
+    }
+
+    void "dado un cliente que realizó una compra y la retiró, obtiene un error tras intentar retirarla nuevamente"() {
+        given: "un cliente que confirma la compra de su pedido y luego lo retira"
+            def pancho = new Producto("pancho", 10, new Dinero(5))
+            buffet.registrarProducto(pancho)
+            
+            cliente.cargarSaldo(new Dinero(10))
+            cliente.agregarAlPedido("pancho", 2)
+            cliente.confirmarCompraDelPedido()
+
+            buffet.prepararCompra(0)
+            buffet.marcarCompraListaParaRetirar(0)
+            cliente.retirarCompra(0)
+            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+
+        when: "intenta retirar dicha compra nuevamente"
+            cliente.retirarCompra(0)
+
+        then: "obtiene el error correspondiente y sus puntos de confianza siguen igual que antes (luego de retirar su pedido la primera vez)"
+            Exception e = thrown()
+            e.message == "Dicha compra ya fue retirada previamente."
+
+            cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente
     }
 }

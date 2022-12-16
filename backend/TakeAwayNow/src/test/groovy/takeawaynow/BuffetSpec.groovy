@@ -15,13 +15,13 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
     Producto dona
 
     def setup() {
-        buffet = new Buffet()
+        buffet = new Buffet("Buffet Paseo Colón")
 
         precioPancho = new Dinero(10)
         precioDona = new Dinero(5)
 
-        pancho = new Producto("pancho", 10, new Dinero(10))
-        dona = new Producto("dona", 5, new Dinero(5))
+        pancho = new Producto("pancho", 10, precioPancho)
+        dona = new Producto("dona", 5, precioDona)
     }
 
     def cleanup() {
@@ -182,24 +182,200 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
             ariana.confirmarCompraDelPedido()
             LocalDateTime fechaDeCompraAriana = LocalDateTime.now()
 
-        then: "el buffet puede ver las compras de los pedidos y tanto sus ids como horarios son los correctos"
-            List<Compra> historialDeCompras = buffet.getComprasRegistradas()
+        then: "el buffet puede ver las compras realizadas, tanto sus ids como horarios y estados son los correctos"
+            Map<Integer, Compra> historialDeCompras = buffet.getComprasRegistradas()
             historialDeCompras.size() == 2
-            historialDeCompras.first().id_compra == 0
-            historialDeCompras.last().id_compra == 1
+            historialDeCompras[0].getId() == 0
+            historialDeCompras[1].getId() == 1
 
-            Pedido pedidoLautaro = historialDeCompras.first().pedido()
+            Pedido pedidoLautaro = historialDeCompras[0].getPedido()
             pedidoLautaro.cantidadDeProductos() == 3
             pedidoLautaro.precio() == new Dinero(16)
             
-            Pedido pedidoAriana = historialDeCompras.last().pedido()
+            Pedido pedidoAriana = historialDeCompras[1].getPedido()
             pedidoAriana.cantidadDeProductos() == 1
             pedidoAriana.precio() == new Dinero(5)
 
-            historialDeCompras.first().fecha().getHour() == fechaDeCompraLautaro.getHour()
-            historialDeCompras.first().fecha().getMinute() == fechaDeCompraLautaro.getMinute()
+            historialDeCompras[0].getFecha().getHour() == fechaDeCompraLautaro.getHour()
+            historialDeCompras[0].getFecha().getMinute() == fechaDeCompraLautaro.getMinute()
+            historialDeCompras[0].getEstado() == Compra.EstadoDeCompra.AGUARDANDO_PREPARACION
 
-            historialDeCompras.last().fecha().getHour() == fechaDeCompraAriana.getHour()
-            historialDeCompras.last().fecha().getMinute() == fechaDeCompraAriana.getMinute()
+            historialDeCompras[1].getFecha().getHour() == fechaDeCompraAriana.getHour()
+            historialDeCompras[1].getFecha().getMinute() == fechaDeCompraAriana.getMinute()
+            historialDeCompras[1].getEstado() == Compra.EstadoDeCompra.AGUARDANDO_PREPARACION
     }
+
+    void "un negocio no puede preparar una compra no registrada'"() {
+        when: "un negocio el cual registra no registra compras intenta preparar una"
+            buffet.prepararCompra(0)
+
+        then: "se lanza el error correspondiente"
+            Exception e = thrown()
+            e.message == "No se encuentra registrada una compra con el ID indicado."
+    }
+
+    void "un negocio puede marcar una compra recién registrada con estado 'EN_PREPARACION' ya que su estado actual es 'AGUARDANDO_PREPARACION'"() {
+        given: "un negocio el cual registra una compra"
+            def lautaro = new Cliente()
+            lautaro.cargarSaldo(new Dinero(16))
+            lautaro.ingresarBuffet(buffet)
+
+            buffet.registrarProducto(pancho)
+            lautaro.agregarAlPedido("pancho", 1)
+            lautaro.confirmarCompraDelPedido()
+
+        when: "el negocio intenta cambiar de un estado de 'AGUARDANDO_PREPARACION' a 'EN_PREPARACION'"
+            buffet.prepararCompra(0)
+
+        then: "la compra ahora tiene como estado 'EN_PREPARACION'"
+            buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.EN_PREPARACION
+    }
+    
+    void "un negocio solo puede marcar una compra recién registrada con estado 'EN_PREPARACION' si y solo si la misma tiene como estado 'AGUARDANDO_PREPARACION'"() {
+        given: "un negocio el cual registra una compra"
+            def lautaro = new Cliente()
+            lautaro.cargarSaldo(new Dinero(16))
+            lautaro.ingresarBuffet(buffet)
+
+            buffet.registrarProducto(pancho)
+            lautaro.agregarAlPedido("pancho", 1)
+            lautaro.confirmarCompraDelPedido()
+
+        when: "el negocio intenta marcar la compra como LISTA_PARA_RETIRAR sin que la misma tenga como estado 'EN_PREPARACION'"
+            buffet.marcarCompraListaParaRetirar(0)
+
+        then: "se lanzan el respectivo error"
+            Exception e = thrown()
+            e.message == "No se puede marcar dicha compra como LISTA_PARA_RETIRAR ya que la misma no se encontraba EN_PREPARACION."
+    }
+
+    void "un negocio puede marcar una compra con estado 'LISTA_PARA_RETIRAR' ya que su estado actual es 'EN_PREPARACION'"() {
+        given: "un negocio el cual registra una compra y posteriormente comienza a prepararla"
+            def lautaro = new Cliente()
+            lautaro.cargarSaldo(new Dinero(16))
+            lautaro.ingresarBuffet(buffet)
+
+            buffet.registrarProducto(pancho)
+            lautaro.agregarAlPedido("pancho", 1)
+            lautaro.confirmarCompraDelPedido()
+
+        when: "el negocio prepara la compra y luego quiere marcarla con estado de 'LISTA_PARA_RETIRAR'"
+            buffet.prepararCompra(0)
+            buffet.marcarCompraListaParaRetirar(0)
+
+        then: "la compra ahora tiene como estado 'LISTA_PARA_RETIRAR'"
+            buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.LISTA_PARA_RETIRAR
+    }
+
+    void "un negocio solo puede marcar una compra con estado 'LISTA_PARA_RETIRAR' si y solo si la misma tiene como estado 'EN_PREPARACION'"() {
+        given: "un negocio el cual registra una compra"
+            def lautaro = new Cliente()
+            lautaro.cargarSaldo(new Dinero(16))
+            lautaro.ingresarBuffet(buffet)
+
+            buffet.registrarProducto(pancho)
+            lautaro.agregarAlPedido("pancho", 1)
+            lautaro.confirmarCompraDelPedido()
+
+        when: "el negocio intenta marcar la compra como LISTA_PARA_RETIRAR sin que la misma tenga como estado 'EN_PREPARACION'"
+            buffet.marcarCompraListaParaRetirar(0)
+
+        then: "se lanzan el respectivo error"
+            Exception e = thrown()
+            e.message == "No se puede marcar dicha compra como LISTA_PARA_RETIRAR ya que la misma no se encontraba EN_PREPARACION."
+    }
+
+    void "un negocio puede marcar una compra con estado 'RETIRADA' ya que su estado actual es 'LISTA_PARA_RETIRAR'"() {
+        given: "un negocio el cual registra una compra"
+            def lautaro = new Cliente()
+            lautaro.cargarSaldo(new Dinero(16))
+            lautaro.ingresarBuffet(buffet)
+
+            buffet.registrarProducto(pancho)
+            lautaro.agregarAlPedido("pancho", 1)
+            lautaro.confirmarCompraDelPedido()
+
+        when: "el negocio prepara la compra, la marca lista para retirar y luego quiere marcarla con estado 'RETIRADA'"
+            buffet.prepararCompra(0)
+            buffet.marcarCompraListaParaRetirar(0)
+            buffet.marcarCompraRetirada(0)
+
+        then: "la compra ahora tiene como estado 'RETIRADA'"
+            buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.RETIRADA
+    }
+
+    void "un negocio solo puede marcar una compra con estado 'RETIRADA' si y solo si la misma tiene como estado 'LISTA_PARA_RETIRAR'"() {
+        given: "un negocio el cual registra una compra"
+            def lautaro = new Cliente()
+            lautaro.cargarSaldo(new Dinero(16))
+            lautaro.ingresarBuffet(buffet)
+
+            buffet.registrarProducto(pancho)
+            lautaro.agregarAlPedido("pancho", 1)
+            lautaro.confirmarCompraDelPedido()
+
+        when: "el negocio intenta marcar la compra como RETIRADA sin que la misma tenga como estado 'LISTA_PARA_RETIRAR'"
+            buffet.marcarCompraRetirada(0)
+
+        then: "se lanzan el respectivo error"
+            Exception e = thrown()
+            e.message == "No se puede marcar dicha compra como RETIRADA ya que la misma no se encontraba LISTA_PARA_RETIRAR."
+    }
+
+    void "un negocio puede marcar una compra con estado 'DEVUELTA' ya que su estado actual es 'RETIRADA'"() {
+        given: "un negocio el cual registra una compra"
+            def lautaro = new Cliente()
+            lautaro.cargarSaldo(new Dinero(16))
+            lautaro.ingresarBuffet(buffet)
+
+            buffet.registrarProducto(pancho)
+            lautaro.agregarAlPedido("pancho", 1)
+            lautaro.confirmarCompraDelPedido()
+
+        when: "el negocio prepara la compra, la marca lista para retirar, la marcar como retirada y posteriormente se ejecuta una devolución'"
+            buffet.prepararCompra(0)
+            buffet.marcarCompraListaParaRetirar(0)
+            buffet.marcarCompraRetirada(0)
+            buffet.marcarCompraDevuelta(0)
+
+        then: "la compra ahora tiene como estado 'DEVUELTA'"
+            buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.DEVUELTA
+    }
+
+    void "un negocio solo puede marcar una compra con estado 'DEVUELTA' si y solo si la misma tiene como estado 'RETIRADA'"() {
+        given: "un negocio el cual registra una compra"
+            def lautaro = new Cliente()
+            lautaro.cargarSaldo(new Dinero(16))
+            lautaro.ingresarBuffet(buffet)
+
+            buffet.registrarProducto(pancho)
+            lautaro.agregarAlPedido("pancho", 1)
+            lautaro.confirmarCompraDelPedido()
+
+        when: "el negocio intenta marcar la compra como DEVUELTA sin que la misma tenga como estado 'RETIRADA'"
+            buffet.marcarCompraDevuelta(0)
+
+        then: "se lanzan el respectivo error"
+            Exception e = thrown()
+            e.message == "No se puede marcar dicha compra como DEVUELTA ya que la misma no se encontraba RETIRADA."
+    }
+
+    // void "un negocio puede marcar una compra con estado 'CANCELADA' ya que su estado actual es 'RETIRADA'"() {
+    //     given: "un negocio el cual registra una compra"
+    //         def lautaro = new Cliente()
+    //         lautaro.cargarSaldo(new Dinero(16))
+    //         lautaro.ingresarBuffet(buffet)
+
+    //         buffet.registrarProducto(pancho)
+    //         lautaro.agregarAlPedido("pancho", 1)
+    //         lautaro.confirmarCompraDelPedido()
+
+    //     when: "el negocio prepara la compra, la marca lista para retirar y luego quiere marcarla con estado 'RETIRADA'"
+    //         buffet.prepararCompra(0)
+    //         buffet.marcarCompraListaParaRetirar(0)
+    //         buffet.marcarCompraRetirada(0)
+
+    //     then: "la compra ahora tiene como estado 'RETIRADA'"
+    //         buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.RETIRADA
+    // }
 }

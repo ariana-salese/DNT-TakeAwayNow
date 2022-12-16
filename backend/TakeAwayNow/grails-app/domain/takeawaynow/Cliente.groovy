@@ -10,7 +10,9 @@ class Cliente {
     Dinero saldo = new Dinero(0)
     Pedido pedido = new Pedido()
     Buffet buffetIngresado
-    List<Compra> historialDeCompras = []
+    Map<Integer, Compra> comprasRealizadas = [:]
+    Set<Integer> comprasRetiradas = []
+    int puntosDeConfianza = 0
 
     void cargarSaldo(Dinero monto) {
         this.setSaldo(this.saldo + monto)
@@ -44,9 +46,19 @@ class Cliente {
         if (pedido.cantidadDeProductos() == 0) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que el mismo no tiene productos agregados.") 
         Dinero precioPedido = pedido.precio()
         if (this.saldo < precioPedido) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que el saldo es insuficiente.") 
+        Compra compraRealizada = buffetIngresado.registrarCompra(this.pedido)
         this.setSaldo(this.saldo - precioPedido)
-        Compra compra = buffetIngresado.registrarCompra(this.pedido)
-        this.historialDeCompras.add(compra)
+        this.comprasRealizadas[compraRealizada.getId()] = compraRealizada
         this.pedido = new Pedido()
+    }
+
+    void retirarCompra(int id) {
+        if (this.comprasRetiradas.contains(id)) throw new Exception("Dicha compra ya fue retirada previamente.")
+        if (!this.comprasRealizadas[id]) throw new Exception("No se encuentra una compra realizada con el ID indicado.")
+        if (this.buffetIngresado.estadoDeCompra(id) != Compra.EstadoDeCompra.LISTA_PARA_RETIRAR) throw new Exception("La compra aún no está lista para retirar, su estado actual es ${this.buffetIngresado.estadoDeCompra(id)}.")
+
+        this.buffetIngresado.marcarCompraRetirada(id)
+        this.comprasRetiradas.add(id)
+        this.setPuntosDeConfianza(this.puntosDeConfianza + this.comprasRealizadas[id].getPedido().cantidadDeProductos())
     }
 }
