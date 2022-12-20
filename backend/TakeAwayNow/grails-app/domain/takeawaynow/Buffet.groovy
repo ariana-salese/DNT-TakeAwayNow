@@ -40,6 +40,11 @@ class Buffet {
         this.almacen.retirarProducto(nombreProducto, cantidad, pedido) 
     }
 
+    void reingresarStockDelPedido(int id) {
+        Map<String, Producto> productos = this.comprasRegistradas[id].getPedido().getProductos()
+        productos.each{ _, producto -> this.ingresarStock(producto.getNombre(), producto.getCantidad()) }
+    }
+
 
     /* MÉTODOS REFERIDOS A LA ETAPA DE REGISTRO Y RETIRO DE COMPRAS */
     

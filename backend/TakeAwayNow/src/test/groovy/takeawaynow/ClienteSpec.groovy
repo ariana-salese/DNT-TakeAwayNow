@@ -233,4 +233,73 @@ class ClienteSpec extends Specification{
 
             cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente
     }
+
+    void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra aguardando preparación entonces pierde un punto de confianza, obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
+        given: "un cliente que confirma la compra de su pedido (compra 2 panchos, el stock de los panchos post compra es 8)"
+            def pancho = new Producto("pancho", 10, new Dinero(5))
+            buffet.registrarProducto(pancho)
+            
+            cliente.cargarSaldo(new Dinero(10))
+            cliente.agregarAlPedido("pancho", 2)
+            
+            Dinero saldoPreCompra = cliente.getSaldo()
+            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+
+            cliente.confirmarCompraDelPedido()
+
+        when: "lo cancela inmediatamente (tiene estado de aguardando preparación)"
+            cliente.cancelarCompra(0)
+
+        then: "pierde un punto de confianza, obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
+            cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente - 1
+            cliente.getSaldo().getMonto() == saldoPreCompra.getMonto()
+            buffet.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+    }
+
+    void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra en preparación entonces pierde varios punto de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
+        given: "un cliente que confirma la compra de su pedido y el negocio lo comienza a preparar"
+            def pancho = new Producto("pancho", 10, new Dinero(5))
+            buffet.registrarProducto(pancho)
+            
+            cliente.cargarSaldo(new Dinero(20))
+            cliente.agregarAlPedido("pancho", 4)
+            
+            Dinero saldoPreCompra = cliente.getSaldo()
+            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+
+            cliente.confirmarCompraDelPedido()
+            buffet.prepararCompra(0)
+
+        when: "cancela la compra cuando el pedido esta en preparación"
+            cliente.cancelarCompra(0)
+
+        then: "pierde puntos de confianza (cantidad total de productos en la compra), no obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
+            cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente - 4
+            cliente.getSaldo().getMonto() == saldoPreCompra.getMonto() - cliente.getComprasRealizadas()[0].getPedido().precio().getMonto()
+            buffet.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+    }
+
+    void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra lista para retirar entonces pierde todos sus puntos de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
+        given: "un cliente que confirma la compra de su pedido, el negocio lo comienza a preparar y luego la compra está lista para retirar"
+            def pancho = new Producto("pancho", 10, new Dinero(5))
+            buffet.registrarProducto(pancho)
+            
+            cliente.cargarSaldo(new Dinero(20))
+            cliente.agregarAlPedido("pancho", 4)
+            
+            Dinero saldoPreCompra = cliente.getSaldo()
+            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+
+            cliente.confirmarCompraDelPedido()
+            buffet.prepararCompra(0)
+            buffet.marcarCompraListaParaRetirar(0)
+
+        when: "cancela la compra cuando el pedido esta listo para retirar"
+            cliente.cancelarCompra(0)
+
+        then: "pierde todos sus puntos de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
+            cliente.getPuntosDeConfianza() == 0
+            cliente.getSaldo().getMonto() == saldoPreCompra.getMonto() - cliente.getComprasRealizadas()[0].getPedido().precio().getMonto()
+            buffet.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+    }
 }

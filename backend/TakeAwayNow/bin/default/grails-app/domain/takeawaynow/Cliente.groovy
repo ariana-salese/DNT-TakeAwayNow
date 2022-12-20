@@ -53,12 +53,45 @@ class Cliente {
     }
 
     void retirarCompra(int id) {
-        if (this.comprasRetiradas.contains(id)) throw new Exception("Dicha compra ya fue retirada previamente.")
         if (!this.comprasRealizadas[id]) throw new Exception("No se encuentra una compra realizada con el ID indicado.")
+        if (this.comprasRetiradas.contains(id)) throw new Exception("Dicha compra ya fue retirada previamente.")
         if (this.buffetIngresado.estadoDeCompra(id) != Compra.EstadoDeCompra.LISTA_PARA_RETIRAR) throw new Exception("La compra aún no está lista para retirar, su estado actual es ${this.buffetIngresado.estadoDeCompra(id)}.")
 
         this.buffetIngresado.marcarCompraRetirada(id)
         this.comprasRetiradas.add(id)
         this.setPuntosDeConfianza(this.puntosDeConfianza + this.comprasRealizadas[id].getPedido().cantidadDeProductos())
+    }
+
+    void cancelarCompra(int id) {
+        if (!this.comprasRealizadas[id]) throw new Exception("No se encuentra una compra realizada con el ID indicado.")
+
+        Compra.EstadoDeCompra estadoDeCompra = this.buffetIngresado.estadoDeCompra(id)
+        switch(estadoDeCompra) {
+            case Compra.EstadoDeCompra.AGUARDANDO_PREPARACION:
+                this.setPuntosDeConfianza(this.puntosDeConfianza - 1)
+                this.setSaldo(this.saldo + this.comprasRealizadas[id].getPedido().precio())
+                this.buffetIngresado.reingresarStockDelPedido(id)
+                break
+
+            case Compra.EstadoDeCompra.EN_PREPARACION:
+                this.setPuntosDeConfianza(this.puntosDeConfianza - this.comprasRealizadas[id].getPedido().cantidadDeProductos())
+                this.buffetIngresado.reingresarStockDelPedido(id)
+                break
+
+            case Compra.EstadoDeCompra.LISTA_PARA_RETIRAR:
+                this.setPuntosDeConfianza(0)
+                this.buffetIngresado.reingresarStockDelPedido(id)
+                break
+        }
+        
+        // if (estadoDeCompra ==) {
+        //     throw new Exception("La compra aún no fue retirada, ya fue cancelada o devuelta, su estado actual es ${this.buffetIngresado.estadoDeCompra(id)}.")            
+        // } 
+        // if (estadoDeCompra) {
+        //     throw new Exception("La compra aún no fue retirada, ya fue cancelada o devuelta, su estado actual es ${this.buffetIngresado.estadoDeCompra(id)}.")
+        // } 
+        // if (estadoDeCompra) {
+        //     throw new Exception("La compra aún no fue retirada, ya fue cancelada o devuelta, su estado actual es ${this.buffetIngresado.estadoDeCompra(id)}.")
+        // } 
     }
 }
