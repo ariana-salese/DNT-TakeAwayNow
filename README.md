@@ -1,6 +1,6 @@
-# BUFFET-FIUBA
+# TakeAwayNow
 
-Trabajo Práctico para la materia 95.68 Desarrollo con nuevas tecnologias.[Ingresar al informe](https://docs.google.com/document/d/1NUL26zoWPJfrKXPsdT5i_bUEeCybPvfwQjPZx1HMw8g/edit?usp=sharing)
+Trabajo Práctico para la materia 95.68 Desarrollo con Nuevas Tecnologias.
 
 ## Integrantes:
 
@@ -15,3 +15,5 @@ Trabajo Práctico para la materia 95.68 Desarrollo con nuevas tecnologias.[Ingre
 * Historias de usuario
 * Diagrama de clases (entidades del dominio)
 * Repositorio en GitHub (código de las respectivas clases)
+
+[Ingresar al informe](https://docs.google.com/document/d/1NUL26zoWPJfrKXPsdT5i_bUEeCybPvfwQjPZx1HMw8g/edit?usp=sharing)
