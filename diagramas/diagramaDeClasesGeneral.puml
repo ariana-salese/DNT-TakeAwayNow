@@ -1,0 +1,106 @@
+@startuml
+class Cliente {
+    - saldo: Dinero
+    - pedido: Pedido 
+    - historialDeCompras: List<Compra>
+    - buffetIngresado: Buffet
+    + ingresarBuffet(Buffet buffet)
+    + cargarSaldo(monto: Dinero)
+    + agregarAlPedido(String nombreProducto, int cantidad)
+    + cantidadDeProductos(): int
+    + valorDelPedido(): Dinero
+    + comprar()
+    + historialDeCompras(): List<Compra>
+    + confirmarCompraDelPedido()
+}
+
+abstract Producto {
+    - nombre: String
+    - cantidad: int
+    + retirar(cantidad: int): Producto
+}
+
+class ProductoCanjeable {
+    - puntos: Puntos
+    + puntosSegunCantidad(): Puntos
+}
+
+class ProductoNoCanjeable {
+    - precio: Dinero 
+    + precioSegunCantidad(): Dinero
+}
+
+class Puntos {
+    - cantidad: int 
+    + canjear(cantidad: int): bool
+}
+
+class Compra {
+    - pedido: Pedido
+    - fecha: LocalDateTime
+    - id_compra: int
+}
+
+class Dinero {
+    - monto: BigDecimal
+    + plus(otro: Dinero): Dinero
+    + minus(otro: Dinero): Dinero
+    + compareTo(otro: Dinero): int
+    + multiply(int cantidad): Dinero
+}
+
+class Almacen{
+    -inventario: Map<nombre: String, Producto>
+    +estaRegistrado(String nombreDelProducto): boolean
+    +hayStock(String nombreDelProducto): boolean
+    +retirarProducto(String nombreDelProducto, int cantidadARetirar, Pedido pedido)
+    +actualizarPrecio(String nombreDelProducto, Dinero nuevoPrecio)
+    +actulizarStock(String nombreDelProducto, int nuevoStock)
+}
+
+class Pedido {
+    - productos: Map<String, Producto>
+    + agregar(Producto producto)
+    + cantidadDeProductos(): int
+    + precio(): Dinero
+}
+
+class Buffet {
+    -almacen: Almacen
+    -comprasRegistradas: List<Compra>
+    -ids_compras: int
+    +registrarProducto(Producto producto)
+    +actualizarPrecio(String nombreDelProducto, Dinero nuevoPrecio)
+    +ingresarStock(String nombreDelProducto, int nuevoStock)
+    +hayStock(String nombreDelProducto): boolean
+    +agregarAlPedido(String nombreProducto, int cantidad, Pedido pedido)
+    +registrarCompra(Pedido pedido): Compra
+    +comprasRegistradas(): List<Compra> comprasRegistradas
+}
+
+Cliente o-down- "1" Buffet
+Cliente o-- "1" Pedido
+Cliente o-left- "*" Compra
+Cliente o- "1" Dinero
+Cliente o-- "1" Puntos
+
+Producto o-up- "1" Dinero
+
+ProductoCanjeable -up-|> Producto
+ProductoNoCanjeable -up-|> "1" Producto
+
+
+ProductoCanjeable o-up- Puntos
+
+Pedido o-down- Producto
+
+Almacen o-- "*" Producto
+'Almacen ..> Dinero
+'Almacen ..> Pedido
+
+Buffet *-- "1" Almacen
+Buffet o-up- "*" Compra
+'Buffet ..> Dinero
+'Buffet ..> Pedido
+
+@enduml
