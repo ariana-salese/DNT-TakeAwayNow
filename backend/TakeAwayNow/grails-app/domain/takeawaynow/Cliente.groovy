@@ -146,4 +146,12 @@ class Cliente {
         //     throw new Exception("La compra aún no fue retirada, ya fue cancelada o devuelta, su estado actual es ${this.negocioIngresado.estadoDeCompra(id)}.")
         // } 
     }
+
+    void solicitarDevoluciónDelPedido(int id) {
+        if (!this.comprasRealizadas[id]) throw new Exception("No se encuentra una compra realizada con el ID indicado.")
+
+        this.negocioIngresado.devolucionDelPedido(id)
+        this.setPuntosDeConfianza(this.puntosDeConfianza - this.comprasRealizadas[id].getPedido().cantidadDeProductos())
+        this.setSaldo(this.saldo + this.comprasRealizadas[id].getPedido().precio())
+    }
 }

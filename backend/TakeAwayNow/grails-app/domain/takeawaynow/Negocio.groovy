@@ -13,7 +13,7 @@ class Negocio {
     String nombre
     Almacen almacen = new Almacen()
     Map<Integer, Compra> comprasRegistradas = [:]
-    Set comprasRetiradas = []
+    // Set comprasRetiradas = []
     int ids_compras = 0
 
     Negocio(String nombreDelNegocio) {
@@ -156,5 +156,17 @@ class Negocio {
     Compra.EstadoDeCompra estadoDeCompra(int id) {
         if (!comprasRegistradas[id]) throw new Exception("No se encuentra registrada una compra con el ID indicado.")
         comprasRegistradas[id].getEstado()
+    }
+
+    /**
+     * 
+     * TODO
+     * 
+     */
+    void devolucionDelPedido(int id) {
+        if (!comprasRegistradas[id]) throw new Exception("No se encuentra registrada una compra con el ID indicado.")
+        if (comprasRegistradas[id].estado != Compra.EstadoDeCompra.RETIRADA) throw new Exception("No se puede devolver el pedido ya que la compra no se encontraba RETIRADA.")
+        this.reingresarStockDelPedido(id)
+        this.marcarCompraDevuelta(id)
     }
 }

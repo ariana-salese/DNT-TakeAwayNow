@@ -302,4 +302,29 @@ class ClienteSpec extends Specification{
             cliente.getSaldo().getMonto() == saldoPreCompra.getMonto() - cliente.getComprasRealizadas()[0].getPedido().precio().getMonto()
             negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
+
+    void "dado un cliente que realizó una compra pero hubo algún error en la entrega del pedido por parte del negocio y pasaron menos de 5 minutos desde que se retiró, el cliente solicita la devolución de la compra y obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
+        given: "un cliente que confirma la compra de su pedido, el negocio lo comienza a preparar y luego la compra está lista para retirar"
+            def pancho = new Producto("pancho", 10, new Dinero(5))
+            negocio.registrarProducto(pancho)
+            
+            cliente.cargarSaldo(new Dinero(20))
+            cliente.agregarAlPedido("pancho", 4)
+            
+            Dinero saldoPreCompra = cliente.getSaldo()
+            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+
+            cliente.confirmarCompraDelPedido()
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
+            cliente.retirarCompra(0)
+
+        when: "el cliente solicita la devolución de la compra"
+            cliente.solicitarDevoluciónDelPedido(0)
+
+        then: "obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10) y sus puntos de confianza no se modifican"
+            cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente
+            cliente.getSaldo() == new Dinero(20)
+            negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+    }
 }
