@@ -2,7 +2,7 @@ package takeawaynow
 
 /**
 * 
-* TODO
+* El negocio provee productos para ser comprados por clientes 
 * 
 */
 class Negocio {
@@ -20,7 +20,7 @@ class Negocio {
 
     /**
     * 
-    * TODO
+    * Crea un negocio. Si el horario de apertura es mayor al de cierre se lanza un error.
     * 
     */
     Negocio(String nombreDelNegocio, Horario horario_apertura, Horario horario_cierre) {
@@ -33,7 +33,8 @@ class Negocio {
 
     /**
      * 
-     * TODO
+     * Registra el producto recibido en el almancen. Si la cantidad del producto recibido es 0 entonces
+     * se lanza un error.
      * 
      */
     void registrarProducto(Producto producto) {
@@ -43,7 +44,8 @@ class Negocio {
 
     /**
      * 
-     * TODO
+     * Se reemplaza el precio del producto con el nombre recibido por el nuevo precio. Si el nuevo precio
+     * es 0 entonces se lanza un error.
      * 
      */
     void actualizarPrecio(String nombreDelProducto, Dinero nuevoPrecio) {
@@ -53,7 +55,8 @@ class Negocio {
 
     /**
      * 
-     * TODO
+     * Aumenta el stock del producto con el nombre recibido. El nuevo stock sera al actual aumentado el recibido.
+     * Si el stock es menor o igual a cer entonces se lanza un error. 
      * 
      */
     void ingresarStock(String nombreDelProducto, int nuevoStock) {
@@ -63,7 +66,7 @@ class Negocio {
 
     /**
      * 
-     * TODO
+     * Verifica si hay stock del producto con el nombre recibido.
      * 
      */
     boolean hayStock(String nombreDelProducto) {
@@ -72,7 +75,8 @@ class Negocio {
 
     /**
      * 
-     * TODO
+     * Agrega la cantidad indicada del producto con el nombre recibido al pedido. En caso 
+     * de que no se pueda agregar al pedido se devolvera false.
      * 
      */
     boolean agregarAlPedido(String nombreProducto, int cantidad, Pedido pedido) {
