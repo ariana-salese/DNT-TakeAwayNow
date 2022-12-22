@@ -34,8 +34,10 @@ class Cliente {
      * 
      * Guarda el negocio al que el cliente ingreso
      * 
+     * TODO mockear dia para no recibirlo por parametro?
      */
-    void ingresarNegocio(Negocio negocio) {
+    void ingresarNegocio(Negocio negocio, Date dia) {
+        if (!negocio.estaAbierto(dia)) throw new IllegalStateException("El negocio al que se quiere ingresar no esta abierto")
         this.setNegocioIngresado(negocio)
     }
 
@@ -44,6 +46,8 @@ class Cliente {
     /**
      * 
      * TODO
+     * 
+     * TODO no se puede agregar nada si no ingreso a un negocio
      * 
      */
     void agregarAlPedido(String nombreProducto, int cantidad) {

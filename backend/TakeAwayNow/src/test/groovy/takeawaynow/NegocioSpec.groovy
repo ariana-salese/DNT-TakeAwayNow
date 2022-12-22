@@ -7,24 +7,41 @@ import java.time.LocalDateTime
 class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     Negocio negocio
-
-    def precioPancho
-    def precioDona
-
+    Dinero precioPancho
+    Dinero precioDona
     Producto pancho
     Producto dona
+    Horario horario_apertura, horario_cierre
+    Date dia
 
     def setup() {
-        negocio = new Negocio("Buffet Paseo Colón")
+        horario_apertura = new Horario(9,0)
+        horario_cierre = new Horario(18,0)
+        negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
 
         precioPancho = new Dinero(10)
         precioDona = new Dinero(5)
 
         pancho = new Producto("pancho", 10, precioPancho)
         dona = new Producto("dona", 5, precioDona)
+        // year: 2022, 
+        // month: 5, 
+        // dayOfMonth: 27, 
+        // hourOfDay: 12,
+        // minute: 0,
+        // second: 0
+        dia = new Date(2022, 5, 27, 12, 0, 0)
     }
 
     def cleanup() {
+    }
+
+    void "crear un negocio con el horario de apertura mayor al de cierre lanza error"() {
+        when: "un negocio tiene horario de apertura mayor al de cierre"
+            Negocio negocio_invalido = new Negocio("Buffet Paseo Colón", horario_cierre, horario_apertura)
+
+        then: "se lanza error"
+            IllegalStateException exception = thrown()
     }
 
     void "un negocio puede agregar una serie de productos"() {
@@ -161,11 +178,11 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         given: "varios clientes y varios productos registrados"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
             def ariana = new Cliente()
             ariana.cargarSaldo(new Dinero(16))
-            ariana.ingresarNegocio(negocio)
+            ariana.ingresarNegocio(negocio, dia)
 
             def pancho = new Producto("pancho", 10, new Dinero(5))
             def coca = new Producto("coca", 10, new Dinero(6))
@@ -218,7 +235,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
@@ -235,7 +252,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
@@ -253,7 +270,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         given: "un negocio el cual registra una compra y posteriormente comienza a prepararla"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
@@ -271,7 +288,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
@@ -289,7 +306,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
@@ -308,7 +325,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
@@ -326,7 +343,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
@@ -346,7 +363,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)

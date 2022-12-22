@@ -2,7 +2,7 @@ package takeawaynow
 
 /**
 * 
-* TODO
+* El negocio provee productos para ser comprados por clientes 
 * 
 */
 class Negocio {
@@ -15,14 +15,26 @@ class Negocio {
     Map<Integer, Compra> comprasRegistradas = [:]
     // Set comprasRetiradas = []
     int ids_compras = 0
+    Horario horario_apertura
+    Horario horario_cierre
 
-    Negocio(String nombreDelNegocio) {
+    /**
+    * 
+    * Crea un negocio. Si el horario de apertura es mayor al de cierre se lanza un error.
+    * 
+    */
+    Negocio(String nombreDelNegocio, Horario horario_apertura, Horario horario_cierre) {
+        if (horario_apertura > horario_cierre) throw new IllegalStateException("El horario de apertura debe ser menor al de cierre.")
+
         this.nombre = nombreDelNegocio
+        this.horario_cierre = horario_cierre
+        this.horario_apertura = horario_apertura
     }
 
     /**
      * 
-     * TODO
+     * Registra el producto recibido en el almancen. Si la cantidad del producto recibido es 0 entonces
+     * se lanza un error.
      * 
      */
     void registrarProducto(Producto producto) {
@@ -35,6 +47,21 @@ class Negocio {
      * TODO
      * 
      */
+    boolean estaAbierto(Date dia) {
+        int hora = dia.hours
+        int minutos = dia.minutes
+
+        Horario hora_actual = new Horario(hora, minutos)
+
+        !(hora_actual > horario_cierre || hora_actual < horario_apertura)
+    }
+
+    /**
+     * 
+     * Se reemplaza el precio del producto con el nombre recibido por el nuevo precio. Si el nuevo precio
+     * es 0 entonces se lanza un error.
+     * 
+     */
     void actualizarPrecio(String nombreDelProducto, Dinero nuevoPrecio) {
         if (nuevoPrecio <= new Dinero(0)) throw new IllegalStateException("No se puede actualizar el precio a un precio menor o igual a cero.") 
         this.almacen.actualizarPrecio(nombreDelProducto, nuevoPrecio)
@@ -42,7 +69,8 @@ class Negocio {
 
     /**
      * 
-     * TODO
+     * Aumenta el stock del producto con el nombre recibido. El nuevo stock sera al actual aumentado el recibido.
+     * Si el stock es menor o igual a cer entonces se lanza un error. 
      * 
      */
     void ingresarStock(String nombreDelProducto, int nuevoStock) {
@@ -52,7 +80,7 @@ class Negocio {
 
     /**
      * 
-     * TODO
+     * Verifica si hay stock del producto con el nombre recibido.
      * 
      */
     boolean hayStock(String nombreDelProducto) {
@@ -61,7 +89,8 @@ class Negocio {
 
     /**
      * 
-     * TODO
+     * Agrega la cantidad indicada del producto con el nombre recibido al pedido. En caso 
+     * de que no se pueda agregar al pedido se devolvera false.
      * 
      */
     boolean agregarAlPedido(String nombreProducto, int cantidad, Pedido pedido) {
