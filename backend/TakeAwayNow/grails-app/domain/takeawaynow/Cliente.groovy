@@ -2,7 +2,8 @@ package takeawaynow
 
 /**
  * 
- * TODO
+ * El cliente es el cual ingresa a un negocio para formar un pedido y formalizar
+ * una compra
  * 
  */
 class Cliente {
@@ -21,7 +22,8 @@ class Cliente {
 
     /**
      * 
-     * TODO
+     * Carga saldo al cliente. El nuevo saldo sera el actual aumentado el monto 
+     * recibido
      * 
      */
     void cargarSaldo(Dinero monto) {
@@ -30,7 +32,7 @@ class Cliente {
 
     /**
      * 
-     * TODO
+     * Guarda el negocio al que el cliente ingreso
      * 
      */
     void ingresarNegocio(Negocio negocio) {
