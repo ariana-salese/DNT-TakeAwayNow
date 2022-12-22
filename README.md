@@ -17,3 +17,37 @@ Trabajo Práctico para la materia 95.68 Desarrollo con Nuevas Tecnologias.
 * Repositorio en GitHub (código de las respectivas clases)
 
 [Ingresar al informe](https://docs.google.com/document/d/1NUL26zoWPJfrKXPsdT5i_bUEeCybPvfwQjPZx1HMw8g/edit?usp=sharing)
+
+### Instalación de dependencias
+```
+sdk install java 11.0.11-open
+sdk default java 11.0.11-open
+
+sdk install grails 5.1.7
+sdk default grails 5.1.7
+
+sdk install groovy 3.0.7
+sdk default groovy 3.0.7
+
+sdk current (para chequear que las versiones hayan sido establecidas correctamente)
+```
+
+### Instrucciones para correr la aplicación
+
+## Correr pruebas
+```
+cd backend
+grails test-app
+```
+
+## Correr backend
+```
+cd backend
+grails run-app
+```
+
+## Correr cliente
+```
+cd cliente
+npm run dev
+```
