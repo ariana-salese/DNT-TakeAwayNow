@@ -2,7 +2,7 @@ package takeawaynow
 
 /**
  * 
- * TODO
+ * El almacen mantiene el control del inventario con todos los productos disponibles
  * 
  */
 class Almacen {
@@ -14,7 +14,7 @@ class Almacen {
 
     /**
      * 
-     * TODO
+     * Agrega el producto recibido al inventario
      * 
      */
     void agregar(Producto producto) {
@@ -23,7 +23,7 @@ class Almacen {
 
     /**
      * 
-     * TODO
+     * Verifica si hay stock de un producto con el mismo nombre del recibido
      * 
      */
     boolean hayStock(String nombreDelProducto) {
@@ -34,7 +34,7 @@ class Almacen {
 
     /**
      * 
-     * TODO
+     * Verifica si hay registrado un producto con el nombre recibido 
      * 
      */
     boolean estaRegistrado(String nombreDelProducto) {
@@ -43,7 +43,11 @@ class Almacen {
 
     /**
      * 
-     * TODO
+     * Retira del inventario la cantidad indicada del producto con el nombre recibido y lo 
+     * agrega al pedido. Si el producto que se quiere retirar no esta registrado se lanza 
+     * una excepcion.
+     * 
+     * TODO no se deberia verificar que haya stock suficiente?
      * 
      */
     void retirarProducto(String nombreDelProducto, int cantidadARetirar, Pedido pedido) {
@@ -54,7 +58,7 @@ class Almacen {
 
     /**
      * 
-     * TODO
+     * Reeplaza el precio del producto con el nombre recibido por el nuevo precio
      * 
      */
     void actualizarPrecio(String nombreDelProducto, Dinero nuevoPrecio) {
@@ -64,7 +68,9 @@ class Almacen {
 
     /**
      * 
-     * TODO
+     * Actualiza el stock del producto con el nombre recibido. El nuevo stock del producto sera
+     * la cantidad actual aumentado el nuevo stock indicado. Si no hay un producto registrado con 
+     * el nombre indicado se lanza una excepcion.
      * 
      */
     void actulizarStock(String nombreDelProducto, int nuevoStock) {
