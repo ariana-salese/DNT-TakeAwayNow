@@ -1,5 +1,10 @@
 package takeawaynow
 
+/**
+ * 
+ * TODO
+ * 
+ */
 class Pedido {
 
     static constraints = {
@@ -9,10 +14,20 @@ class Pedido {
 
     Map<String, Producto> productos = [:]
 
+    /**
+     * 
+     * TODO
+     * 
+     */
     void agregar(Producto producto) {
         this.productos[producto.nombre] = producto
     }
 
+    /**
+     * 
+     * TODO
+     * 
+     */
     void quitar(String nombreProducto, int cantidadPorQuitar) {
         if (cantidadPorQuitar > productos[nombreProducto].cantidad) {
             throw new IllegalStateException("No se pueden quitar más ${nombreProducto}s de los que hay en el pedido.")

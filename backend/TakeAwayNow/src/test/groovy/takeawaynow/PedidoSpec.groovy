@@ -5,12 +5,12 @@ import spock.lang.Specification
 
 class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
 
-    Buffet buffet
+    Negocio negocio
     Cliente lautaro, ariana
     Producto alfajor, gaseosa, pancho
 
     def setup() {
-        buffet = new Buffet("Buffet Paseo Colón")
+        negocio = new Negocio("buffet Paseo Colón")
         
         lautaro = new Cliente()
         ariana = new Cliente()
@@ -26,10 +26,10 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
 
     void "Dado que un cliente agrega varios productos registrados a su pedido, el valor del mismo y la cantidad de productos es la adecuada"() {
         given: "Un cliente y varios productos"
-            buffet.registrarProducto(pancho)
-            buffet.registrarProducto(alfajor)
-            buffet.registrarProducto(gaseosa)
-            lautaro.ingresarBuffet(buffet)
+            negocio.registrarProducto(pancho)
+            negocio.registrarProducto(alfajor)
+            negocio.registrarProducto(gaseosa)
+            lautaro.ingresarNegocio(negocio)
 
         when: "El cliente los agrega a su pedido"
             lautaro.agregarAlPedido("pancho", 1)
@@ -43,9 +43,9 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
 
     void "Dado que un cliente intenta agregar un producto del cual acaba de terminarse el stock a su pedido, se lanza una excepción y el valor/cantidad de productos de los pedidos no se ven afectados"() {
         given: "Dos clientes y un único producto"
-            buffet.registrarProducto(pancho)
-            lautaro.ingresarBuffet(buffet)
-            ariana.ingresarBuffet(buffet)
+            negocio.registrarProducto(pancho)
+            lautaro.ingresarNegocio(negocio)
+            ariana.ingresarNegocio(negocio)
 
         when: "Ambos quieren agregar el mismo producto"
             lautaro.agregarAlPedido("pancho", 1)
@@ -63,10 +63,10 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
 
     void "Dado que dos clientes intentan agregar el mismo producto a su pedido y hay stock disponible, el valor/cantidad de productos de los pedidos son adecuados"() {
         given: "Dos clientes y un único producto"
-            buffet.registrarProducto(pancho)
-            buffet.ingresarStock("pancho", 1)
-            lautaro.ingresarBuffet(buffet)
-            ariana.ingresarBuffet(buffet)
+            negocio.registrarProducto(pancho)
+            negocio.ingresarStock("pancho", 1)
+            lautaro.ingresarNegocio(negocio)
+            ariana.ingresarNegocio(negocio)
 
         when: "Ambos quieren agregar el mismo producto"
             lautaro.agregarAlPedido("pancho", 1)
