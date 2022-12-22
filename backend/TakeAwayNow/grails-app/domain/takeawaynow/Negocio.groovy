@@ -15,9 +15,20 @@ class Negocio {
     Map<Integer, Compra> comprasRegistradas = [:]
     // Set comprasRetiradas = []
     int ids_compras = 0
+    Horario horario_apertura
+    Horario horario_cierre
 
-    Negocio(String nombreDelNegocio) {
+    /**
+    * 
+    * TODO
+    * 
+    */
+    Negocio(String nombreDelNegocio, Horario horario_apertura, Horario horario_cierre) {
+        if (horario_apertura > horario_cierre) throw new IllegalStateException("El horario de apertura debe ser menor al de cierre.")
+
         this.nombre = nombreDelNegocio
+        this.horario_cierre = horario_cierre
+        this.horario_apertura = horario_apertura
     }
 
     /**

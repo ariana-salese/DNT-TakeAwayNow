@@ -8,9 +8,12 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
     Negocio negocio
     Cliente lautaro, ariana
     Producto alfajor, gaseosa, pancho
+    Horario horario_apertura, horario_cierre
 
     def setup() {
-        negocio = new Negocio("buffet Paseo Colón")
+        horario_apertura = new Horario(9,0)
+        horario_cierre = new Horario(18,0)
+        negocio = new Negocio("buffet Paseo Colón", horario_apertura, horario_cierre)
         
         lautaro = new Cliente()
         ariana = new Cliente()

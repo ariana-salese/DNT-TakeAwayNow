@@ -8,9 +8,12 @@ class ClienteSpec extends Specification{
 
     Negocio negocio
     Cliente cliente
+    Horario horario_apertura, horario_cierre
 
     def setup() {
-        negocio = new Negocio("Buffet Paseo Colón")
+        horario_apertura = new Horario(9,0)
+        horario_cierre = new Horario(18,0)
+        negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
         cliente = new Cliente()
         cliente.ingresarNegocio(negocio)
     }

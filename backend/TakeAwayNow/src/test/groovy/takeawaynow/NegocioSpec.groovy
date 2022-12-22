@@ -7,15 +7,16 @@ import java.time.LocalDateTime
 class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     Negocio negocio
-
-    def precioPancho
-    def precioDona
-
+    Dinero precioPancho
+    Dinero precioDona
     Producto pancho
     Producto dona
+    Horario horario_apertura, horario_cierre
 
     def setup() {
-        negocio = new Negocio("Buffet Paseo Colón")
+        horario_apertura = new Horario(9,0)
+        horario_cierre = new Horario(18,0)
+        negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
 
         precioPancho = new Dinero(10)
         precioDona = new Dinero(5)
