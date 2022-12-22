@@ -2,21 +2,21 @@ package takeawaynow
 
 // Place your Spring DSL code here
 beans = {
-    Buffet pc = new Buffet("Paseo Colon");
-    Buffet lh = new Buffet("Las Heras");
-    Buffet av = new Buffet("CBC Avellaneda");
+    Negocio pc = new Negocio("Paseo Colon");
+    Negocio lh = new Negocio("Las Heras");
+    Negocio av = new Negocio("CBC Avellaneda");
     // pc.save()
     // lh.save()
     // av.save()
 
     Cliente lauti = new Cliente()
-    lauti.ingresarBuffet(pc)
+    lauti.ingresarNegocio(pc)
 
     Cliente santi = new Cliente()
-    santi.ingresarBuffet(lh)
+    santi.ingresarNegocio(lh)
 
     Cliente ari = new Cliente()
-    ari.ingresarBuffet(av)
+    ari.ingresarNegocio(av)
 
     // lauti.save()
     // santi.save()

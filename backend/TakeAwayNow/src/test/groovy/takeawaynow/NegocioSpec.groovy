@@ -4,9 +4,9 @@ import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 import java.time.LocalDateTime
 
-class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
+class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
-    Buffet buffet
+    Negocio negocio
 
     def precioPancho
     def precioDona
@@ -15,7 +15,7 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
     Producto dona
 
     def setup() {
-        buffet = new Buffet("Buffet Paseo Colón")
+        negocio = new Negocio("Buffet Paseo Colón")
 
         precioPancho = new Dinero(10)
         precioDona = new Dinero(5)
@@ -27,150 +27,150 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
     def cleanup() {
     }
 
-    void "un buffet puede agregar una serie de productos"() {
-        when: "el buffet registra los productos"
-            buffet.registrarProducto(pancho)
-            buffet.registrarProducto(dona)
+    void "un negocio puede agregar una serie de productos"() {
+        when: "el negocio registra los productos"
+            negocio.registrarProducto(pancho)
+            negocio.registrarProducto(dona)
 
         then: "hay stock del productos registrados y sus precios son los correctos"
-            def inventario = buffet.almacen.inventario
+            def inventario = negocio.almacen.inventario
             //chequea precio
             inventario["dona"].precio == precioDona
             inventario["pancho"].precio == precioPancho
             //chequea stock
-            buffet.hayStock("dona") == true
-            buffet.hayStock("pancho") == true
+            negocio.hayStock("dona") == true
+            negocio.hayStock("pancho") == true
             inventario.size() == 2
     }
 
-    void "un buffet puede actualizar el precio de un producto ya registrado"() {
-        given: "un buffet que registra un producto"
-            buffet.registrarProducto(pancho)
+    void "un negocio puede actualizar el precio de un producto ya registrado"() {
+        given: "un negocio que registra un producto"
+            negocio.registrarProducto(pancho)
         
-        when: "el buffet actualiza el precio"
+        when: "el negocio actualiza el precio"
             def nuevoPrecioPancho = new Dinero(15)
-            buffet.actualizarPrecio("pancho", nuevoPrecioPancho)
+            negocio.actualizarPrecio("pancho", nuevoPrecioPancho)
 
         then: "el precio fue actualizado"
-            buffet.almacen.inventario["pancho"].precio == nuevoPrecioPancho
+            negocio.almacen.inventario["pancho"].precio == nuevoPrecioPancho
     }
 
-    void "un buffet no puede actualizar el precio de un producto como igual a cero"() {
-        given: "un buffet que registra un producto"
-            buffet.registrarProducto(pancho)
+    void "un negocio no puede actualizar el precio de un producto como igual a cero"() {
+        given: "un negocio que registra un producto"
+            negocio.registrarProducto(pancho)
      
-        when: "el buffet actualiza el precio de un producto ya registrado con precio cero"
+        when: "el negocio actualiza el precio de un producto ya registrado con precio cero"
             def nuevoPrecioPancho = new Dinero(0)
-            buffet.actualizarPrecio("pancho", nuevoPrecioPancho)
+            negocio.actualizarPrecio("pancho", nuevoPrecioPancho)
 
         then: "el precio no fue actualizado y se lanzo error"
             Exception e = thrown()
             e.message == "No se puede actualizar el precio a un precio menor o igual a cero."
-            buffet.almacen.inventario["pancho"].precio == precioPancho
+            negocio.almacen.inventario["pancho"].precio == precioPancho
     }
 
-    void "un buffet no puede actualizar el precio de un producto que no tiene registrado"() {    
-        when: "el buffet actualiza el precio que no tiene"
-            buffet.actualizarPrecio("pancho", new Dinero(15))
+    void "un negocio no puede actualizar el precio de un producto que no tiene registrado"() {    
+        when: "el negocio actualiza el precio que no tiene"
+            negocio.actualizarPrecio("pancho", new Dinero(15))
 
         then: "se lanza error"
             Exception e = thrown()
             e.message == "El producto al cual se busca actualizar el precio no se encuentra registrado."
     }
 
-    void "un buffet puede ingresar nuevo stock de un producto ya registrado"() {
-        given: "un buffet que registra un producto"
-            buffet.registrarProducto(pancho)
+    void "un negocio puede ingresar nuevo stock de un producto ya registrado"() {
+        given: "un negocio que registra un producto"
+            negocio.registrarProducto(pancho)
         
-        when: "el buffet actualiza el stock"
-            buffet.ingresarStock("pancho", 5)
+        when: "el negocio actualiza el stock"
+            negocio.ingresarStock("pancho", 5)
 
         then: "el stock se incremento"
-            buffet.almacen.inventario["pancho"].cantidad == 15
+            negocio.almacen.inventario["pancho"].cantidad == 15
     }
 
-    void "un buffet no puede ingresar nuevo stock de un producto que no tiene registrado"() {
-        when: "el buffet ingresa stock de un producto que no tiene registrado"
-            buffet.ingresarStock("chipa", 5)
+    void "un negocio no puede ingresar nuevo stock de un producto que no tiene registrado"() {
+        when: "el negocio ingresa stock de un producto que no tiene registrado"
+            negocio.ingresarStock("chipa", 5)
 
         then: "se lanzo error"
             Exception e = thrown()
             e.message == "El producto al cual se busca actualizar el stock no se encuentra registrado."
     }
 
-    void "un buffet no puede ingresar stock negativo de un producto ya registrado"() {
-        given: "un buffet que registra un producto"
-            buffet.registrarProducto(pancho)
+    void "un negocio no puede ingresar stock negativo de un producto ya registrado"() {
+        given: "un negocio que registra un producto"
+            negocio.registrarProducto(pancho)
         
-        when: "el buffet ingresa stock negativo"
-            buffet.ingresarStock("pancho", -1)
+        when: "el negocio ingresa stock negativo"
+            negocio.ingresarStock("pancho", -1)
 
         then: "se lanzo un error"
             Exception e = thrown()
             e.message == "No se puede ingresar un stock menor o igual a cero."
     }
 
-    void "un buffet no puede ingresar stock igual a cero de un producto ya registrado"() {
-        given: "un buffet que registra un producto"
-            buffet.registrarProducto(pancho)
+    void "un negocio no puede ingresar stock igual a cero de un producto ya registrado"() {
+        given: "un negocio que registra un producto"
+            negocio.registrarProducto(pancho)
 
-        when: "el buffet ingresa stock cero del producto"
-            buffet.ingresarStock("pancho", 0)
+        when: "el negocio ingresa stock cero del producto"
+            negocio.ingresarStock("pancho", 0)
 
         then: "se lanza error"
             Exception e = thrown()
             e.message == "No se puede ingresar un stock menor o igual a cero."
     }
 
-    void "un buffet puede agregar un producto a un pedido si hay stock"() {
-        given: "un buffet que registra un producto"
-            buffet.registrarProducto(pancho)
+    void "un negocio puede agregar un producto a un pedido si hay stock"() {
+        given: "un negocio que registra un producto"
+            negocio.registrarProducto(pancho)
 
-        when: "el buffet agrega el producto al pedido"
+        when: "el negocio agrega el producto al pedido"
             def pedido = new Pedido()
-            buffet.agregarAlPedido("pancho", 2, pedido)
+            negocio.agregarAlPedido("pancho", 2, pedido)
 
         then: "el pedido tiene el producto y el stock se actualizo"
             pedido.cantidadDeProductos() == 2
-            buffet.almacen.inventario["pancho"].cantidad == 8
+            negocio.almacen.inventario["pancho"].cantidad == 8
     }
 
-    void "un buffet no puede agregar un producto a un pedido si no hay suficiente stock"() {
-        given: "un buffet que registra un producto"
-            buffet.registrarProducto(pancho)
+    void "un negocio no puede agregar un producto a un pedido si no hay suficiente stock"() {
+        given: "un negocio que registra un producto"
+            negocio.registrarProducto(pancho)
 
-        when: "el buffet intenta agregar un producto sin stock al pedido"
+        when: "el negocio intenta agregar un producto sin stock al pedido"
             def pedido = new Pedido()
-            buffet.agregarAlPedido("pancho", 11, pedido)
+            negocio.agregarAlPedido("pancho", 11, pedido)
 
         then: "se lanza error"
             Exception e = thrown()
     }
 
-    void "un buffet no puede agregar un producto a un pedido si no lo tiene registrado"() {
-        when: "el buffet intenta agregar un producto que no tiene registrado al pedido"
+    void "un negocio no puede agregar un producto a un pedido si no lo tiene registrado"() {
+        when: "el negocio intenta agregar un producto que no tiene registrado al pedido"
             def pedido = new Pedido()
-            buffet.agregarAlPedido("pancho", 1, pedido)
+            negocio.agregarAlPedido("pancho", 1, pedido)
 
         then: "se lanza error"
             Exception e = thrown()
             e.message == "El producto que se busca retirar no se encuentra registrado."
     }
 
-    void "un buffet puede ver las compras que sus clientes realizaron de forma correcta"() {
+    void "un negocio puede ver las compras que sus clientes realizaron de forma correcta"() {
         given: "varios clientes y varios productos registrados"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarBuffet(buffet)
+            lautaro.ingresarNegocio(negocio)
 
             def ariana = new Cliente()
             ariana.cargarSaldo(new Dinero(16))
-            ariana.ingresarBuffet(buffet)
+            ariana.ingresarNegocio(negocio)
 
             def pancho = new Producto("pancho", 10, new Dinero(5))
             def coca = new Producto("coca", 10, new Dinero(6))
-            buffet.registrarProducto(coca)
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(coca)
+            negocio.registrarProducto(pancho)
 
         when: "los clientes confirman la compra de sus pedidos"
             lautaro.agregarAlPedido("pancho", 2)
@@ -182,8 +182,8 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
             ariana.confirmarCompraDelPedido()
             LocalDateTime fechaDeCompraAriana = LocalDateTime.now()
 
-        then: "el buffet puede ver las compras realizadas, tanto sus ids como horarios y estados son los correctos"
-            Map<Integer, Compra> historialDeCompras = buffet.getComprasRegistradas()
+        then: "el negocio puede ver las compras realizadas, tanto sus ids como horarios y estados son los correctos"
+            Map<Integer, Compra> historialDeCompras = negocio.getComprasRegistradas()
             historialDeCompras.size() == 2
             historialDeCompras[0].getId() == 0
             historialDeCompras[1].getId() == 1
@@ -207,7 +207,7 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
 
     void "un negocio no puede preparar una compra no registrada'"() {
         when: "un negocio el cual registra no registra compras intenta preparar una"
-            buffet.prepararCompra(0)
+            negocio.prepararCompra(0)
 
         then: "se lanza el error correspondiente"
             Exception e = thrown()
@@ -218,31 +218,31 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarBuffet(buffet)
+            lautaro.ingresarNegocio(negocio)
 
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
             lautaro.confirmarCompraDelPedido()
 
         when: "el negocio intenta cambiar de un estado de 'AGUARDANDO_PREPARACION' a 'EN_PREPARACION'"
-            buffet.prepararCompra(0)
+            negocio.prepararCompra(0)
 
         then: "la compra ahora tiene como estado 'EN_PREPARACION'"
-            buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.EN_PREPARACION
+            negocio.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.EN_PREPARACION
     }
     
     void "un negocio solo puede marcar una compra recién registrada con estado 'EN_PREPARACION' si y solo si la misma tiene como estado 'AGUARDANDO_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarBuffet(buffet)
+            lautaro.ingresarNegocio(negocio)
 
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
             lautaro.confirmarCompraDelPedido()
 
         when: "el negocio intenta marcar la compra como LISTA_PARA_RETIRAR sin que la misma tenga como estado 'EN_PREPARACION'"
-            buffet.marcarCompraListaParaRetirar(0)
+            negocio.marcarCompraListaParaRetirar(0)
 
         then: "se lanzan el respectivo error"
             Exception e = thrown()
@@ -253,32 +253,32 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
         given: "un negocio el cual registra una compra y posteriormente comienza a prepararla"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarBuffet(buffet)
+            lautaro.ingresarNegocio(negocio)
 
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
             lautaro.confirmarCompraDelPedido()
 
         when: "el negocio prepara la compra y luego quiere marcarla con estado de 'LISTA_PARA_RETIRAR'"
-            buffet.prepararCompra(0)
-            buffet.marcarCompraListaParaRetirar(0)
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
 
         then: "la compra ahora tiene como estado 'LISTA_PARA_RETIRAR'"
-            buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.LISTA_PARA_RETIRAR
+            negocio.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.LISTA_PARA_RETIRAR
     }
 
     void "un negocio solo puede marcar una compra con estado 'LISTA_PARA_RETIRAR' si y solo si la misma tiene como estado 'EN_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarBuffet(buffet)
+            lautaro.ingresarNegocio(negocio)
 
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
             lautaro.confirmarCompraDelPedido()
 
         when: "el negocio intenta marcar la compra como LISTA_PARA_RETIRAR sin que la misma tenga como estado 'EN_PREPARACION'"
-            buffet.marcarCompraListaParaRetirar(0)
+            negocio.marcarCompraListaParaRetirar(0)
 
         then: "se lanzan el respectivo error"
             Exception e = thrown()
@@ -289,33 +289,33 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarBuffet(buffet)
+            lautaro.ingresarNegocio(negocio)
 
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
             lautaro.confirmarCompraDelPedido()
 
         when: "el negocio prepara la compra, la marca lista para retirar y luego quiere marcarla con estado 'RETIRADA'"
-            buffet.prepararCompra(0)
-            buffet.marcarCompraListaParaRetirar(0)
-            buffet.marcarCompraRetirada(0)
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
+            negocio.marcarCompraRetirada(0)
 
         then: "la compra ahora tiene como estado 'RETIRADA'"
-            buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.RETIRADA
+            negocio.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.RETIRADA
     }
 
     void "un negocio solo puede marcar una compra con estado 'RETIRADA' si y solo si la misma tiene como estado 'LISTA_PARA_RETIRAR'"() {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarBuffet(buffet)
+            lautaro.ingresarNegocio(negocio)
 
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
             lautaro.confirmarCompraDelPedido()
 
         when: "el negocio intenta marcar la compra como RETIRADA sin que la misma tenga como estado 'LISTA_PARA_RETIRAR'"
-            buffet.marcarCompraRetirada(0)
+            negocio.marcarCompraRetirada(0)
 
         then: "se lanzan el respectivo error"
             Exception e = thrown()
@@ -326,56 +326,37 @@ class BuffetSpec extends Specification implements DomainUnitTest<Buffet> {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarBuffet(buffet)
+            lautaro.ingresarNegocio(negocio)
 
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
             lautaro.confirmarCompraDelPedido()
 
         when: "el negocio prepara la compra, la marca lista para retirar, la marcar como retirada y posteriormente se ejecuta una devolución'"
-            buffet.prepararCompra(0)
-            buffet.marcarCompraListaParaRetirar(0)
-            buffet.marcarCompraRetirada(0)
-            buffet.marcarCompraDevuelta(0)
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
+            negocio.marcarCompraRetirada(0)
+            negocio.marcarCompraDevuelta(0)
 
         then: "la compra ahora tiene como estado 'DEVUELTA'"
-            buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.DEVUELTA
+            negocio.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.DEVUELTA
     }
 
     void "un negocio solo puede marcar una compra con estado 'DEVUELTA' si y solo si la misma tiene como estado 'RETIRADA'"() {
         given: "un negocio el cual registra una compra"
             def lautaro = new Cliente()
             lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarBuffet(buffet)
+            lautaro.ingresarNegocio(negocio)
 
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             lautaro.agregarAlPedido("pancho", 1)
             lautaro.confirmarCompraDelPedido()
 
         when: "el negocio intenta marcar la compra como DEVUELTA sin que la misma tenga como estado 'RETIRADA'"
-            buffet.marcarCompraDevuelta(0)
+            negocio.marcarCompraDevuelta(0)
 
         then: "se lanzan el respectivo error"
             Exception e = thrown()
             e.message == "No se puede marcar dicha compra como DEVUELTA ya que la misma no se encontraba RETIRADA."
     }
-
-    // void "un negocio puede marcar una compra con estado 'CANCELADA' ya que su estado actual es 'RETIRADA'"() {
-    //     given: "un negocio el cual registra una compra"
-    //         def lautaro = new Cliente()
-    //         lautaro.cargarSaldo(new Dinero(16))
-    //         lautaro.ingresarBuffet(buffet)
-
-    //         buffet.registrarProducto(pancho)
-    //         lautaro.agregarAlPedido("pancho", 1)
-    //         lautaro.confirmarCompraDelPedido()
-
-    //     when: "el negocio prepara la compra, la marca lista para retirar y luego quiere marcarla con estado 'RETIRADA'"
-    //         buffet.prepararCompra(0)
-    //         buffet.marcarCompraListaParaRetirar(0)
-    //         buffet.marcarCompraRetirada(0)
-
-    //     then: "la compra ahora tiene como estado 'RETIRADA'"
-    //         buffet.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.RETIRADA
-    // }
 }

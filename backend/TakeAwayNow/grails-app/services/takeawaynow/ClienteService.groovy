@@ -5,10 +5,10 @@ import grails.gorm.transactions.Transactional
 @Transactional
 class ClienteService {
 
-    def listarBuffets(List<Buffet> buffets) {
-        for (buffet in buffets) {
-            buffet.save()
-            render(template: "BuffetsDisponibles", model: [buffet:buffet])
+    def listarNegocios(List<Negocio> negocios) {
+        for (negocio in negocios) {
+            negocio.save()
+            render(template: "NegociosDisponibles", model: [negocio:negocio])
         }
     }
 }

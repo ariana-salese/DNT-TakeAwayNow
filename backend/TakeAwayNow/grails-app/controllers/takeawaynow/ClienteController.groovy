@@ -5,20 +5,20 @@ class ClienteController {
     ClienteService service
 
     def index() {
-        Buffet pc = new Buffet("Paseo Colon");
-        Buffet lh = new Buffet("Las Heras");
-        Buffet av = new Buffet("CBC Avellaneda");
-        def buffets = [pc, lh, av]
-        for (buffet in buffets) {
-            buffet.save()
-            render(template: "BuffetsDisponibles", model: [buffet:buffet])
+        Negocio pc = new Negocio("Paseo Colon");
+        Negocio lh = new Negocio("Las Heras");
+        Negocio av = new Negocio("CBC Avellaneda");
+        def negocios = [pc, lh, av]
+        for (negocio in negocios) {
+            negocio.save()
+            render(template: "NegociosDisponibles", model: [negocio:negocio])
         }
-        // service.listarBuffets([pc, lh, av])
+        // service.listarNegocios([pc, lh, av])
     }
 
     // def crear() {
     //     (1..10).each { it ->
-    //         new Buffet("HOLACOMOVA").save()
+    //         new Negocio("HOLACOMOVA").save()
     //     }
 
     //     (1..10).each { it ->

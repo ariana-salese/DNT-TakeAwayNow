@@ -2,6 +2,11 @@ package takeawaynow
 
 import java.time.LocalDateTime
 
+/**
+ * 
+ * TODO
+ * 
+ */
 class Compra {
 
     static constraints = {
@@ -21,6 +26,11 @@ class Compra {
     LocalDateTime fecha
     int id
 
+    /**
+     * 
+     * TODO
+     * 
+     */
     Compra (Pedido pedido, int id) {
         this.pedido = pedido
         this.estado = EstadoDeCompra.AGUARDANDO_PREPARACION

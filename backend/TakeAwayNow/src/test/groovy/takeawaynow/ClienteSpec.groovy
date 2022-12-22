@@ -6,13 +6,13 @@ import java.time.LocalDateTime
 
 class ClienteSpec extends Specification{
 
-    Buffet buffet
+    Negocio negocio
     Cliente cliente
 
     def setup() {
-        buffet = new Buffet("Buffet Paseo Colón")
+        negocio = new Negocio("Buffet Paseo Colón")
         cliente = new Cliente()
-        cliente.ingresarBuffet(buffet)
+        cliente.ingresarNegocio(negocio)
     }
 
     def cleanup() {
@@ -21,7 +21,7 @@ class ClienteSpec extends Specification{
     void "un cliente puede agregar un producto con stock al pedido"() {
         given: "un cliente que quiere un producto con stock"
             def pancho = new Producto("pancho", 1, new Dinero(10))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
 
         when: "el cliente agrega el producto al pedido"
             cliente.agregarAlPedido("pancho", 1)
@@ -33,17 +33,17 @@ class ClienteSpec extends Specification{
     void "un cliente puede agregar y quitar productos con stock al pedido"() {
         given: "un cliente que quiere un producto con stock"
             def pancho = new Producto("pancho", 5, new Dinero(10))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
 
         when: "el cliente agrega dos productos al pedido"
             cliente.agregarAlPedido("pancho", 5)
             cliente.quitarDelPedido("pancho", 3)
 
-        then: "el pedido tiene la cantidad de productos adecuados, y el inventario del buffet vuelve a actualizarse"
+        then: "el pedido tiene la cantidad de productos adecuados, y el inventario del negocio vuelve a actualizarse"
             cliente.valorDelPedido() == new Dinero(20)
             cliente.cantidadDeProductosEnElPedido() == 2
-            buffet.hayStock("pancho") == true
-            buffet.almacen.inventario["pancho"].cantidad == 3
+            negocio.hayStock("pancho") == true
+            negocio.almacen.inventario["pancho"].cantidad == 3
     }
 
     void "un cliente no puede quitar productos de su pedido los cuales no haya agregado previamente"() {
@@ -60,7 +60,7 @@ class ClienteSpec extends Specification{
     void "un cliente no puede agregar un producto sin stock sufuciente al pedido"() {
        when: "el cliente intenta agrega el producto sin stock suficiente al pedido"
             def pancho = new Producto("pancho", 1, new Dinero(10))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             cliente.agregarAlPedido("pancho", 2)
 
        then: "el pedido no tiene productos"
@@ -82,7 +82,7 @@ class ClienteSpec extends Specification{
         given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
             cliente.cargarSaldo(new Dinero(10))
             def pancho = new Producto("pancho", 10, new Dinero(5))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
 
         when: "el cliente compra el pancho"
             cliente.agregarAlPedido("pancho", 1)
@@ -96,7 +96,7 @@ class ClienteSpec extends Specification{
         given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
             cliente.cargarSaldo(new Dinero(10))
             def pancho = new Producto("pancho", 10, new Dinero(15))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
 
         when: "el cliente intenta comprar el pancho"
             cliente.agregarAlPedido("pancho", 1)
@@ -111,7 +111,7 @@ class ClienteSpec extends Specification{
         given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
             cliente.cargarSaldo(new Dinero(10))
             def pancho = new Producto("pancho", 10, new Dinero(5))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
 
         when: "el cliente compra el pancho"
             cliente.agregarAlPedido("pancho", 1)
@@ -130,8 +130,8 @@ class ClienteSpec extends Specification{
             cliente.cargarSaldo(new Dinero(11))
             def pancho = new Producto("pancho", 10, new Dinero(5))
             def coca = new Producto("coca", 10, new Dinero(6))
-            buffet.registrarProducto(pancho)
-            buffet.registrarProducto(coca)
+            negocio.registrarProducto(pancho)
+            negocio.registrarProducto(coca)
 
         when: "el cliente compra el pancho y luego la coca"
             cliente.agregarAlPedido("pancho", 1)
@@ -172,13 +172,13 @@ class ClienteSpec extends Specification{
     void "dado un cliente que realizó una compra y la misma aún no está lista para retirar, cuando el cliente intenta retirarla obtiene un error"() {
         given: "un cliente que confirma la compra de su pedido"
             def pancho = new Producto("pancho", 10, new Dinero(5))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             
             cliente.cargarSaldo(new Dinero(10))
             cliente.agregarAlPedido("pancho", 2)
             cliente.confirmarCompraDelPedido()
 
-            buffet.prepararCompra(0)
+            negocio.prepararCompra(0)
             int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
 
         when: "intenta retirar dicha compra"
@@ -194,15 +194,15 @@ class ClienteSpec extends Specification{
     void "dado un cliente que realizó una compra y la misma está lista para retirar, tras retirarla sus puntos de confianza se actualizan y el id de la compra corresponde a una compra retirada"() {
         given: "un cliente que confirma la compra de su pedido"
             def pancho = new Producto("pancho", 10, new Dinero(5))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             
             cliente.cargarSaldo(new Dinero(5))
             cliente.agregarAlPedido("pancho", 1)
             cliente.confirmarCompraDelPedido()
 
         when: "la misma está lista para retirar y el mismo la quiere retirar"
-            buffet.prepararCompra(0)
-            buffet.marcarCompraListaParaRetirar(0)
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
             cliente.retirarCompra(0)
 
         then: "la compra se retiró con éxito, los puntos de confianza se actualizan y el id de la compra corresponde a una compra retirada"
@@ -213,14 +213,14 @@ class ClienteSpec extends Specification{
     void "dado un cliente que realizó una compra y la retiró, obtiene un error tras intentar retirarla nuevamente"() {
         given: "un cliente que confirma la compra de su pedido y luego lo retira"
             def pancho = new Producto("pancho", 10, new Dinero(5))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             
             cliente.cargarSaldo(new Dinero(10))
             cliente.agregarAlPedido("pancho", 2)
             cliente.confirmarCompraDelPedido()
 
-            buffet.prepararCompra(0)
-            buffet.marcarCompraListaParaRetirar(0)
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
             cliente.retirarCompra(0)
             int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
 
@@ -237,7 +237,7 @@ class ClienteSpec extends Specification{
     void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra aguardando preparación entonces pierde un punto de confianza, obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
         given: "un cliente que confirma la compra de su pedido (compra 2 panchos, el stock de los panchos post compra es 8)"
             def pancho = new Producto("pancho", 10, new Dinero(5))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             
             cliente.cargarSaldo(new Dinero(10))
             cliente.agregarAlPedido("pancho", 2)
@@ -253,13 +253,13 @@ class ClienteSpec extends Specification{
         then: "pierde un punto de confianza, obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
             cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente - 1
             cliente.getSaldo().getMonto() == saldoPreCompra.getMonto()
-            buffet.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+            negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
 
     void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra en preparación entonces pierde varios punto de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
         given: "un cliente que confirma la compra de su pedido y el negocio lo comienza a preparar"
             def pancho = new Producto("pancho", 10, new Dinero(5))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             
             cliente.cargarSaldo(new Dinero(20))
             cliente.agregarAlPedido("pancho", 4)
@@ -268,7 +268,7 @@ class ClienteSpec extends Specification{
             int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
 
             cliente.confirmarCompraDelPedido()
-            buffet.prepararCompra(0)
+            negocio.prepararCompra(0)
 
         when: "cancela la compra cuando el pedido esta en preparación"
             cliente.cancelarCompra(0)
@@ -276,13 +276,13 @@ class ClienteSpec extends Specification{
         then: "pierde puntos de confianza (cantidad total de productos en la compra), no obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
             cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente - 4
             cliente.getSaldo().getMonto() == saldoPreCompra.getMonto() - cliente.getComprasRealizadas()[0].getPedido().precio().getMonto()
-            buffet.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+            negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
 
     void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra lista para retirar entonces pierde todos sus puntos de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
         given: "un cliente que confirma la compra de su pedido, el negocio lo comienza a preparar y luego la compra está lista para retirar"
             def pancho = new Producto("pancho", 10, new Dinero(5))
-            buffet.registrarProducto(pancho)
+            negocio.registrarProducto(pancho)
             
             cliente.cargarSaldo(new Dinero(20))
             cliente.agregarAlPedido("pancho", 4)
@@ -291,8 +291,8 @@ class ClienteSpec extends Specification{
             int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
 
             cliente.confirmarCompraDelPedido()
-            buffet.prepararCompra(0)
-            buffet.marcarCompraListaParaRetirar(0)
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
 
         when: "cancela la compra cuando el pedido esta listo para retirar"
             cliente.cancelarCompra(0)
@@ -300,6 +300,6 @@ class ClienteSpec extends Specification{
         then: "pierde todos sus puntos de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
             cliente.getPuntosDeConfianza() == 0
             cliente.getSaldo().getMonto() == saldoPreCompra.getMonto() - cliente.getComprasRealizadas()[0].getPedido().precio().getMonto()
-            buffet.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+            negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
 }
