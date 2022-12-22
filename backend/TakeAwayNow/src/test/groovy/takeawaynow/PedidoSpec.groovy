@@ -9,6 +9,7 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
     Cliente lautaro, ariana
     Producto alfajor, gaseosa, pancho
     Horario horario_apertura, horario_cierre
+    Date dia
 
     def setup() {
         horario_apertura = new Horario(9,0)
@@ -21,7 +22,13 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
         alfajor = new Producto("alfajor", 1, new Dinero(60))
         gaseosa = new Producto("gaseosa", 1, new Dinero(100))
         pancho = new Producto("pancho", 1, new Dinero(90))
-        
+        // year: 2022, 
+        // month: 5, 
+        // dayOfMonth: 27, 
+        // hourOfDay: 12,
+        // minute: 0,
+        // second: 0
+        dia = new Date(2022, 5, 27, 12, 0, 0)
     }
 
     def cleanup() {
@@ -32,7 +39,7 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
             negocio.registrarProducto(pancho)
             negocio.registrarProducto(alfajor)
             negocio.registrarProducto(gaseosa)
-            lautaro.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
 
         when: "El cliente los agrega a su pedido"
             lautaro.agregarAlPedido("pancho", 1)
@@ -47,8 +54,8 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
     void "Dado que un cliente intenta agregar un producto del cual acaba de terminarse el stock a su pedido, se lanza una excepción y el valor/cantidad de productos de los pedidos no se ven afectados"() {
         given: "Dos clientes y un único producto"
             negocio.registrarProducto(pancho)
-            lautaro.ingresarNegocio(negocio)
-            ariana.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
+            ariana.ingresarNegocio(negocio, dia)
 
         when: "Ambos quieren agregar el mismo producto"
             lautaro.agregarAlPedido("pancho", 1)
@@ -68,8 +75,8 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
         given: "Dos clientes y un único producto"
             negocio.registrarProducto(pancho)
             negocio.ingresarStock("pancho", 1)
-            lautaro.ingresarNegocio(negocio)
-            ariana.ingresarNegocio(negocio)
+            lautaro.ingresarNegocio(negocio, dia)
+            ariana.ingresarNegocio(negocio, dia)
 
         when: "Ambos quieren agregar el mismo producto"
             lautaro.agregarAlPedido("pancho", 1)

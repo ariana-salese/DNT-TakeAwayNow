@@ -44,6 +44,20 @@ class Negocio {
 
     /**
      * 
+     * TODO
+     * 
+     */
+    boolean estaAbierto(Date dia) {
+        int hora = dia.hours
+        int minutos = dia.minutes
+
+        Horario hora_actual = new Horario(hora, minutos)
+
+        !(hora_actual > horario_cierre || hora_actual < horario_apertura)
+    }
+
+    /**
+     * 
      * Se reemplaza el precio del producto con el nombre recibido por el nuevo precio. Si el nuevo precio
      * es 0 entonces se lanza un error.
      * 

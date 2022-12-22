@@ -9,16 +9,41 @@ class ClienteSpec extends Specification{
     Negocio negocio
     Cliente cliente
     Horario horario_apertura, horario_cierre
+    Date dia
 
     def setup() {
         horario_apertura = new Horario(9,0)
         horario_cierre = new Horario(18,0)
         negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
         cliente = new Cliente()
-        cliente.ingresarNegocio(negocio)
+        // year: 2022, 
+        // month: 5, 
+        // dayOfMonth: 27, 
+        // hourOfDay: 12,
+        // minute: 0,
+        // second: 0
+        dia = new Date(2022, 5, 27, 12, 0, 0)
+        cliente.ingresarNegocio(negocio, dia)
     }
 
     def cleanup() {
+    }
+
+    void "un cliente no puede ingresar a un negocio que este cerrado"() {
+        given: "un horario pasado el horario de cierre"
+            // year: 2022, 
+            // month: 5, 
+            // dayOfMonth: 27, 
+            // hourOfDay: 19,
+            // minute: 0,
+            // second: 0
+            Date dia_con_horario_pasado_el_cierre = new Date(2022, 5, 27, 19, 0, 0)
+
+        when: "un cliente ingresa al negocio"
+            cliente.ingresarNegocio(negocio, dia_con_horario_pasado_el_cierre)
+
+        then: "se lanza error"
+            IllegalStateException exception = thrown()
     }
 
     void "un cliente puede agregar un producto con stock al pedido"() {
