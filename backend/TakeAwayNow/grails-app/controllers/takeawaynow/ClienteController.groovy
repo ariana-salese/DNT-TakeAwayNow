@@ -5,9 +5,11 @@ class ClienteController {
     ClienteService service
 
     def index() {
-        Negocio pc = new Negocio("Paseo Colon");
-        Negocio lh = new Negocio("Las Heras");
-        Negocio av = new Negocio("CBC Avellaneda");
+        Horario horario_apertura = new Horario(9,0)
+        Horario horario_cierre = new Horario(18,0)
+        Negocio pc = new Negocio("Paseo Colon", horario_apertura, horario_cierre);
+        Negocio lh = new Negocio("Las Heras", horario_apertura, horario_cierre);
+        Negocio av = new Negocio("CBC Avellaneda", horario_apertura, horario_cierre);
         def negocios = [pc, lh, av]
         for (negocio in negocios) {
             negocio.save()
