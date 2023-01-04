@@ -18,6 +18,17 @@ class ClienteController {
         // service.listarNegocios([pc, lh, av])
     }
 
+    def ingreso(String nombreCliente) {
+        new Cliente(nombreCliente).save()
+
+        render "Hello again ${nombreCliente}"
+    }
+
+    def registro(String nombreCliente) {
+        new Cliente(nombreCliente).save()
+        render "Welcome ${nombreCliente}"
+    }
+
     // def crear() {
     //     (1..10).each { it ->
     //         new Negocio("HOLACOMOVA").save()

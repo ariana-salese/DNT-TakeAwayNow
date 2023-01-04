@@ -1,7 +1,7 @@
 <div class="container">
-    <g:form class="loginForm d-flex flex-column flex-fill m-2 rounded-4" name="negocioForm" url="[controller:'negocio',action:'login']">
+    <g:form class="loginForm d-flex flex-column flex-fill m-2 rounded-4" resource="cliente" action="ingreso">
         <strong>Ingrese su nombre</strong>
-        <g:textField name="negocioNombreField" value="${myValue}" />
-        <g:actionSubmit class="mt-2" value="Ingresar como cliente" action="update" />
+        <g:textField name="nombreCliente" />
+        <g:actionSubmit class="mt-2" value="Ingresar como cliente" action="ingreso" />
     </g:form>
 </div>

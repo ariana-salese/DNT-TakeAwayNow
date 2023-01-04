@@ -13,12 +13,17 @@ class Cliente {
 
     // static embedded = ['saldo', 'pedido', 'negocioIngresado']
 
+    String nombre = "Pepito"
     Dinero saldo = new Dinero(0)
     Pedido pedido = new Pedido()
     Negocio negocioIngresado
     Map<Integer, Compra> comprasRealizadas = [:]
     Set<Integer> comprasRetiradas = []
     int puntosDeConfianza = 0
+
+    Cliente(String nombreCliente){
+        this.nombre = nombreCliente
+    }
 
     /**
      * 
