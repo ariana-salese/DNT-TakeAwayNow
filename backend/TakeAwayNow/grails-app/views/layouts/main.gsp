@@ -17,7 +17,7 @@
 
     <body>
 
-        <%-- <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
+        <nav class="navbar navbar-expand-lg navbar-dark navbar-static-top" role="navigation">
             <div class="container-fluid">
                 <a class="navbar-brand" href="/#"><asset:image src="grails.svg" alt="Grails Logo"/></a>
                 <button class="navbar-toggler" type="button" data-toggle="collapse" data-target="#navbarContent" aria-controls="navbarContent" aria-expanded="false" aria-label="Toggle navigation">
@@ -30,11 +30,11 @@
                     </ul>
                 </div>
             </div>
-        </nav> --%>
+        </nav>
 
         <g:layoutBody/>
 
-        <g:render template="logo" />
+        <%-- <g:render template="logo" />
 
         <div class="container-fluid d-flex">
             <div class="formClienteContainer mb-2 container d-flex flex-column">
@@ -47,24 +47,9 @@
                 <g:render template="/negocio/ingresoNegocio" />
                 <g:render template="/negocio/registroNegocio" />
             </div>
-        </div>
-        <%-- <div class="mainFormContainer container d-flex flex-column align-items-center justify-content-center">
-            <g:form class="loginForm d-flex flex-column flex-fill m-4 rounded-4" name="negocioForm" url="[controller:'negocio',action:'login']">
-                <strong>Ingreso como negocio</strong>
-                <g:textField name="negocioNombreField" value="${myValue}" />
-                
-                <label for="appt">Elija un horario de apertura</label>
-                <input type="time" id="appt" name="appt">
-
-                <label for="appt">Elija un horario de cierre</label>
-                <input type="time" id="appt" name="appt">
-
-                <g:actionSubmit class="mt-3" value="Ingresar como negocio" action="update" />
-                <g:actionSubmit value="Registrarse como nuevo negocio" action="update" />
-            </g:form>
         </div> --%>
 
-        <%-- <div class="footer" role="contentinfo">
+        <div class="footer" role="contentinfo">
             <div class="container-fluid">
                 <div class="row">
                     <div class="col">
@@ -96,7 +81,8 @@
 
         <div id="spinner" class="spinner" style="display:none;">
             <g:message code="spinner.alt" default="Loading&hellip;"/>
-        </div> --%>
+        </div>
+
         <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js" integrity="sha384-w76AqPfDkMBDXo30jS1Sgez6pr3x5MlQ1ZAGC+nuZB+EYdgRZgiwxhTBTkF7CXvN" crossorigin="anonymous"></script>
         <asset:javascript src="application.js"/>
 

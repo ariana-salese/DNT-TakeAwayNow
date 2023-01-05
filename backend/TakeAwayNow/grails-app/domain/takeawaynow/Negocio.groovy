@@ -8,15 +8,20 @@ package takeawaynow
 class Negocio {
 
     static constraints = {
-        nombre blank: false, nullable: false
-        horario_apertura blank: false, nullable: false
+        nombre blank: false, nullable: false, unique: true
+        password blank: false, nullable: false
+        horario_apertura attributes: [horarios: 0..23], blank: false, nullable: false
         horario_cierre blank: false, nullable: false
+        comprasRegistradas display: false
+        almacen display: false
+        ids_compras display: false
     }
 
+
     String nombre
+    String password
     Almacen almacen = new Almacen()
     Map<Integer, Compra> comprasRegistradas = [:]
-    // Set comprasRetiradas = []
     int ids_compras = 0
     Horario horario_apertura
     Horario horario_cierre

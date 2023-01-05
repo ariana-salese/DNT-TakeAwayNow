@@ -9,11 +9,20 @@ package takeawaynow
 class Cliente {
 
     static constraints = {
+        nombre size: 5..15, blank: false, unique: true
+        password password: true, size: 5..15, blank: false
+        saldo display: false
+        pedido display: false
+        negocioIngresado display: false, nullable: true
+        comprasRealizadas display: false
+        comprasRetiradas display: false
+        puntosDeConfianza display: false
     }
 
     // static embedded = ['saldo', 'pedido', 'negocioIngresado']
 
-    String nombre = "Pepito"
+    String nombre
+    String password
     Dinero saldo = new Dinero(0)
     Pedido pedido = new Pedido()
     Negocio negocioIngresado
@@ -21,8 +30,9 @@ class Cliente {
     Set<Integer> comprasRetiradas = []
     int puntosDeConfianza = 0
 
-    Cliente(String nombreCliente){
+    Cliente(String nombreCliente, String pass){
         this.nombre = nombreCliente
+        this.password = password
     }
 
     /**

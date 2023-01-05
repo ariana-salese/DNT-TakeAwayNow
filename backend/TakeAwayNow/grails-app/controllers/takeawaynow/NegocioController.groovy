@@ -2,8 +2,10 @@ package takeawaynow
 
 class NegocioController {
 
+    static scaffold = Negocio
+
     def index() { 
-        render "hola"
+        // render "hola"
     }
 
     def ingreso(String nombreNegocio) {
