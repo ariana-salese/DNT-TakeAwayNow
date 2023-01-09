@@ -105,6 +105,16 @@ class Negocio {
         this.almacen.retirarProducto(nombreProducto, cantidad, pedido) 
     }
 
+
+    /**
+    * 
+    * TODO
+    * 
+    */
+    boolean agregarAlPedidoPorPuntoDeConfianza(String nombreProducto, int cantidad, Pedido pedido) {
+        this.almacen.retirarProductoPorPuntosDeConfianza(nombreProducto, cantidad, pedido) 
+    }
+
     /**
      * 
      * TODO

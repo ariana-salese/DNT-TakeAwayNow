@@ -24,6 +24,7 @@ class ClienteSpec extends Specification{
         // second: 0
         dia = new Date(2022, 5, 27, 12, 0, 0)
         cliente.ingresarNegocio(negocio, dia)
+        cliente.darPuntosDeConfianza(new PuntosDeConfianza(30))
     }
 
     def cleanup() {
@@ -68,7 +69,7 @@ class ClienteSpec extends Specification{
             cliente.quitarDelPedido("pancho", 3)
 
         then: "el pedido tiene la cantidad de productos adecuados, y el inventario del negocio vuelve a actualizarse"
-            cliente.valorDelPedido() == new Dinero(20)
+            cliente.valorDelPedidoEnDinero() == new Dinero(20)
             cliente.cantidadDeProductosEnElPedido() == 2
             negocio.hayStock("pancho") == true
             negocio.almacen.inventario["pancho"].cantidad == 3
@@ -81,7 +82,7 @@ class ClienteSpec extends Specification{
         then:
             Exception e = thrown()
             e.message == "No se pueden quitar 3 panchos del pedido ya que no hay productos en el mismo."
-            cliente.valorDelPedido() == new Dinero(0)
+            cliente.valorDelPedidoEnDinero() == new Dinero(0)
             cliente.cantidadDeProductosEnElPedido() == 0
     }
 
@@ -207,7 +208,7 @@ class ClienteSpec extends Specification{
             cliente.confirmarCompraDelPedido()
 
             negocio.prepararCompra(0)
-            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+            PuntosDeConfianza puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
 
         when: "intenta retirar dicha compra"
             cliente.retirarCompra(0)
@@ -224,6 +225,7 @@ class ClienteSpec extends Specification{
             def pancho = new Producto("pancho", 10, new Dinero(5))
             negocio.registrarProducto(pancho)
             
+            PuntosDeConfianza puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
             cliente.cargarSaldo(new Dinero(5))
             cliente.agregarAlPedido("pancho", 1)
             cliente.confirmarCompraDelPedido()
@@ -234,7 +236,7 @@ class ClienteSpec extends Specification{
             cliente.retirarCompra(0)
 
         then: "la compra se retiró con éxito, los puntos de confianza se actualizan y el id de la compra corresponde a una compra retirada"
-            cliente.getPuntosDeConfianza() == 1
+            cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente + 1
             cliente.getComprasRetiradas().contains(0) == true
     }
 
@@ -250,7 +252,7 @@ class ClienteSpec extends Specification{
             negocio.prepararCompra(0)
             negocio.marcarCompraListaParaRetirar(0)
             cliente.retirarCompra(0)
-            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+            PuntosDeConfianza puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
 
         when: "intenta retirar dicha compra nuevamente"
             cliente.retirarCompra(0)
@@ -271,7 +273,7 @@ class ClienteSpec extends Specification{
             cliente.agregarAlPedido("pancho", 2)
             
             Dinero saldoPreCompra = cliente.getSaldo()
-            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+            PuntosDeConfianza puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
 
             cliente.confirmarCompraDelPedido()
 
@@ -279,7 +281,7 @@ class ClienteSpec extends Specification{
             cliente.cancelarCompra(0)
 
         then: "pierde un punto de confianza, obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
-            cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente - 1
+            cliente.getPuntosDeConfianza().cantidad == puntosObtenidosPreviamente.cantidad - 1
             cliente.getSaldo().getMonto() == saldoPreCompra.getMonto()
             negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
@@ -293,7 +295,7 @@ class ClienteSpec extends Specification{
             cliente.agregarAlPedido("pancho", 4)
             
             Dinero saldoPreCompra = cliente.getSaldo()
-            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+            PuntosDeConfianza puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
 
             cliente.confirmarCompraDelPedido()
             negocio.prepararCompra(0)
@@ -302,7 +304,7 @@ class ClienteSpec extends Specification{
             cliente.cancelarCompra(0)
 
         then: "pierde puntos de confianza (cantidad total de productos en la compra), no obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
-            cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente - 4
+            cliente.puntosDeConfianza.cantidad == puntosObtenidosPreviamente.cantidad - 4
             cliente.getSaldo().getMonto() == saldoPreCompra.getMonto() - cliente.getComprasRealizadas()[0].getPedido().precio().getMonto()
             negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
@@ -316,7 +318,7 @@ class ClienteSpec extends Specification{
             cliente.agregarAlPedido("pancho", 4)
             
             Dinero saldoPreCompra = cliente.getSaldo()
-            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+            PuntosDeConfianza puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
 
             cliente.confirmarCompraDelPedido()
             negocio.prepararCompra(0)
@@ -326,7 +328,7 @@ class ClienteSpec extends Specification{
             cliente.cancelarCompra(0)
 
         then: "pierde todos sus puntos de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
-            cliente.getPuntosDeConfianza() == 0
+            cliente.getPuntosDeConfianza().cantidad == 0
             cliente.getSaldo().getMonto() == saldoPreCompra.getMonto() - cliente.getComprasRealizadas()[0].getPedido().precio().getMonto()
             negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
@@ -340,7 +342,7 @@ class ClienteSpec extends Specification{
             cliente.agregarAlPedido("pancho", 4)
             
             Dinero saldoPreCompra = cliente.getSaldo()
-            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza()
+            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza().cantidad
 
             cliente.confirmarCompraDelPedido()
             negocio.prepararCompra(0)
@@ -351,8 +353,72 @@ class ClienteSpec extends Specification{
             cliente.solicitarDevoluciónDelPedido(0)
 
         then: "obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10) y sus puntos de confianza no se modifican"
-            cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente
+            cliente.puntosDeConfianza.cantidad == puntosObtenidosPreviamente
             cliente.getSaldo() == new Dinero(20)
             negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
+
+    void "dado un cliente que tiene 30 puntos de confianza y confirma compra con canje de pancho por 10 le quedan 20"() {
+        given: "dado un cliente que tiene 30 puntos de confianza y un pancho canjeable por 10"
+            Producto pancho = new Producto("pancho", 10, new Dinero(5), new PuntosDeConfianza(10))
+            negocio.registrarProducto(pancho)
+
+        when: "el cliente confirma compra con el pancho por puntos"
+            cliente.agregarAlPedidoPorPuntoDeConfianza("pancho", 1)
+            cliente.confirmarCompraDelPedido()
+
+        then: "los puntos de confianza resultantes son correctos"
+            cliente.puntosDeConfianza == new PuntosDeConfianza(20)
+    }
+
+    void "dado un cliente que tiene 30 puntos de confianza y retira compra con canje de pancho por 10 le quedan 20"() {
+        given: "dado un cliente que tiene 30 puntos de confianza y un pancho canjeable por 10"
+            Producto pancho = new Producto("pancho", 10, new Dinero(5), new PuntosDeConfianza(10))
+            negocio.registrarProducto(pancho)
+
+        when: "el cliente compra y retira el pancho por puntos"
+            cliente.agregarAlPedidoPorPuntoDeConfianza("pancho", 1)
+            cliente.confirmarCompraDelPedido()
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
+            cliente.retirarCompra(0)
+
+        then: "los puntos de confianza resultantes son correctos"
+            cliente.puntosDeConfianza == new PuntosDeConfianza(20)
+    }
+
+    void "dado un cliente que tiene 30 puntos de confianza y retira compra con canje de pancho por 10 y afajor por 50 pesos entonces el saldo y puntos finales son correctos"() {
+        given: "dado un cliente que tiene 30 puntos de confianza, un pancho canjeable por 10 y un alfajor que valo 50 pesos"
+            Producto pancho = new Producto("pancho", 10, new Dinero(5), new PuntosDeConfianza(10))
+            Producto alfajor = new Producto("alfajor", 10, new Dinero(50))
+            negocio.registrarProducto(pancho)
+            negocio.registrarProducto(alfajor)
+
+        when: "el cliente compra el pancho por puntos"
+            cliente.cargarSaldo(new Dinero(100))
+            cliente.agregarAlPedidoPorPuntoDeConfianza("pancho", 1)
+            cliente.agregarAlPedido("alfajor", 1)
+            cliente.confirmarCompraDelPedido()
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
+            cliente.retirarCompra(0)
+
+        then: "los puntos de confianza y sald0 resultantes son correctos"
+            cliente.puntosDeConfianza == new PuntosDeConfianza(21)
+            cliente.saldo == new Dinero(50)
+    }
+
+    void "dado un cliente que agrega a su pedido a cambio de puntos un producto no canjeable por puntos entonces se lanza error"() {
+        given: "dado un cliente que tiene 30 puntos de confianza y un pancho no canjeable por puntos"
+            Producto pancho = new Producto("pancho", 10, new Dinero(5))
+            negocio.registrarProducto(pancho)
+
+        when: "el agrega por puntos el pancho no canjeable por puntos"
+            cliente.agregarAlPedidoPorPuntoDeConfianza("pancho", 1)
+
+        then: "se lanza error"
+            IllegalStateException exception = thrown()
+            cliente.cantidadDeProductosEnElPedido() == 0
+    }
+
 }

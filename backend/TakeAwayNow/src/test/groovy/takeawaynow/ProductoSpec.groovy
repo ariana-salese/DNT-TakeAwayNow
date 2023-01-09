@@ -46,4 +46,12 @@ class ProductoSpec extends Specification implements DomainUnitTest<Producto> {
             Exception e = thrown()
             e.message == "No puede existir dinero negativo."
     }
+
+    void "se crea correctamente producto con puntos de confianza"() {
+        when: "se crea un producto con puntos de confianza"
+            def alfajor = new Producto("Alfajor", 1, new Dinero(10), new PuntosDeConfianza(100))
+
+        then: "sus puntos de confianza son correctos"
+            alfajor.puntosDeConfianza.cantidad == 100
+    }
 }

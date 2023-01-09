@@ -13,6 +13,7 @@ class Pedido {
     // static embedded = ['productos']
 
     Map<String, Producto> productos = [:]
+    Map<String, Producto> productosPorPuntosDeConfianza = [:]
 
     /**
      * 
@@ -21,6 +22,16 @@ class Pedido {
      */
     void agregar(Producto producto) {
         this.productos[producto.nombre] = producto
+    }
+
+    /**
+     * 
+     * TODO
+     * 
+     */
+    void agregarPorPuntosDeConfianza(Producto producto) {
+        if (!producto.esCanjeablePorPuntosDeConfianza()) throw new IllegalStateException("No se puede canjear ${producto.nombre} por puntos de confianza.")
+        this.productosPorPuntosDeConfianza[producto.nombre] = producto
     }
 
     /**
@@ -38,14 +49,47 @@ class Pedido {
         }
     }
 
+    /**
+     * 
+     * TODO
+     * 
+     */
     Dinero precio() {
         Dinero precioTotal = new Dinero(0)
         this.productos.each{ _, producto -> precioTotal = precioTotal + producto.precioSegunCantidad() }
         precioTotal
     }
+
+    /**
+     * 
+     * TODO
+     * 
+     */
+    PuntosDeConfianza puntos() {
+        PuntosDeConfianza puntosTotales = new PuntosDeConfianza(0)
+        this.productosPorPuntosDeConfianza.each{ _, producto -> puntosTotales = puntosTotales + producto.puntosDeConfianzaSegunCantidad() }
+        puntosTotales
+    }
     
+    /**
+     * 
+     * TODO
+     * 
+     */
     int cantidadDeProductos() {
-        int cantidad = 0
+        int cantidad = 0 //TODO no hay un len o size?
+        this.productos.each{ _, producto -> cantidad = cantidad + producto.cantidad }
+        this.productosPorPuntosDeConfianza.each{ _, producto -> cantidad = cantidad + producto.cantidad }
+        cantidad
+    }
+
+    /**
+     * 
+     * TODO
+     * 
+     */
+    int cantidadDeProductosPorDinero() {
+        int cantidad = 0 //TODO no hay un len o size?
         this.productos.each{ _, producto -> cantidad = cantidad + producto.cantidad }
         cantidad
     }

@@ -37,4 +37,22 @@ class Compra {
         this.fecha = LocalDateTime.now()
         this.id = id
     }
+
+    /**
+     * 
+     * TODO
+     * 
+     */
+    int cantidadDeProductos() {
+        this.pedido.cantidadDeProductos()
+    }
+
+    /**
+     * 
+     * TODO
+     * 
+     */
+    int cantidadDeProductosPorDinero() {
+        this.pedido.cantidadDeProductosPorDinero()
+    }
 }

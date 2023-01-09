@@ -7,7 +7,7 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
 
     Negocio negocio
     Cliente lautaro, ariana
-    Producto alfajor, gaseosa, pancho
+    Producto alfajor, gaseosa, pancho, chicle
     Horario horario_apertura, horario_cierre
     Date dia
 
@@ -19,9 +19,10 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
         lautaro = new Cliente()
         ariana = new Cliente()
         
-        alfajor = new Producto("alfajor", 1, new Dinero(60))
-        gaseosa = new Producto("gaseosa", 1, new Dinero(100))
-        pancho = new Producto("pancho", 1, new Dinero(90))
+        alfajor = new Producto("alfajor", 1, new Dinero(60), new PuntosDeConfianza(70))
+        gaseosa = new Producto("gaseosa", 1, new Dinero(100), new PuntosDeConfianza(60))
+        pancho = new Producto("pancho", 1, new Dinero(90),  new PuntosDeConfianza(80))
+        chicle = new Producto("chicle", 1, new Dinero(30))
         // year: 2022, 
         // month: 5, 
         // dayOfMonth: 27, 
@@ -48,7 +49,7 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
 
         then: "La cantidad de productos del pedido y el valor del mismo es el adecuado"
             lautaro.cantidadDeProductosEnElPedido() == 3
-            lautaro.valorDelPedido() == new Dinero(250)
+            lautaro.valorDelPedidoEnDinero() == new Dinero(250)
     }
 
     void "Dado que un cliente intenta agregar un producto del cual acaba de terminarse el stock a su pedido, se lanza una excepción y el valor/cantidad de productos de los pedidos no se ven afectados"() {
@@ -63,10 +64,10 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
 
         then: "Lanza una excepción y la cantidad de productos de los pedidos y sus valores son adecuados"
             lautaro.cantidadDeProductosEnElPedido() == 1
-            lautaro.valorDelPedido() == new Dinero(90)
+            lautaro.valorDelPedidoEnDinero() == new Dinero(90)
 
             ariana.cantidadDeProductosEnElPedido() == 0
-            ariana.valorDelPedido() == new Dinero(0)
+            ariana.valorDelPedidoEnDinero() == new Dinero(0)
             Exception e = thrown()
             e.message == "La cantidad que se desea retirar es mayor al stock actual del producto"
     }
@@ -84,9 +85,54 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
 
         then: "La cantidad de productos de los pedidos y sus valores son adecuados"
             lautaro.cantidadDeProductosEnElPedido() == 1
-            lautaro.valorDelPedido() == new Dinero(90)
+            lautaro.valorDelPedidoEnDinero() == new Dinero(90)
 
             ariana.cantidadDeProductosEnElPedido() == 1
-            ariana.valorDelPedido() == new Dinero(90)
+            ariana.valorDelPedidoEnDinero() == new Dinero(90)
+    }
+
+    //TODO los test de arriba creo que testean cosas de mas, estamos testeando cliente y negocio al pp,
+    //me pa que solo deberiamos usar un pedido porque estamos testeando pedido y no necesitamos a los otro
+
+    void "Un pedido con productos agregado por puntos de confianza tiene valor correcto"() {
+        given: "Un pedido"
+            Pedido pedido = new Pedido()
+
+        when: "Se agregan productos a cambio de puntos"
+            pedido.agregarPorPuntosDeConfianza(pancho)
+            pedido.agregarPorPuntosDeConfianza(alfajor)
+            pedido.agregarPorPuntosDeConfianza(gaseosa)
+
+        then: "La cantidad de productos del pedido y el valor del mismo es el adecuado"
+            pedido.cantidadDeProductos() == 3
+            pedido.precio() == new Dinero(0)
+            pedido.puntos() == new PuntosDeConfianza(210)
+    }
+
+    void "Un pedido con dos productos agregados por puntos de confianza y uno por dinero tiene valor correcto"() {
+        given: "Un pedido"
+            Pedido pedido = new Pedido()
+
+        when: "Se agregan dos productos a cambio de puntos y uno a cambio de dinero"
+            pedido.agregarPorPuntosDeConfianza(pancho)
+            pedido.agregarPorPuntosDeConfianza(alfajor)
+            pedido.agregar(gaseosa)
+
+        then: "La cantidad de productos del pedido y el valor del mismo es el adecuado"
+            pedido.cantidadDeProductos() == 3
+            pedido.precio() == new Dinero(100)
+            pedido.puntos() == new PuntosDeConfianza(150)
+    }
+
+    void "Agregar un producto no canjeable por puntos de confianza, por puntos de confianza, lanza error"() {
+        given: "Un pedido"
+            Pedido pedido = new Pedido()
+
+        when: "Se agregan un producto no canjeable por puntos a cambio de puntos"
+            pedido.agregarPorPuntosDeConfianza(chicle)
+
+        then: "Se lanza error"
+            pedido.cantidadDeProductos() == 0
+            IllegalStateException exception = thrown()
     }
 }

@@ -55,6 +55,18 @@ class Almacen {
         Producto productoARetirar = this.inventario[nombreDelProducto]
         pedido.agregar(productoARetirar.retirar(cantidadARetirar))
     }
+    
+    /**
+     * 
+     * TODO no se deberia verificar que haya stock suficiente?
+     * 
+     */
+    void retirarProductoPorPuntosDeConfianza(String nombreDelProducto, int cantidadARetirar, Pedido pedido) {
+        if (!this.estaRegistrado(nombreDelProducto)) throw new IllegalStateException("El producto que se busca retirar no se encuentra registrado.")
+        Producto productoARetirar = this.inventario[nombreDelProducto]
+        if (productoARetirar.puntosDeConfianza == null) throw new IllegalStateException("El producto no es canjeable por puntos.")
+        pedido.agregarPorPuntosDeConfianza(productoARetirar.retirar(cantidadARetirar))
+    }
 
     /**
      * 
