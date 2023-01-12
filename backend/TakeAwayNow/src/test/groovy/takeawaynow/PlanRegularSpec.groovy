@@ -10,9 +10,4 @@ class PlanRegularSpec extends Specification implements DomainUnitTest<PlanRegula
 
     def cleanup() {
     }
-
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

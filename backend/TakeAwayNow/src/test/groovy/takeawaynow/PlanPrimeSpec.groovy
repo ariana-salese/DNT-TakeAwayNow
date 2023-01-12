@@ -11,8 +11,4 @@ class PlanPrimeSpec extends Specification implements DomainUnitTest<PlanPrime> {
     def cleanup() {
     }
 
-    void "test something"() {
-        expect:"fix me"
-            true == false
-    }
 }

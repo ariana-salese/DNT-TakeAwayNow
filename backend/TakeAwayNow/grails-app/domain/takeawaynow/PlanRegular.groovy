@@ -5,13 +5,34 @@ package takeawaynow
  * TODO
  * 
  */
-class PlanRegular implements PlanDeCliente {
+class PlanRegular extends PlanDeCliente {
 
     /**
      * 
      * TODO
      * 
-     */
+    */
+    @Override
+    Dinero obtenerSaldoActualizadoPorCompra(Compra compra, Dinero saldoCliente) {
+        saldoCliente - compra.pedido.precio()
+    }
+
+    /**
+     * 
+     * TODO
+     * 
+    */
+    @Override
+    PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
+        puntosDeConfianzaCliente - compra.pedido.puntos()
+    }
+
+    /**
+     * 
+     * TODO
+     * 
+    */
+    @Override
     PlanPrime subscribirseAPlanPrime(Dinero saldoCliente) {
         new PlanPrime(saldoCliente)
     }
@@ -20,26 +41,19 @@ class PlanRegular implements PlanDeCliente {
      * 
      * TODO
      * 
-     */
-    Dinero obtenerSaldoActualizadoPorCompra(Compra compra, Dinero saldoCliente) {
-        saldoCliente - compra.precio()
-    }
-
-    /**
-     * 
-     * TODO
-     * 
-     */
-    PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
-        puntosDeConfianzaCliente - compra.puntos()
-    }
-
-    /**
-     * 
-     * TODO
-     * 
-     */
+    */
+    @Override
     PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraRetirada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
         puntosDeConfianzaCliente.agregarPuntosPorCompra(compra)
+    }
+
+    /**
+     * 
+     * TODO
+     * 
+    */
+    @Override
+    PuntosDeConfianza eliminarPuntosPorCompra(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
+        puntosDeConfianzaCliente.eliminarPuntosPorCompra(compra)
     }
 }

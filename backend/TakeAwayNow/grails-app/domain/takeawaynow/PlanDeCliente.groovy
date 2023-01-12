@@ -5,13 +5,15 @@ package takeawaynow
  * TODO
  * 
  */
-interface PlanDeCliente {
+abstract class PlanDeCliente {
 
-    Dinero obtenerSaldoActualizadoPorCompra(Compra compra, Dinero saldoCliente)
+    Dinero obtenerSaldoActualizadoPorCompra(Compra compra, Dinero saldoCliente) {}
 
-    PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente)
+    PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {}
 
-    PlanPrime subscribirseAPlanPrime(Dinero saldoCliente)
+    PlanPrime subscribirseAPlanPrime(Dinero saldoCliente) {}
 
-    PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraRetirada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente)
+    PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraRetirada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {}
+
+    PuntosDeConfianza eliminarPuntosPorCompra(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {}
 }
