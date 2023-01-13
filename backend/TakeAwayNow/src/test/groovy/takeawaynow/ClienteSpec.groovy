@@ -421,4 +421,30 @@ class ClienteSpec extends Specification{
             cliente.cantidadDeProductosEnElPedido() == 0
     }
 
+    void "dado un cliente con plan regular se subscribe a plan prime con fondos suficientes y la cantidad de dias restantes de prime son correctos"() {
+        given: "dado un cliente que fondos suficientes para abonar plan prime"
+            cliente.cargarSaldo(new Dinero(500))
+
+        when: "el cliente se subscribe a plan prime"
+            cliente.subscribirseAPlanPrime()
+
+        then: "la cantidad de dias de plan prime restantes es correcto"
+            cliente.diasRestantesDePlanPrime() == 30
+    }
+
+    void "dado un cliente con plan regular se subscribe a plan prime con fondos insuficientes se lanza error"() {
+        when: "el cliente se subscribe a plan prime con fondos insuficientes"
+            cliente.subscribirseAPlanPrime()
+
+        then: "se lanza error"
+            IllegalStateException exception = thrown()
+    }
+
+    void "dado un cliente con plan regula y la cantidad de dias restantes de prime son 0"() {
+        when: "un cliente que fondos suficientes para abonar plan prime"
+            cliente.cargarSaldo(new Dinero(500))
+
+        then: "la cantidad de dias de plan prime restantes es cero"
+            cliente.diasRestantesDePlanPrime() == 0
+    }
 }

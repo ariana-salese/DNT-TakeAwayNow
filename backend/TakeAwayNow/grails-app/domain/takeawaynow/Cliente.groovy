@@ -247,4 +247,8 @@ class Cliente {
         this.setPuntosDeConfianza(this.plan.eliminarPuntosPorCompra(this.comprasRealizadas[id], this.puntosDeConfianza))
         this.setSaldo(this.saldo + this.comprasRealizadas[id].getPedido().precio())
     }
+
+    int diasRestantesDePlanPrime() {
+        this.plan.diasRestantesDePlanPrime()
+    }
 }
