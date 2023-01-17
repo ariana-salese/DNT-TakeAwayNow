@@ -25,7 +25,6 @@ class Cliente {
     String password
     Dinero saldo = new Dinero(0)
     Pedido pedido = new Pedido()
-    PlanDeCliente plan = new PlanRegular()
     Negocio negocioIngresado
     Map<Integer, Compra> comprasRealizadas = [:]
     Set<Integer> comprasRetiradas = []
@@ -48,19 +47,9 @@ class Cliente {
 
     /**
      * 
-     * TODO
-     * 
-     */
-    void subscribirseAPlanPrime() {
-        this.plan = this.plan.subscribirseAPlanPrime()
-        this.setSaldo(this.plan.obtenerSaldoActualizadoPorSubscripcion(this.saldo))
-    }
-
-    /**
-     * 
      * Guarda el negocio al que el cliente ingreso
      * 
-     * TODO mockear dia en tests para no recibirlo por parametro?
+     * TODO mockear diaen tests para no recibirlo por parametro?
      */
     void ingresarNegocio(Negocio negocio, Date dia) {
         if (!negocio.estaAbierto(dia)) throw new IllegalStateException("El negocio al que se quiere ingresar no esta abierto.")
@@ -142,7 +131,7 @@ class Cliente {
      * 
      */
     Dinero valorDelPedidoEnDinero() {
-        this.pedido.precio()
+        pedido.precio()
     }
 
     /**
@@ -151,7 +140,7 @@ class Cliente {
      * 
      */
     PuntosDeConfianza valorDelPedidoEnPuntos() {
-        this.pedido.puntos()
+        pedido.puntos()
     }
 
     /**
@@ -172,9 +161,8 @@ class Cliente {
         if (this.puntosDeConfianza < puntosPedido) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que los puntos de confianza son insuficientes.")  
         
         Compra compraRealizada = negocioIngresado.registrarCompra(this.pedido)
-        this.setSaldo(this.plan.obtenerSaldoActualizadoPorCompra(compraRealizada, this.saldo))
-        this.setPuntosDeConfianza(this.plan.obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(compraRealizada, this.puntosDeConfianza))
-        
+        this.setSaldo(this.saldo - precioPedido)
+        this.setPuntosDeConfianza(this.puntosDeConfianza - puntosPedido)
         this.comprasRealizadas[compraRealizada.getId()] = compraRealizada
         this.pedido = new Pedido()
     }
@@ -194,7 +182,7 @@ class Cliente {
 
         this.negocioIngresado.marcarCompraRetirada(id)
         this.comprasRetiradas.add(id)
-        this.setPuntosDeConfianza(this.plan.obtenerPuntosDeConfianzaActualizadosPorCompraRetirada(this.comprasRealizadas[id], this.puntosDeConfianza))
+        this.setPuntosDeConfianza(this.puntosDeConfianza.agregarPuntosPorCompra(this.comprasRealizadas[id]))
     }
 
     /**
@@ -215,13 +203,13 @@ class Cliente {
         Compra.EstadoDeCompra estadoDeCompra = this.negocioIngresado.estadoDeCompra(id)
         switch(estadoDeCompra) {
             case Compra.EstadoDeCompra.AGUARDANDO_PREPARACION:
-                this.setPuntosDeConfianza(this.puntosDeConfianza - 1) 
+                this.setPuntosDeConfianza(this.puntosDeConfianza - 1)
                 this.setSaldo(this.saldo + this.comprasRealizadas[id].getPedido().precio())
                 this.negocioIngresado.reingresarStockDelPedido(id)
                 break
 
             case Compra.EstadoDeCompra.EN_PREPARACION:
-                this.setPuntosDeConfianza(this.plan.eliminarPuntosPorCompra(this.comprasRealizadas[id], this.puntosDeConfianza))
+                this.setPuntosDeConfianza(this.puntosDeConfianza.eliminarPuntosPorCompra(this.comprasRealizadas[id]))
                 this.negocioIngresado.reingresarStockDelPedido(id)
                 break
 
@@ -244,11 +232,7 @@ class Cliente {
         if (!this.comprasRealizadas[id]) throw new Exception("No se encuentra una compra realizada con el ID indicado.")
         
         this.negocioIngresado.devolucionDelPedido(id)
-        this.setPuntosDeConfianza(this.plan.eliminarPuntosPorCompra(this.comprasRealizadas[id], this.puntosDeConfianza))
+        this.setPuntosDeConfianza(this.puntosDeConfianza.eliminarPuntosPorCompra(this.comprasRealizadas[id]))
         this.setSaldo(this.saldo + this.comprasRealizadas[id].getPedido().precio())
-    }
-
-    int diasRestantesDePlanPrime() {
-        this.plan.diasRestantesDePlanPrime()
     }
 }

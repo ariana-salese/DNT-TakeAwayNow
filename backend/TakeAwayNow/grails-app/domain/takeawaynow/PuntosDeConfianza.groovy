@@ -19,6 +19,28 @@ class PuntosDeConfianza implements Comparable<PuntosDeConfianza> {
 
     /**
      * 
+     * Suma la cantidad actual con la cantidad de los puntos de confianza recibidos y retorna
+     * nuevos puntos de confianza con el valor resultante
+     * 
+     */
+    PuntosDeConfianza plus(PuntosDeConfianza otro) {
+        new PuntosDeConfianza(this.cantidad + otro.cantidad)
+    }
+
+    /**
+     * 
+     * Resta la cantidad actual con la cantidad de puntos de confianza recibidos y retorna
+     * nuevos puntos de confianza con el valor resultante. Si el valor resultante de la resta
+     * es menor a cero la nueva cantidad sera cero.
+     * 
+     */
+    PuntosDeConfianza minus(PuntosDeConfianza otro) {
+        if (this.cantidad - otro.cantidad < 0) return new PuntosDeConfianza(0)
+        new PuntosDeConfianza(this.cantidad - otro.cantidad)
+    }
+
+    /**
+     * 
      * Compara la cantidad actual con la cantidad de puntos de confianza recibidos
      * 
      */
@@ -48,28 +70,6 @@ class PuntosDeConfianza implements Comparable<PuntosDeConfianza> {
 
     /**
      * 
-     * Suma la cantidad actual con la cantidad de los puntos de confianza recibidos y retorna
-     * nuevos puntos de confianza con el valor resultante
-     * 
-     */
-    PuntosDeConfianza plus(PuntosDeConfianza otro) {
-        new PuntosDeConfianza(this.cantidad + otro.cantidad)
-    }
-
-    /**
-     * 
-     * Resta la cantidad actual con la cantidad de puntos de confianza recibidos y retorna
-     * nuevos puntos de confianza con el valor resultante. Si el valor resultante de la resta
-     * es menor a cero la nueva cantidad sera cero.
-     * 
-     */
-    PuntosDeConfianza minus(PuntosDeConfianza otro) {
-        if (this.cantidad - otro.cantidad < 0) return new PuntosDeConfianza(0)
-        new PuntosDeConfianza(this.cantidad - otro.cantidad)
-    }
-
-    /**
-     * 
      * TODO
      * 
      */
@@ -82,8 +82,8 @@ class PuntosDeConfianza implements Comparable<PuntosDeConfianza> {
      * TODO
      * 
      */
-    PuntosDeConfianza eliminarPuntosPorCompra(Compra compra, int multiplicador = 1) {
-        this - this.calcularPuntosPorCompra(compra) * multiplicador
+    PuntosDeConfianza eliminarPuntosPorCompra(Compra compra) {
+        this - this.calcularPuntosPorCompra(compra) 
     }
 
     /**
@@ -91,8 +91,8 @@ class PuntosDeConfianza implements Comparable<PuntosDeConfianza> {
      * TODO
      * 
      */
-    PuntosDeConfianza agregarPuntosPorCompra(Compra compra, int multiplicador = 1) {
-        this + this.calcularPuntosPorCompra(compra) * multiplicador
+    PuntosDeConfianza agregarPuntosPorCompra(Compra compra) {
+        this + this.calcularPuntosPorCompra(compra)
     }
 
     /**

@@ -29,6 +29,7 @@ class Producto {
         this.nombre = nombre
         this.precio = precio
         this.cantidad = cantidad
+        print "${nombre} se crea con puntos ${puntosDeConfianza.cantidad}\n"
         this.puntosDeConfianza = puntosDeConfianza
     }
 
