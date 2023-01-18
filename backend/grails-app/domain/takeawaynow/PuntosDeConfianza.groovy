@@ -28,7 +28,9 @@ class PuntosDeConfianza implements Comparable<PuntosDeConfianza> {
 
     /**
      * 
-     * TODO
+     * Suma puntos de confianza con un entero. Retorna puntos de confianza
+     * con la cantidad restultante de sumar la actual con la indicada. Si la cantidad 
+     * indicada es negativa se lanza un error.
      * 
      */
     PuntosDeConfianza plus(int cantidad) {
@@ -38,7 +40,10 @@ class PuntosDeConfianza implements Comparable<PuntosDeConfianza> {
 
     /**
      * 
-     * TODO
+     * Resta puntos de confianza con un entero. Retorna puntos de confianza
+     * con la cantidad restultante de restar la actual con la indicada por parametro.
+     * Si resta da menor a cero la cantidad restultante sera cero. Si la cantidad
+     * indicada por parametro es negativa se lanza un error.
      * 
      */
     PuntosDeConfianza minus(int cantidad) {
@@ -70,7 +75,9 @@ class PuntosDeConfianza implements Comparable<PuntosDeConfianza> {
 
     /**
      * 
-     * TODO
+     * Multiplica la cantidad actual por la cantidad indicada por parametro. Retorna
+     * puntos de confianza con la cantidad resultante. Si esta es negativa se lanza un
+     * error.
      * 
      */
     PuntosDeConfianza multiply(int cantidad) {

@@ -2,7 +2,7 @@ package takeawaynow
 
 /**
  * 
- * TODO
+ * Horario representa un momento del dia por horas y minutos.
  * 
  */
 class Horario implements Comparable<Horario> {
@@ -15,7 +15,11 @@ class Horario implements Comparable<Horario> {
 
     /**
      * 
-     * TODO
+     * Retorna un horario. Se lanza error si:
+     * - La hora indicada es menor a 0.
+     * - La hora indicada es mayor o igual a 24.
+     * - Los minutos indicados son menores a 0.
+     * - Los minutos indicados son mayores a 59.
      * 
      */
     Horario(int hora, int minutos) {
@@ -30,7 +34,7 @@ class Horario implements Comparable<Horario> {
 
     /**
      * 
-     * TODO
+     * Compara dos horarios segun sus horas y minutos.
      * 
      */
     int compareTo(Horario otro) {

@@ -19,8 +19,6 @@ class Cliente {
         puntosDeConfianza display: false
     }
 
-    // static embedded = ['saldo', 'pedido', 'negocioIngresado']
-
     String nombre
     String password
     Dinero saldo = new Dinero(0)
@@ -48,7 +46,9 @@ class Cliente {
 
     /**
      * 
-     * TODO
+     * Subscribe al cliente al plan prime. Se lanza error si:
+     * - El cliente ya esta subscrito al plan prime.
+     * - El saldo actual no es suficiente para abonar el plan prime.
      * 
      */
     void subscribirseAPlanPrime() {
@@ -58,7 +58,8 @@ class Cliente {
 
     /**
      * 
-     * Guarda el negocio al que el cliente ingreso
+     * Guarda el negocio al que el cliente ingreso. Si el negocio al que se quiere ingresar
+     * esta cerrado se lanza un error.
      * 
      * TODO mockear dia en tests para no recibirlo por parametro?
      */
@@ -67,13 +68,11 @@ class Cliente {
         this.setNegocioIngresado(negocio)
     }
 
-    /* MÉTODOS REFERIDOS AL ARMADO Y LA COMPRA DE UN PEDIDO */
-
     /**
      * 
      * Notifica al negocio que el cliente esta agregando un producto a su pedido.
      * Lanza error en los siguiente casos: 
-     *  - No se ingreso a ningun negocio  
+     *  - No se ingreso a ningun negocio.  
      *  - No se puede agregar al pedido (ej. no hay stock).
      * 
      * TODO creo que deberiamos chequear si esta abierto o no al agregar al pedido. 
@@ -92,7 +91,7 @@ class Cliente {
      * 
      * Notifica al negocio que el cliente esta agregando un producto a su pedido
      * a cambio de puntos de confianza. Lanza error en los siguiente casos: 
-     *  - No se ingreso a ningun negocio  
+     *  - No se ingreso a ningun negocio.  
      *  - No se puede agregar al pedido (ej. no hay stock).
      * 
      * TODO lo mismo que arriba
@@ -128,8 +127,6 @@ class Cliente {
     /**
      * 
      * Otorga los puntos de confiaza indicados.
-     * 
-     * TODO borrar? Lo use en los tests, quizas no hace falta el metodo
      * 
      */
     void darPuntosDeConfianza(PuntosDeConfianza puntosDeConfianza) {

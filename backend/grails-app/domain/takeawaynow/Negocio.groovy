@@ -52,7 +52,7 @@ class Negocio {
 
     /**
      * 
-     * TODO
+     * Indica si el negocio esta abierto segun el horario.
      * 
      */
     boolean estaAbierto(Date dia) {
@@ -108,7 +108,8 @@ class Negocio {
 
     /**
     * 
-    * TODO
+    * Agrega un producto al pedido indicado a cambio de puntos de confianza. Si no es
+    * posible agregar el producto al pedido se retorna false.
     * 
     */
     boolean agregarAlPedidoPorPuntoDeConfianza(String nombreProducto, int cantidad, Pedido pedido) {

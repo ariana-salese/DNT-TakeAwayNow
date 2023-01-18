@@ -2,13 +2,19 @@ package takeawaynow
 
 /**
  * 
- * TODO
+ * El dinero representa pesos argentinos utilizados para dar valor a compras, productos y
+ * al saldo disponible de los clientes.
  * 
  */
 class Dinero implements Comparable<Dinero> {
 
     BigDecimal monto
 
+    /**
+     * 
+     * Crea un dinero con el monto indicado. Si el monto es negativo se lanza un error.
+     * 
+     */
     Dinero(BigDecimal monto) {
         if (monto < 0) throw new IllegalStateException("No puede existir dinero negativo.")
         this.monto = monto
@@ -16,7 +22,7 @@ class Dinero implements Comparable<Dinero> {
 
     /**
      * 
-     * TODO
+     * Retorna un nuevo dinero resultante de sumar los montos.
      * 
      */
     Dinero plus(Dinero otro) {
@@ -25,7 +31,8 @@ class Dinero implements Comparable<Dinero> {
 
     /**
      * 
-     * TODO
+     * Retorna un nuevo dinero resultante de restar los montos. Si el monto resultante
+     * es negativo se lanza un error.
      * 
      */
     Dinero minus(Dinero otro) {
@@ -34,7 +41,7 @@ class Dinero implements Comparable<Dinero> {
 
     /**
      * 
-     * TODO
+     * Compara dinero segun el monto. 
      * 
      */
     int compareTo(Dinero otro) {
@@ -43,7 +50,8 @@ class Dinero implements Comparable<Dinero> {
 
     /**
      * 
-     * TODO
+     * Multiplica el monto actual y la cantidad indicada. Si la cantidad es negativa se lanza 
+     * un error.
      * 
      */
     Dinero multiply(int cantidad) {

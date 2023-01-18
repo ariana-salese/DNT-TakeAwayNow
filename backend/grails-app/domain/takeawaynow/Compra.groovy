@@ -4,7 +4,7 @@ import java.time.LocalDateTime
 
 /**
  * 
- * TODO
+ * La compra representa el pedido confirmado.
  * 
  */
 class Compra {
@@ -28,10 +28,11 @@ class Compra {
 
     /**
      * 
-     * TODO
+     * Crea una compra con el pedido y id dado. Se guarda la fecha en la que se crea y se
+     * setea su estado como "aguardando preparacion".
      * 
      */
-    Compra (Pedido pedido, int id) {
+    Compra(Pedido pedido, int id) {
         this.pedido = pedido
         this.estado = EstadoDeCompra.AGUARDANDO_PREPARACION
         this.fecha = LocalDateTime.now()
@@ -40,7 +41,7 @@ class Compra {
 
     /**
      * 
-     * TODO
+     * Indica la cantidad de productos totales en el pedido.
      * 
      */
     int cantidadDeProductos() {
@@ -49,7 +50,7 @@ class Compra {
 
     /**
      * 
-     * TODO
+     * Indica la cantidad de productos a cambio de dinero en el pedido.
      * 
      */
     int cantidadDeProductosPorDinero() {

@@ -44,10 +44,8 @@ class Almacen {
     /**
      * 
      * Retira del inventario la cantidad indicada del producto con el nombre recibido y lo 
-     * agrega al pedido. Si el producto que se quiere retirar no esta registrado se lanza 
-     * una excepcion.
-     * 
-     * TODO no se deberia verificar que haya stock suficiente?
+     * agrega al pedido a cambio de dinero. Si el producto que se quiere retirar no esta registrado
+     * se lanza una excepcion.
      * 
      */
     void retirarProducto(String nombreDelProducto, int cantidadARetirar, Pedido pedido) {
@@ -58,13 +56,18 @@ class Almacen {
     
     /**
      * 
-     * TODO no se deberia verificar que haya stock suficiente?
+     * Retira del inventario la cantidad indicada del producto con el nombre recibido y lo 
+     * agrega al pedido a cambio de puntos de confianza. Se lanza error si:
+     * - El producto que se quiere retirar no esta registrado se lanza una excepcion.
+     * - El producto a retirar a cambio de puntos no es canjeable por puntos. 
      * 
      */
     void retirarProductoPorPuntosDeConfianza(String nombreDelProducto, int cantidadARetirar, Pedido pedido) {
         if (!this.estaRegistrado(nombreDelProducto)) throw new IllegalStateException("El producto que se busca retirar no se encuentra registrado.")
+        
         Producto productoARetirar = this.inventario[nombreDelProducto]
         if (productoARetirar.puntosDeConfianza == null) throw new IllegalStateException("El producto no es canjeable por puntos.")
+        
         pedido.agregarPorPuntosDeConfianza(productoARetirar.retirar(cantidadARetirar))
     }
 
