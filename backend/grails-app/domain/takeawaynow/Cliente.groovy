@@ -28,17 +28,21 @@ class Cliente {
 
     String nombre
     String password
-    Dinero saldo = new Dinero(0)
-    Pedido pedido = new Pedido()
+    // Dinero saldo = new Dinero(0)
+    // Pedido pedido = new Pedido()
     def plan = new PlanRegular()
-    Negocio negocioIngresado
+    // Negocio negocioIngresado
     Map<Integer, Compra> comprasRealizadas = [:]
     Set<Integer> comprasRetiradas = []
-    PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
+    // PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
 
     Cliente(String nombreCliente, String pass){
         this.nombre = nombreCliente
         this.password = password
+        
+        this.dinero = new Dinero(0)
+        this.pedido = new Pedido()
+        this.puntosDeConfianza = new PuntosDeConfianza(0)
     }
 
     /**

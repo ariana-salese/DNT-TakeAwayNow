@@ -17,10 +17,26 @@ class ClienteController {
         //     render(template: "NegociosDisponibles", model: [negocio:negocio])
         // }
         // // service.listarNegocios([pc, lh, av])
+        def lista = Cliente.list()
+        render(view: "/cliente/index", model: [clienteList: lista])
     }
 
     def home() {
         render "<h1>Real Programmers do not eat Quiche</h1>"
+    }
+
+    def login() {
+        render(view: "/cliente/login")
+    }
+
+    def acceder() {
+        def nombre = params.usuario
+        def cliente = Cliente.findByNombre(nombre)
+        if (!cliente) {
+            render "No existe el cliente ${nombre}"
+        } else {
+            render "Bienvenido ${nombre}"
+        }
     }
 
     // def ingreso(String nombreCliente) {
