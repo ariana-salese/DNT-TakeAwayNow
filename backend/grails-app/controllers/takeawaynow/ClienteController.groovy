@@ -39,6 +39,16 @@ class ClienteController {
         }
     }
 
+    def listarNegocios() {
+        def lista = Negocio.list()
+        render(template:"/cliente/negociosDisponibles", model:[negocios: lista])
+    }
+
+    def verSaldo() {
+        def lista = Cliente.list()
+        render(template:"/cliente/saldoDisponible", model:[clientes: lista])
+    }
+
     // def ingreso(String nombreCliente) {
     //     new Cliente(nombreCliente).save()
 

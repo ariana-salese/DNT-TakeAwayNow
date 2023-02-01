@@ -2,34 +2,32 @@
 <html>
     <head>
         <meta name="layout" content="main" />
-        <g:set var="entityName" value="${message(code: 'cliente.label', default: 'Cliente')}" />
+        <g:set var="entityName" value="${message(code: 'negocio.label', default: 'Negocio')}" />
         <title><g:message code="default.list.label" args="[entityName]" /></title>
     </head>
     <body>
     <div id="content" role="main">
         <div class="container">
             <section class="row">
-                <a href="#list-cliente" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
+                <a href="#list-negocio" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
                 <div class="nav" role="navigation">
                     <ul>
                         <li><a class="home" href="${createLink(uri: '/')}"><g:message code="default.home.label"/></a></li>
                         <li><g:link class="create" action="create"><g:message code="default.new.label" args="[entityName]" /></g:link></li>
-                        <li><a class="home" href="${createLink(uri: '/cliente/listarNegocios')}"><g:message code="Negocios disponibles"/></a></li>
-                        <li><a class="home" href="${createLink(uri: '/cliente/verSaldo')}"><g:message code="Consultar saldo"/></a></li>
                     </ul>
                 </div>
             </section>
             <section class="row">
-                <div id="list-cliente" class="col-12 content scaffold-list" role="main">
+                <div id="list-negocio" class="col-12 content scaffold-list" role="main">
                     <h1><g:message code="default.list.label" args="[entityName]" /></h1>
                     <g:if test="${flash.message}">
                         <div class="message" role="status">${flash.message}</div>
                     </g:if>
-                    <f:table collection="${clienteList}" />
+                    <f:table collection="${negocioList}" />
 
-                    <g:if test="${clienteList.size() > 0}">
+                    <g:if test="${negocioList.size() > 0}">
                     <div class="pagination">
-                        <g:paginate total="${clienteList ?: 0}" />
+                        <g:paginate total="${negocioList ?: 0}" />
                     </div>
                     </g:if>
                 </div>
