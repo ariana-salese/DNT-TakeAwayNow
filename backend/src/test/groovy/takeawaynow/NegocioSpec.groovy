@@ -7,10 +7,14 @@ import java.time.LocalDateTime
 class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     Negocio negocio
+    Cliente messi
+    Cliente dibu
     Dinero precioPancho
     Dinero precioDona
+    Dinero precioCoca
     Producto pancho
     Producto dona
+    Producto coca
     Horario horario_apertura, horario_cierre
     Date dia
 
@@ -18,12 +22,15 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         horario_apertura = new Horario(9,0)
         horario_cierre = new Horario(18,0)
         negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
-
+        messi = new Cliente("Messi", "campeondelmundo")
+        dibu = new Cliente("Dibu", "if***youtwice")
         precioPancho = new Dinero(10)
         precioDona = new Dinero(5)
+        precioCoca = new Dinero(6)
 
         pancho = new Producto("pancho", 10, precioPancho)
         dona = new Producto("dona", 5, precioDona)
+        coca = new Producto("coca", 10, precioCoca)
         // year: 2022, 
         // month: 5, 
         // dayOfMonth: 27, 
@@ -31,6 +38,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         // minute: 0,
         // second: 0
         dia = new Date(2022, 5, 27, 12, 0, 0)
+        messi.ingresarNegocio(negocio, dia)
+        messi.cargarSaldo(new Dinero(16))
+        dibu.ingresarNegocio(negocio, dia)
+        dibu.cargarSaldo(new Dinero(16))
     }
 
     def cleanup() {
@@ -176,28 +187,18 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede ver las compras que sus clientes realizaron de forma correcta"() {
         given: "varios clientes y varios productos registrados"
-            def lautaro = new Cliente("Messi", "campeondelmundo")
-            lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio, dia)
-
-            def ariana = new Cliente("Messi", "campeondelmundo")
-            ariana.cargarSaldo(new Dinero(16))
-            ariana.ingresarNegocio(negocio, dia)
-
-            def pancho = new Producto("pancho", 10, new Dinero(5))
-            def coca = new Producto("coca", 10, new Dinero(6))
             negocio.registrarProducto(coca)
             negocio.registrarProducto(pancho)
 
         when: "los clientes confirman la compra de sus pedidos"
-            lautaro.agregarAlPedido("pancho", 2)
-            lautaro.agregarAlPedido("coca", 1)
-            lautaro.confirmarCompraDelPedido()
-            LocalDateTime fechaDeCompraLautaro = LocalDateTime.now()
+            messi.agregarAlPedido("pancho", 1)
+            messi.agregarAlPedido("coca", 1)
+            messi.confirmarCompraDelPedido()
+            LocalDateTime fechaDeCompraMessi = LocalDateTime.now()
             
-            ariana.agregarAlPedido("pancho", 1)
-            ariana.confirmarCompraDelPedido()
-            LocalDateTime fechaDeCompraAriana = LocalDateTime.now()
+            dibu.agregarAlPedido("pancho", 1)
+            dibu.confirmarCompraDelPedido()
+            LocalDateTime fechaDeCompraDibu = LocalDateTime.now()
 
         then: "el negocio puede ver las compras realizadas, tanto sus ids como horarios y estados son los correctos"
             Map<Integer, Compra> historialDeCompras = negocio.getComprasRegistradas()
@@ -205,20 +206,20 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             historialDeCompras[0].getId() == 0
             historialDeCompras[1].getId() == 1
 
-            Pedido pedidoLautaro = historialDeCompras[0].getPedido()
-            pedidoLautaro.cantidadDeProductos() == 3
-            pedidoLautaro.precio() == new Dinero(16)
+            Pedido pedidoMessi = historialDeCompras[0].getPedido()
+            pedidoMessi.cantidadDeProductos() == 2
+            pedidoMessi.precio() == new Dinero(16)
             
-            Pedido pedidoAriana = historialDeCompras[1].getPedido()
-            pedidoAriana.cantidadDeProductos() == 1
-            pedidoAriana.precio() == new Dinero(5)
+            Pedido pedidoDibu = historialDeCompras[1].getPedido()
+            pedidoDibu.cantidadDeProductos() == 1
+            pedidoDibu.precio() == new Dinero(10)
 
-            historialDeCompras[0].getFecha().getHour() == fechaDeCompraLautaro.getHour()
-            historialDeCompras[0].getFecha().getMinute() == fechaDeCompraLautaro.getMinute()
+            historialDeCompras[0].getFecha().getHour() == fechaDeCompraMessi.getHour()
+            historialDeCompras[0].getFecha().getMinute() == fechaDeCompraMessi.getMinute()
             historialDeCompras[0].getEstado() == Compra.EstadoDeCompra.AGUARDANDO_PREPARACION
 
-            historialDeCompras[1].getFecha().getHour() == fechaDeCompraAriana.getHour()
-            historialDeCompras[1].getFecha().getMinute() == fechaDeCompraAriana.getMinute()
+            historialDeCompras[1].getFecha().getHour() == fechaDeCompraDibu.getHour()
+            historialDeCompras[1].getFecha().getMinute() == fechaDeCompraDibu.getMinute()
             historialDeCompras[1].getEstado() == Compra.EstadoDeCompra.AGUARDANDO_PREPARACION
     }
 
@@ -233,13 +234,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra recién registrada con estado 'EN_PREPARACION' ya que su estado actual es 'AGUARDANDO_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente("Messi", "campeondelmundo")
-            lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
-            lautaro.agregarAlPedido("pancho", 1)
-            lautaro.confirmarCompraDelPedido()
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
 
         when: "el negocio intenta cambiar de un estado de 'AGUARDANDO_PREPARACION' a 'EN_PREPARACION'"
             negocio.prepararCompra(0)
@@ -250,13 +248,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
     
     void "un negocio solo puede marcar una compra recién registrada con estado 'EN_PREPARACION' si y solo si la misma tiene como estado 'AGUARDANDO_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente("Messi", "campeondelmundo")
-            lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
-            lautaro.agregarAlPedido("pancho", 1)
-            lautaro.confirmarCompraDelPedido()
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
 
         when: "el negocio intenta marcar la compra como LISTA_PARA_RETIRAR sin que la misma tenga como estado 'EN_PREPARACION'"
             negocio.marcarCompraListaParaRetirar(0)
@@ -268,13 +263,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra con estado 'LISTA_PARA_RETIRAR' ya que su estado actual es 'EN_PREPARACION'"() {
         given: "un negocio el cual registra una compra y posteriormente comienza a prepararla"
-            def lautaro = new Cliente("Messi", "campeondelmundo")
-            lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
-            lautaro.agregarAlPedido("pancho", 1)
-            lautaro.confirmarCompraDelPedido()
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
 
         when: "el negocio prepara la compra y luego quiere marcarla con estado de 'LISTA_PARA_RETIRAR'"
             negocio.prepararCompra(0)
@@ -286,13 +278,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio solo puede marcar una compra con estado 'LISTA_PARA_RETIRAR' si y solo si la misma tiene como estado 'EN_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente("Messi", "campeondelmundo")
-            lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
-            lautaro.agregarAlPedido("pancho", 1)
-            lautaro.confirmarCompraDelPedido()
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
 
         when: "el negocio intenta marcar la compra como LISTA_PARA_RETIRAR sin que la misma tenga como estado 'EN_PREPARACION'"
             negocio.marcarCompraListaParaRetirar(0)
@@ -304,13 +293,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra con estado 'RETIRADA' ya que su estado actual es 'LISTA_PARA_RETIRAR'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente("Messi", "campeondelmundo")
-            lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
-            lautaro.agregarAlPedido("pancho", 1)
-            lautaro.confirmarCompraDelPedido()
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
 
         when: "el negocio prepara la compra, la marca lista para retirar y luego quiere marcarla con estado 'RETIRADA'"
             negocio.prepararCompra(0)
@@ -323,13 +309,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio solo puede marcar una compra con estado 'RETIRADA' si y solo si la misma tiene como estado 'LISTA_PARA_RETIRAR'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente("Messi", "campeondelmundo")
-            lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
-            lautaro.agregarAlPedido("pancho", 1)
-            lautaro.confirmarCompraDelPedido()
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
 
         when: "el negocio intenta marcar la compra como RETIRADA sin que la misma tenga como estado 'LISTA_PARA_RETIRAR'"
             negocio.marcarCompraRetirada(0)
@@ -341,13 +324,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra con estado 'DEVUELTA' ya que su estado actual es 'RETIRADA'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente("Messi", "campeondelmundo")
-            lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
-            lautaro.agregarAlPedido("pancho", 1)
-            lautaro.confirmarCompraDelPedido()
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
 
         when: "el negocio prepara la compra, la marca lista para retirar, la marcar como retirada y posteriormente se ejecuta una devolución'"
             negocio.prepararCompra(0)
@@ -361,13 +341,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio solo puede marcar una compra con estado 'DEVUELTA' si y solo si la misma tiene como estado 'RETIRADA'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente("Messi", "campeondelmundo")
-            lautaro.cargarSaldo(new Dinero(16))
-            lautaro.ingresarNegocio(negocio, dia)
 
             negocio.registrarProducto(pancho)
-            lautaro.agregarAlPedido("pancho", 1)
-            lautaro.confirmarCompraDelPedido()
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
 
         when: "el negocio intenta marcar la compra como DEVUELTA sin que la misma tenga como estado 'RETIRADA'"
             negocio.marcarCompraDevuelta(0)
