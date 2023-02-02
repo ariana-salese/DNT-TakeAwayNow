@@ -10,11 +10,11 @@ class Negocio {
     static constraints = {
         nombre blank: false, nullable: false, unique: true
         password blank: false, nullable: false, password: true
+        almacen display: false, nullable: true
+        comprasRegistradas display: false, nullable: true
+        ids_compras display: false, nullable: true
         horario_apertura blank: false, display: false, nullable: true
         horario_cierre blank: false, display: false, nullable: true
-        comprasRegistradas display: false
-        almacen display: false, nullable: true
-        ids_compras display: false
         comprasRegistradas display: false, nullable: true
     }
 
@@ -23,11 +23,11 @@ class Negocio {
 
     String nombre
     String password
-    // Almacen almacen = new Almacen()
-    // Map<Integer, Compra> comprasRegistradas = [:]
+    Almacen almacen
+    Map<Integer, Compra> comprasRegistradas = [:]
     int ids_compras = 0
-    // Horario horario_apertura
-    // Horario horario_cierre
+    Horario horario_apertura
+    Horario horario_cierre
 
     /**
     * 
@@ -41,8 +41,7 @@ class Negocio {
         this.horario_apertura = new Horario(9,0)
         this.horario_cierre = new Horario(18,0)
 
-        this.almacen = new Almacen()
-        this.comprasRegistradas = [:]
+        this.almacen = new Almacen() 
     }
 
     /**

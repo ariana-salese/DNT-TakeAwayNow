@@ -176,11 +176,11 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede ver las compras que sus clientes realizaron de forma correcta"() {
         given: "varios clientes y varios productos registrados"
-            def lautaro = new Cliente()
+            def lautaro = new Cliente("Messi", "campeondelmundo")
             lautaro.cargarSaldo(new Dinero(16))
             lautaro.ingresarNegocio(negocio, dia)
 
-            def ariana = new Cliente()
+            def ariana = new Cliente("Messi", "campeondelmundo")
             ariana.cargarSaldo(new Dinero(16))
             ariana.ingresarNegocio(negocio, dia)
 
@@ -233,7 +233,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra recién registrada con estado 'EN_PREPARACION' ya que su estado actual es 'AGUARDANDO_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente()
+            def lautaro = new Cliente("Messi", "campeondelmundo")
             lautaro.cargarSaldo(new Dinero(16))
             lautaro.ingresarNegocio(negocio, dia)
 
@@ -250,7 +250,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
     
     void "un negocio solo puede marcar una compra recién registrada con estado 'EN_PREPARACION' si y solo si la misma tiene como estado 'AGUARDANDO_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente()
+            def lautaro = new Cliente("Messi", "campeondelmundo")
             lautaro.cargarSaldo(new Dinero(16))
             lautaro.ingresarNegocio(negocio, dia)
 
@@ -268,7 +268,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra con estado 'LISTA_PARA_RETIRAR' ya que su estado actual es 'EN_PREPARACION'"() {
         given: "un negocio el cual registra una compra y posteriormente comienza a prepararla"
-            def lautaro = new Cliente()
+            def lautaro = new Cliente("Messi", "campeondelmundo")
             lautaro.cargarSaldo(new Dinero(16))
             lautaro.ingresarNegocio(negocio, dia)
 
@@ -286,7 +286,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio solo puede marcar una compra con estado 'LISTA_PARA_RETIRAR' si y solo si la misma tiene como estado 'EN_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente()
+            def lautaro = new Cliente("Messi", "campeondelmundo")
             lautaro.cargarSaldo(new Dinero(16))
             lautaro.ingresarNegocio(negocio, dia)
 
@@ -304,7 +304,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra con estado 'RETIRADA' ya que su estado actual es 'LISTA_PARA_RETIRAR'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente()
+            def lautaro = new Cliente("Messi", "campeondelmundo")
             lautaro.cargarSaldo(new Dinero(16))
             lautaro.ingresarNegocio(negocio, dia)
 
@@ -323,7 +323,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio solo puede marcar una compra con estado 'RETIRADA' si y solo si la misma tiene como estado 'LISTA_PARA_RETIRAR'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente()
+            def lautaro = new Cliente("Messi", "campeondelmundo")
             lautaro.cargarSaldo(new Dinero(16))
             lautaro.ingresarNegocio(negocio, dia)
 
@@ -341,7 +341,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra con estado 'DEVUELTA' ya que su estado actual es 'RETIRADA'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente()
+            def lautaro = new Cliente("Messi", "campeondelmundo")
             lautaro.cargarSaldo(new Dinero(16))
             lautaro.ingresarNegocio(negocio, dia)
 
@@ -361,7 +361,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio solo puede marcar una compra con estado 'DEVUELTA' si y solo si la misma tiene como estado 'RETIRADA'"() {
         given: "un negocio el cual registra una compra"
-            def lautaro = new Cliente()
+            def lautaro = new Cliente("Messi", "campeondelmundo")
             lautaro.cargarSaldo(new Dinero(16))
             lautaro.ingresarNegocio(negocio, dia)
 
