@@ -17,5 +17,5 @@ interface PlanDeCliente {
 
     PuntosDeConfianza eliminarPuntosPorCompra(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente)
 
-    int diasRestantesDePlanPrime()
+    boolean planPrimeVigente() 
 }

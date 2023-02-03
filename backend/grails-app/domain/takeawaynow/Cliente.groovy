@@ -175,11 +175,9 @@ class Cliente {
         if (pedido.cantidadDeProductos() == 0) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que el mismo no tiene productos agregados.") 
         
         Dinero precioPedido = this.beneficiosCumpleanios.obtenerPrecioDePedidoSegunFecha(dia, this.pedido)
-        //print "precio de pedido ${precioPedido.monto}\n"
         PuntosDeConfianza puntosPedido = pedido.puntos()
         
         if (this.saldo < precioPedido) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que el saldo es insuficiente.")
-        
         if (this.puntosDeConfianza(dia) < puntosPedido) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que los puntos de confianza son insuficientes.")  
         
         Compra compraRealizada = negocioIngresado.registrarCompra(this.pedido)
@@ -279,14 +277,28 @@ class Cliente {
 
     /**
      * 
-     * TODO
+     * Retorna los puntos de confianza del cliente actualizados segun la fecha
+     * 
+     * TODO quizas se puede hacer lo mismo que ibas a hacer con el tema de renovar el plan 
+     * prime lauti, en vez de chequear cada vez que se piden. Me parecio que queda raro asi.
      * 
      */
     PuntosDeConfianza puntosDeConfianza(Date dia = new Date()) {
-        //println "puntos de confianza antes de actualizar en dia ${dia.date}/${dia.month}: ${this.puntosDeConfianza.cantidad}"
         this.actualizarPuntosDeConfianza(dia)
-        //println "puntos de confianza despues de actualizar: ${this.puntosDeConfianza.cantidad}"
         this.puntosDeConfianza
+    }
+
+    /**
+     * 
+     * TODO
+     * 
+     */
+    boolean tienePlanPrime() {
+        if (!this.plan.planPrimeVigente()) {
+            this.plan = new PlanRegular()
+            return false
+        }
+        true
     }
 }
 

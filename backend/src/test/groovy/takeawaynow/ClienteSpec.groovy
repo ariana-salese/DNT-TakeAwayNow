@@ -35,6 +35,8 @@ class ClienteSpec extends Specification{
     def cleanup() {
     }
 
+    // INGRESAR A NEGOCIO
+
     void "un cliente no puede ingresar a un negocio que este cerrado"() {
         given: "un horario pasado el horario de cierre"
             // year: 2022, 
@@ -51,6 +53,8 @@ class ClienteSpec extends Specification{
         then: "se lanza error"
             IllegalStateException exception = thrown()
     }
+
+    // PEDIDO Y STOCK DE PRODUCTOS 
 
     void "un cliente puede agregar un producto con stock al pedido"() {
         given: "un cliente que quiere un producto con stock"
@@ -92,16 +96,18 @@ class ClienteSpec extends Specification{
     }
 
     void "un cliente no puede agregar un producto sin stock sufuciente al pedido"() {
-       when: "el cliente intenta agrega el producto sin stock suficiente al pedido"
+        when: "el cliente intenta agrega el producto sin stock suficiente al pedido"
             def pancho = new Producto("pancho", 1, new Dinero(10))
             negocio.registrarProducto(pancho)
             cliente.agregarAlPedido("pancho", 2)
 
-       then: "el pedido no tiene productos"
+        then: "el pedido no tiene productos"
             Exception e = thrown()
             e.message == "La cantidad que se desea retirar es mayor al stock actual del producto"
             cliente.pedido.cantidadDeProductos() == 0
     }
+
+    // CONFIMAR COMPRA
 
     void "un cliente que no agregó productos a su pedido no puede confirmar la compra del mismo"() {
         when: "el cliente confirma la compra de su pedido"
@@ -194,6 +200,8 @@ class ClienteSpec extends Specification{
             comprasRealizadasDelCliente[1].getId() == 1
     }
 
+    // RETIRAR COMPRA
+
     void "dado un cliente que no realizó compras, el mismo no puede retirar ninguna compra"() {
         when: "el cliente quiere retirar una compra"
             cliente.retirarCompra(0)
@@ -269,7 +277,9 @@ class ClienteSpec extends Specification{
             cliente.getPuntosDeConfianza() == puntosObtenidosPreviamente
     }
 
-    void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra aguardando preparación entonces pierde un punto de confianza, obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
+    // CANCELAR COMPRA
+
+        void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra aguardando preparación entonces pierde un punto de confianza, obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
         given: "un cliente que confirma la compra de su pedido (compra 2 panchos, el stock de los panchos post compra es 8)"
             def pancho = new Producto("pancho", 10, new Dinero(5))
             negocio.registrarProducto(pancho)
@@ -338,6 +348,8 @@ class ClienteSpec extends Specification{
             negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
 
+    // DEVOLUCION DE COMPRA
+
     void "dado un cliente que realizó una compra pero hubo algún error en la entrega del pedido por parte del negocio y pasaron menos de 5 minutos desde que se retiró, el cliente solicita la devolución de la compra y obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
         given: "un cliente que confirma la compra de su pedido, el negocio lo comienza a preparar y luego la compra está lista para retirar"
             def pancho = new Producto("pancho", 10, new Dinero(5))
@@ -362,6 +374,8 @@ class ClienteSpec extends Specification{
             cliente.getSaldo() == new Dinero(20)
             negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
     }
+
+    // COMPRAS CON CANJE PUNTOS DE CONFIANZA
 
     void "dado un cliente que tiene 30 puntos de confianza y confirma compra con canje de pancho por 10 le quedan 20"() {
         given: "dado un cliente que tiene 30 puntos de confianza y un pancho canjeable por 10"
@@ -426,32 +440,28 @@ class ClienteSpec extends Specification{
             cliente.cantidadDeProductosEnElPedido() == 0
     }
 
-    void "dado un cliente con plan regular se subscribe a plan prime con fondos suficientes y la cantidad de dias restantes de prime son correctos"() {
-        given: "dado un cliente que fondos suficientes para abonar plan prime"
-            cliente.cargarSaldo(new Dinero(500))
+    void "dado un cliente que tiene 30 puntos de confianza y retira compra con canje de pancho por 10 y afajor por 50 pesos entonces el saldo y puntos finales son correctos"() {
+        given: "dado un cliente que tiene 30 puntos de confianza, un pancho canjeable por 10 y un alfajor que valo 50 pesos"
+            Producto pancho = new Producto("pancho", 10, new Dinero(5), new PuntosDeConfianza(10))
+            Producto alfajor = new Producto("alfajor", 10, new Dinero(50))
+            negocio.registrarProducto(pancho)
+            negocio.registrarProducto(alfajor)
 
-        when: "el cliente se subscribe a plan prime"
-            cliente.subscribirseAPlanPrime()
+        when: "el cliente compra el pancho por puntos"
+            cliente.cargarSaldo(new Dinero(100))
+            cliente.agregarAlPedidoPorPuntoDeConfianza("pancho", 1)
+            cliente.agregarAlPedido("alfajor", 1)
+            cliente.confirmarCompraDelPedido()
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
+            cliente.retirarCompra(0)
 
-        then: "la cantidad de dias de plan prime restantes es correcto"
-            cliente.diasRestantesDePlanPrime() == 30
+        then: "los puntos de confianza y sald0 resultantes son correctos"
+            cliente.puntosDeConfianza == new PuntosDeConfianza(21)
+            cliente.saldo == new Dinero(50)
     }
-
-    void "dado un cliente con plan regular se subscribe a plan prime con fondos insuficientes se lanza error"() {
-        when: "el cliente se subscribe a plan prime con fondos insuficientes"
-            cliente.subscribirseAPlanPrime()
-
-        then: "se lanza error"
-            IllegalStateException exception = thrown()
-    }
-
-    void "dado un cliente con plan regula y la cantidad de dias restantes de prime son 0"() {
-        when: "un cliente que fondos suficientes para abonar plan prime"
-            cliente.cargarSaldo(new Dinero(500))
-
-        then: "la cantidad de dias de plan prime restantes es cero"
-            cliente.diasRestantesDePlanPrime() == 0
-    }
+    
+    // BENEFICIOS DE CUMPLEANIOS
 
     void "dado un cliente que cumpleanios tiene 100 puntos de confianza extra"() {
         when: "el cliente consulta puntos en dia que no es su cumpleanios"
@@ -481,4 +491,36 @@ class ClienteSpec extends Specification{
             pedido.cantidadDeProductos() == 2
             cliente.saldo == new Dinero(30)
     }
+
+    // PLAN PRIME
+
+    void "dado un cliente con plan regular se subscribe a plan prime con fondos suficientes y tiene plan prime"() {
+        given: "dado un cliente que fondos suficientes para abonar plan prime"
+            cliente.cargarSaldo(new Dinero(500))
+
+        when: "el cliente se subscribe a plan prime"
+            cliente.subscribirseAPlanPrime()
+
+        then: "el cliente tiene plan prime"
+            cliente.tienePlanPrime() == true
+    }
+
+    void "dado un cliente con plan regular se subscribe a plan prime con fondos insuficientes se lanza error"() {
+        when: "el cliente se subscribe a plan prime con fondos insuficientes"
+            cliente.subscribirseAPlanPrime()
+
+        then: "se lanza error"
+            IllegalStateException exception = thrown()
+    }
+
+    void "dado un cliente con plan regular y la cantidad de dias restantes de prime son 0"() {
+        when: "un cliente que fondos suficientes para abonar plan prime"
+            cliente.cargarSaldo(new Dinero(500))
+
+        then: "el cliente no tiene plan prime"
+            cliente.tienePlanPrime() == false
+    }
+
+    // TODO tests el resto de cosas prime, Lauti lo ibas a hacer vos no?
+
 }

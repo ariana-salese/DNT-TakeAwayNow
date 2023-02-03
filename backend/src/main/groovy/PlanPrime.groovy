@@ -1,6 +1,7 @@
 package takeawaynow
 
 import java.time.LocalDateTime
+import java.time.temporal.ChronoUnit;
 
 /**
  * 
@@ -60,33 +61,34 @@ class PlanPrime implements PlanDeCliente {
 
     /**
      * 
-     * TODO
+     * Obtiene los puntos de confianza actualizados por compra. Se aplica un multiplicador de puntos por
+     * el plan prime.
      * 
     */
     PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraRetirada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
-        puntosDeConfianzaCliente.agregarPuntosDeConfianzaPorCompra(this.MULTIPLICADOR_PUNTOS)
+        puntosDeConfianzaCliente.agregarPuntosPorCompra(compra, this.MULTIPLICADOR_PUNTOS)
     }
 
     /**
      * 
-     * TODO
+     * Resta los puntos de confianza obtenidos por la compra a los puntos de confianza recibidos,
+     * teninedo en cuenta el multiplicados aplicado por el prime.
      * 
     */
     PuntosDeConfianza eliminarPuntosPorCompra(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
-        puntosDeConfianzaCliente.eliminarPuntosPorCompra(compra, this.DESCUENTO)
+        puntosDeConfianzaCliente.eliminarPuntosPorCompra(compra, this.MULTIPLICADOR_PUNTOS)
     }
 
     /**
      * 
-     * TODO
+     * Retorna si el plan prime esta vigente. No esta vigente si pasaron mas de 30 dias
+     * desde el dia en el que se subscribio al plan prime.
      * 
      */
-    int diasRestantesDePlanPrime() {
+    boolean planPrimeVigente() {
         LocalDateTime dia = LocalDateTime.now()
 
-        //print "dia fin ${this.diaInicioPrime.getDayOfMonth()}\n"
-        //print "dia ahora ${dia.getDayOfMonth()}\n"
-        this.diaInicioPrime.getDayOfMonth() + 30 - dia.getDayOfMonth()
+        this.diaInicioPrime >= dia.minus(30, ChronoUnit.DAYS)
     }
 
 }
