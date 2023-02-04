@@ -15,9 +15,9 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
         horario_apertura = new Horario(9,0)
         horario_cierre = new Horario(18,0)
         negocio = new Negocio("buffet Paseo Colón", horario_apertura, horario_cierre)
-        
-        lautaro = new Cliente("Messi", "campeondelmundo")
-        ariana = new Cliente("dibu", "if***youtwice")
+        Date diaDeCumpleanios = new Date(2001, 5, 27, 0, 0, 0)
+        lautaro = new Cliente("Messi", "campeondelmundo", diaDeCumpleanios)
+        ariana = new Cliente("dibu", "if***youtwice", diaDeCumpleanios)
         
         alfajor = new Producto("alfajor", 1, new Dinero(60), new PuntosDeConfianza(70))
         gaseosa = new Producto("gaseosa", 1, new Dinero(100), new PuntosDeConfianza(60))

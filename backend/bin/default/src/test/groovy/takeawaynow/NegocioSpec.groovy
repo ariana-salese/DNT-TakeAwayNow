@@ -21,9 +21,10 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
     def setup() {
         horario_apertura = new Horario(9,0)
         horario_cierre = new Horario(18,0)
+        Date diaDeCumpleanios = new Date(2001, 5, 27, 0, 0, 0)
         negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
-        messi = new Cliente("Messi", "campeondelmundo")
-        dibu = new Cliente("Dibu", "if***youtwice")
+        messi = new Cliente("Messi", "campeondelmundo", diaDeCumpleanios)
+        dibu = new Cliente("Dibu", "if***youtwice", diaDeCumpleanios)
         precioPancho = new Dinero(10)
         precioDona = new Dinero(5)
         precioCoca = new Dinero(6)
@@ -187,6 +188,9 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede ver las compras que sus clientes realizaron de forma correcta"() {
         given: "varios clientes y varios productos registrados"
+
+            //def pancho = new Producto("pancho", 10, new Dinero(5))
+            //def coca = new Producto("coca", 10, new Dinero(6))
             negocio.registrarProducto(coca)
             negocio.registrarProducto(pancho)
 
@@ -234,7 +238,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra recién registrada con estado 'EN_PREPARACION' ya que su estado actual es 'AGUARDANDO_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
-
             negocio.registrarProducto(pancho)
             messi.agregarAlPedido("pancho", 1)
             messi.confirmarCompraDelPedido()
@@ -248,7 +251,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
     
     void "un negocio solo puede marcar una compra recién registrada con estado 'EN_PREPARACION' si y solo si la misma tiene como estado 'AGUARDANDO_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
-
             negocio.registrarProducto(pancho)
             messi.agregarAlPedido("pancho", 1)
             messi.confirmarCompraDelPedido()
@@ -263,7 +265,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra con estado 'LISTA_PARA_RETIRAR' ya que su estado actual es 'EN_PREPARACION'"() {
         given: "un negocio el cual registra una compra y posteriormente comienza a prepararla"
-
             negocio.registrarProducto(pancho)
             messi.agregarAlPedido("pancho", 1)
             messi.confirmarCompraDelPedido()
@@ -278,7 +279,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio solo puede marcar una compra con estado 'LISTA_PARA_RETIRAR' si y solo si la misma tiene como estado 'EN_PREPARACION'"() {
         given: "un negocio el cual registra una compra"
-
             negocio.registrarProducto(pancho)
             messi.agregarAlPedido("pancho", 1)
             messi.confirmarCompraDelPedido()
@@ -293,7 +293,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra con estado 'RETIRADA' ya que su estado actual es 'LISTA_PARA_RETIRAR'"() {
         given: "un negocio el cual registra una compra"
-
             negocio.registrarProducto(pancho)
             messi.agregarAlPedido("pancho", 1)
             messi.confirmarCompraDelPedido()
@@ -309,7 +308,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio solo puede marcar una compra con estado 'RETIRADA' si y solo si la misma tiene como estado 'LISTA_PARA_RETIRAR'"() {
         given: "un negocio el cual registra una compra"
-
             negocio.registrarProducto(pancho)
             messi.agregarAlPedido("pancho", 1)
             messi.confirmarCompraDelPedido()
@@ -324,7 +322,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio puede marcar una compra con estado 'DEVUELTA' ya que su estado actual es 'RETIRADA'"() {
         given: "un negocio el cual registra una compra"
-
             negocio.registrarProducto(pancho)
             messi.agregarAlPedido("pancho", 1)
             messi.confirmarCompraDelPedido()
@@ -341,7 +338,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
     void "un negocio solo puede marcar una compra con estado 'DEVUELTA' si y solo si la misma tiene como estado 'RETIRADA'"() {
         given: "un negocio el cual registra una compra"
-
             negocio.registrarProducto(pancho)
             messi.agregarAlPedido("pancho", 1)
             messi.confirmarCompraDelPedido()

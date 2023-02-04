@@ -35,7 +35,6 @@ class Cliente {
     Set<Integer> comprasRetiradas = []
     PuntosDeConfianza puntosDeConfianza
     
-    //String password //TODO se usa?
     //Dinero saldo = new Dinero(0)
     //Pedido pedido = new Pedido()
     //def plan = new PlanRegular()
@@ -43,9 +42,10 @@ class Cliente {
     //Map<Integer, Compra> comprasRealizadas = [:]
     //Set<Integer> comprasRetiradas = []
     //PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
+    
     BeneficiosCumpleanios beneficiosCumpleanios 
 
-    Cliente(String nombreCliente, String pass){
+    Cliente(String nombreCliente, String pass, Date fechaDeCumpleanios){
         this.nombre = nombreCliente
         this.password = password
         
@@ -53,8 +53,6 @@ class Cliente {
         this.pedido = new Pedido()
         this.plan = new PlanRegular()
         this.puntosDeConfianza = new PuntosDeConfianza(0)
-
-    Cliente(Date fechaDeCumpleanios) {
         this.beneficiosCumpleanios = new BeneficiosCumpleanios(fechaDeCumpleanios)
     }
     
