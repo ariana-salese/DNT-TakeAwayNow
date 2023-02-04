@@ -16,6 +16,7 @@ class ClienteSpec extends Specification{
         horario_apertura = new Horario(9,0)
         horario_cierre = new Horario(18,0)
         negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
+        cliente = new Cliente("Messi", "campeondelmundo")
         // year: 2001, 
         // month: 5, 
         // dayOfMonth: 27

@@ -11,41 +11,53 @@ class Cliente {
     static constraints = {
         nombre size: 5..15, blank: false, unique: true
         password password: true, size: 5..15, blank: false
-        saldo display: false
-        pedido display: false
+        saldo display: false, nullable: true
+        pedido display: false, nullable: true
+        plan display: false, nullable: true
         negocioIngresado display: false, nullable: true
-        comprasRealizadas display: false
-        comprasRetiradas display: false
-        puntosDeConfianza display: false
+        comprasRealizadas display: false, nullable: true
+        comprasRetiradas display: false, nullable: true
+        puntosDeConfianza display: false, nullable: true
     }
 
+    // static hasOne = [negocio: Negocio, pedido: Pedido]
+    static hasOne = [saldo: Dinero]
+    static hasMany = [pedido: Pedido, puntosDeConfianza: PuntosDeConfianza]
+    static belongsTo = [negocioIngresado: Negocio]
+
     String nombre
-    String password //TODO se usa?
-    Dinero saldo = new Dinero(0)
-    Pedido pedido = new Pedido()
-    def plan = new PlanRegular()
+    String password
+    Dinero saldo
+    Pedido pedido
+    def plan
     Negocio negocioIngresado
     Map<Integer, Compra> comprasRealizadas = [:]
     Set<Integer> comprasRetiradas = []
-    PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
+    PuntosDeConfianza puntosDeConfianza
+    
+    //String password //TODO se usa?
+    //Dinero saldo = new Dinero(0)
+    //Pedido pedido = new Pedido()
+    //def plan = new PlanRegular()
+    //Negocio negocioIngresado
+    //Map<Integer, Compra> comprasRealizadas = [:]
+    //Set<Integer> comprasRetiradas = []
+    //PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
     BeneficiosCumpleanios beneficiosCumpleanios 
 
-    /**
-     * 
-     * TODO
-     * 
-     * TODO esto lo usamos? no se estamos usando en los tests
-     * 
-     */
-    // Cliente(String nombreCliente, String pass) {
-    //     this.nombre = nombreCliente
-    //     this.password = password // ?? pense que no teniamos contra 
-    // }
+    Cliente(String nombreCliente, String pass){
+        this.nombre = nombreCliente
+        this.password = password
+        
+        this.saldo = new Dinero(0)
+        this.pedido = new Pedido()
+        this.plan = new PlanRegular()
+        this.puntosDeConfianza = new PuntosDeConfianza(0)
 
     Cliente(Date fechaDeCumpleanios) {
         this.beneficiosCumpleanios = new BeneficiosCumpleanios(fechaDeCumpleanios)
     }
-
+    
     /**
      * 
      * Carga saldo al cliente. El nuevo saldo sera el actual aumentado el monto 
@@ -55,6 +67,7 @@ class Cliente {
     void cargarSaldo(Dinero monto) {
         this.setSaldo(this.saldo + monto)
     }
+
 
     /**
      * 
@@ -141,8 +154,8 @@ class Cliente {
      * Otorga los puntos de confiaza indicados.
      * 
      */
-    void darPuntosDeConfianza(PuntosDeConfianza puntosDeConfianza) {
-        this.setPuntosDeConfianza(this.puntosDeConfianza + puntosDeConfianza)
+    void darPuntosDeConfianza(PuntosDeConfianza nuevosPuntosDeConfianza) {
+        this.setPuntosDeConfianza(this.puntosDeConfianza + nuevosPuntosDeConfianza)
     }
 
     /**

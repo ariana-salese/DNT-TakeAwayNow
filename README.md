@@ -45,9 +45,3 @@ grails test-app
 cd backend
 grails run-app
 ```
-
-## Correr cliente
-```
-cd cliente
-npm run dev
-```

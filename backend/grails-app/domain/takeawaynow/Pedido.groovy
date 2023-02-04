@@ -10,6 +10,8 @@ class Pedido {
     static constraints = {
     }
     
+    static belogsTo = [cliente: Cliente]
+
     // static embedded = ['productos']
 
     Map<String, Producto> productos = [:]
