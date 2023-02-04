@@ -2,23 +2,23 @@ package takeawaynow
 
 /**
  * 
- * TODO
+ * Representa el plan basico para el cliente. No cuenta con beneficios.
  * 
  */
 class PlanRegular implements PlanDeCliente {
 
     /**
      * 
-     * TODO
+     * Retorna slado actual actualizado segun precio dado.
      * 
     */
-    Dinero obtenerSaldoActualizadoPorCompra(Compra compra, Dinero saldoCliente) {
-        saldoCliente - compra.pedido.precio()
+    Dinero obtenerSaldoActualizadoPorCompra(Dinero precio, Dinero saldoCliente) {
+        saldoCliente - precio
     }
 
     /**
      * 
-     * TODO
+     * Retorna puntos de confianza actualizados segun la compra confirmada. 
      * 
     */
     PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
@@ -27,7 +27,8 @@ class PlanRegular implements PlanDeCliente {
 
     /**
      * 
-     * TODO
+     * Retorna un plan prime. Si no es posible subscribirse al plan por falta de saldo entonces
+     * se lanza un error.
      * 
     */
     PlanPrime subscribirseAPlanPrime(Dinero saldoCliente) {
@@ -36,7 +37,7 @@ class PlanRegular implements PlanDeCliente {
 
     /**
      * 
-     * TODO
+     * Retorna puntos de confianza actualizados segun la compra realizada.
      * 
     */
     PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraRetirada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
@@ -45,19 +46,20 @@ class PlanRegular implements PlanDeCliente {
 
     /**
      * 
-     * TODO
+     * Retorna los puntos de confianza recibidos disminuidos por los puntos dados por la compra.
      * 
     */
     PuntosDeConfianza eliminarPuntosPorCompra(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
         puntosDeConfianzaCliente.eliminarPuntosPorCompra(compra)
     }
 
+
     /**
      * 
-     * TODO
+     * Retorna si el plan prime esta vigente. Siempre en false.
      * 
-     */
-    int diasRestantesDePlanPrime() {
-        0
+    */
+    boolean planPrimeVigente() {
+        false
     }
 }

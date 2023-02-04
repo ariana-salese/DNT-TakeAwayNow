@@ -34,6 +34,16 @@ class Cliente {
     Map<Integer, Compra> comprasRealizadas = [:]
     Set<Integer> comprasRetiradas = []
     PuntosDeConfianza puntosDeConfianza
+    
+    //String password //TODO se usa?
+    //Dinero saldo = new Dinero(0)
+    //Pedido pedido = new Pedido()
+    //def plan = new PlanRegular()
+    //Negocio negocioIngresado
+    //Map<Integer, Compra> comprasRealizadas = [:]
+    //Set<Integer> comprasRetiradas = []
+    //PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
+    BeneficiosCumpleanios beneficiosCumpleanios 
 
     Cliente(String nombreCliente, String pass){
         this.nombre = nombreCliente
@@ -43,6 +53,9 @@ class Cliente {
         this.pedido = new Pedido()
         this.plan = new PlanRegular()
         this.puntosDeConfianza = new PuntosDeConfianza(0)
+
+    Cliente(Date fechaDeCumpleanios) {
+        this.beneficiosCumpleanios = new BeneficiosCumpleanios(fechaDeCumpleanios)
     }
     
     /**
@@ -75,7 +88,7 @@ class Cliente {
      * 
      * TODO mockear dia en tests para no recibirlo por parametro?
      */
-    void ingresarNegocio(Negocio negocio, Date dia) {
+    void ingresarNegocio(Negocio negocio, Date dia = new Date()) {
         if (!negocio.estaAbierto(dia)) throw new IllegalStateException("El negocio al que se quiere ingresar no esta abierto.")
         this.setNegocioIngresado(negocio)
     }
@@ -171,17 +184,17 @@ class Cliente {
      *  - El saldo o puntos de confianza actuales es insuficiente para pagar el pedido.
      * 
      */
-    void confirmarCompraDelPedido() {
+    void confirmarCompraDelPedido(Date dia = new Date()) {
         if (pedido.cantidadDeProductos() == 0) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que el mismo no tiene productos agregados.") 
         
-        Dinero precioPedido = pedido.precio()
+        Dinero precioPedido = this.beneficiosCumpleanios.obtenerPrecioDePedidoSegunFecha(dia, this.pedido)
         PuntosDeConfianza puntosPedido = pedido.puntos()
         
         if (this.saldo < precioPedido) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que el saldo es insuficiente.")
-        if (this.puntosDeConfianza < puntosPedido) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que los puntos de confianza son insuficientes.")  
+        if (this.puntosDeConfianza(dia) < puntosPedido) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que los puntos de confianza son insuficientes.")  
         
         Compra compraRealizada = negocioIngresado.registrarCompra(this.pedido)
-        this.setSaldo(this.plan.obtenerSaldoActualizadoPorCompra(compraRealizada, this.saldo))
+        this.setSaldo(this.plan.obtenerSaldoActualizadoPorCompra(precioPedido, this.saldo))
         this.setPuntosDeConfianza(this.plan.obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(compraRealizada, this.puntosDeConfianza))
         
         this.comprasRealizadas[compraRealizada.getId()] = compraRealizada
@@ -257,7 +270,48 @@ class Cliente {
         this.setSaldo(this.saldo + this.comprasRealizadas[id].getPedido().precio())
     }
 
+    /**
+     * 
+     * TODO
+     * 
+     */
     int diasRestantesDePlanPrime() {
         this.plan.diasRestantesDePlanPrime()
     }
+
+    /**
+     * 
+     * TODO
+     * 
+     */
+    void actualizarPuntosDeConfianza(Date dia = new Date()) {
+        this.setPuntosDeConfianza(this.beneficiosCumpleanios.obtenerPuntosDeConfianzaActualizadosSegunFecha(dia, this.puntosDeConfianza))
+    }
+
+    /**
+     * 
+     * Retorna los puntos de confianza del cliente actualizados segun la fecha
+     * 
+     * TODO quizas se puede hacer lo mismo que ibas a hacer con el tema de renovar el plan 
+     * prime lauti, en vez de chequear cada vez que se piden. Me parecio que queda raro asi.
+     * 
+     */
+    PuntosDeConfianza puntosDeConfianza(Date dia = new Date()) {
+        this.actualizarPuntosDeConfianza(dia)
+        this.puntosDeConfianza
+    }
+
+    /**
+     * 
+     * TODO
+     * 
+     */
+    boolean tienePlanPrime() {
+        if (!this.plan.planPrimeVigente()) {
+            this.plan = new PlanRegular()
+            return false
+        }
+        true
+    }
 }
+

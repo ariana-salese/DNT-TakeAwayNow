@@ -7,7 +7,7 @@ package takeawaynow
  */
 interface PlanDeCliente {
 
-    Dinero obtenerSaldoActualizadoPorCompra(Compra compra, Dinero saldoCliente)
+    Dinero obtenerSaldoActualizadoPorCompra(Dinero precio, Dinero saldoCliente)
 
     PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) 
 
@@ -17,5 +17,5 @@ interface PlanDeCliente {
 
     PuntosDeConfianza eliminarPuntosPorCompra(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente)
 
-    int diasRestantesDePlanPrime()
+    boolean planPrimeVigente() 
 }

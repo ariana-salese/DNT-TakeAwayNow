@@ -66,6 +66,37 @@ class Pedido {
      * 
      * TODO
      * 
+     * TODO test
+     * 
+     */
+    Dinero precioDescontandoProductoDeMenorValor() {
+        Dinero precio = this.precio()
+
+        if (this.productos.isEmpty()) return precio
+
+        print "set ${this.productos.keySet()}\n"
+        print "set 0 ${this.productos.keySet()[0]}\n"
+        print "producto ${this.productos.get(this.productos.keySet()[0])}\n"
+        Producto productoDeMenorValor = this.productos.get(this.productos.keySet()[0])
+        print "producto menos valor ${productoDeMenorValor}\n"
+
+        for (producto in this.productos) {
+            print "producto ${producto.value.nombre} de precio ${producto.value.precio.monto}\n"
+            if (productoDeMenorValor.precio > producto.value.precio) {
+                print "entre\n"
+                productoDeMenorValor = producto.value
+            }
+        }
+
+        print "de menor valor ${productoDeMenorValor.nombre}\n"
+
+        precio - productoDeMenorValor.precio
+    }
+
+    /**
+     * 
+     * TODO
+     * 
      */
     PuntosDeConfianza puntos() {
         PuntosDeConfianza puntosTotales = new PuntosDeConfianza(0)
