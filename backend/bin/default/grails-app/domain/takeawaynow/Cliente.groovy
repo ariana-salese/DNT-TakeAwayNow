@@ -11,14 +11,13 @@ class Cliente {
     static constraints = {
         nombre size: 5..15, blank: false, unique: true
         password password: true, size: 5..15, blank: false
-        saldo display: false
-        pedido display: false
-        negocioIngresado display: false, nullable: true
-        comprasRealizadas display: false
-        comprasRetiradas display: false
-        puntosDeConfianza display: false
-        negocioIngresado display: false, nullable: true
         saldo display: false, nullable: true
+        pedido display: false, nullable: true
+        plan display: false, nullable: true
+        negocioIngresado display: false, nullable: true
+        comprasRealizadas display: false, nullable: true
+        comprasRetiradas display: false, nullable: true
+        puntosDeConfianza display: false, nullable: true
     }
 
     // static hasOne = [negocio: Negocio, pedido: Pedido]
@@ -28,23 +27,24 @@ class Cliente {
 
     String nombre
     String password
-    // Dinero saldo = new Dinero(0)
-    // Pedido pedido = new Pedido()
-    def plan = new PlanRegular()
-    // Negocio negocioIngresado
+    Dinero saldo
+    Pedido pedido
+    def plan
+    Negocio negocioIngresado
     Map<Integer, Compra> comprasRealizadas = [:]
     Set<Integer> comprasRetiradas = []
-    // PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
+    PuntosDeConfianza puntosDeConfianza
 
     Cliente(String nombreCliente, String pass){
         this.nombre = nombreCliente
         this.password = password
         
-        this.dinero = new Dinero(0)
+        this.saldo = new Dinero(0)
         this.pedido = new Pedido()
+        this.plan = new PlanRegular()
         this.puntosDeConfianza = new PuntosDeConfianza(0)
     }
-
+    
     /**
      * 
      * Carga saldo al cliente. El nuevo saldo sera el actual aumentado el monto 
@@ -54,6 +54,7 @@ class Cliente {
     void cargarSaldo(Dinero monto) {
         this.setSaldo(this.saldo + monto)
     }
+
 
     /**
      * 
@@ -140,8 +141,8 @@ class Cliente {
      * Otorga los puntos de confiaza indicados.
      * 
      */
-    void darPuntosDeConfianza(PuntosDeConfianza puntosDeConfianza) {
-        this.setPuntosDeConfianza(this.puntosDeConfianza + puntosDeConfianza)
+    void darPuntosDeConfianza(PuntosDeConfianza nuevosPuntosDeConfianza) {
+        this.setPuntosDeConfianza(this.puntosDeConfianza + nuevosPuntosDeConfianza)
     }
 
     /**

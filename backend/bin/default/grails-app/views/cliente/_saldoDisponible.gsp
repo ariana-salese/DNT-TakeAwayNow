@@ -14,7 +14,12 @@
             <table border="1|0">
                 <tr>
                     <td>Cliente</td>
+                    <td>Puntos de confianza</td>
                     <td>Saldo</td>
+                    <td>Compras realizadas</td>
+                    <td>Compras retiradas</td>
+                    <td>Plan actual</td>
+                    <td>Buffet ingresado</td>
                 </tr>
                 <g:each var="cliente" in="${clientes}">
                     <tr>
@@ -22,7 +27,22 @@
                             ${cliente.nombre}
                         </td>
                         <td>
-                            No tiene un mango
+                            ${cliente.saldo?.monto}
+                        </td>
+                        <td>
+                            ${cliente.comprasRealizadas?.size()}
+                        </td>
+                        <td>
+                            ${cliente.comprasRetiradas?.size()}
+                        </td>
+                        <td>
+                            ${cliente.puntosDeConfianza?.cantidad}
+                        </td>
+                        <td>
+                            ${cliente.plan?.getClass() == takeawaynow.PlanRegular ? "Plan Regular" : "Plan Prime " + {(String) cliente.getPlan().diasRestantesDePlanPrime()}}
+                        </td>
+                        <td>
+                            ${cliente.negocioIngresado?.nombre}
                         </td>
                     </tr>
                 </g:each>

@@ -44,7 +44,7 @@ class Cliente {
         this.plan = new PlanRegular()
         this.puntosDeConfianza = new PuntosDeConfianza(0)
     }
-
+    
     /**
      * 
      * Carga saldo al cliente. El nuevo saldo sera el actual aumentado el monto 
@@ -54,6 +54,7 @@ class Cliente {
     void cargarSaldo(Dinero monto) {
         this.setSaldo(this.saldo + monto)
     }
+
 
     /**
      * 
