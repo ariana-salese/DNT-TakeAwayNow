@@ -5,7 +5,7 @@ class PuntosDeConfianza implements Comparable<PuntosDeConfianza> {
     static constraints = {
     }
 
-    static belongsTo = [cliente: Cliente]
+    //static belongsTo = [cliente: Cliente]
 
     int cantidad
 
