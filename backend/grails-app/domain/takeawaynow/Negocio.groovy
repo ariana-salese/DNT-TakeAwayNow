@@ -1,5 +1,6 @@
 package takeawaynow
 
+import java.time.LocalDateTime
 /**
 * 
 * El negocio provee productos para ser comprados por clientes 
@@ -60,9 +61,9 @@ class Negocio {
      * Indica si el negocio esta abierto segun el horario.
      * 
      */
-    boolean estaAbierto(Date dia) {
-        int hora = dia.hours
-        int minutos = dia.minutes
+    boolean estaAbierto(LocalDateTime dia) {        
+        int hora = dia.getHour()
+        int minutos = dia.getMinute()
 
         Horario hora_actual = new Horario(hora, minutos)
 

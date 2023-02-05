@@ -3,6 +3,7 @@ package takeawaynow
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 import java.time.LocalDateTime
+import java.time.Month
 
 class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
@@ -16,12 +17,12 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
     Producto dona
     Producto coca
     Horario horario_apertura, horario_cierre
-    Date dia
+    LocalDateTime dia
 
     def setup() {
         horario_apertura = new Horario(9,0)
         horario_cierre = new Horario(18,0)
-        Date diaDeCumpleanios = new Date(2001, 5, 27, 0, 0, 0)
+        LocalDateTime diaDeCumpleanios = LocalDateTime.of(2001, Month.MAY, 27, 0, 0)
         negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
         messi = new Cliente("Messi", "campeondelmundo", diaDeCumpleanios)
         dibu = new Cliente("Dibu", "if***youtwice", diaDeCumpleanios)
@@ -38,7 +39,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         // hourOfDay: 12,
         // minute: 0,
         // second: 0
-        dia = new Date(2022, 5, 27, 12, 0, 0)
+        dia = LocalDateTime.of(2022, Month.MAY, 27, 12, 0, 0)
         messi.ingresarNegocio(negocio, dia)
         messi.cargarSaldo(new Dinero(16))
         dibu.ingresarNegocio(negocio, dia)

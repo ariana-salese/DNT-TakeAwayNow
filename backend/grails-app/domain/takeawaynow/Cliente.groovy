@@ -1,5 +1,7 @@
 package takeawaynow
 
+import java.time.LocalDateTime
+
 /**
  * 
  * El cliente es el cual ingresa a un negocio para formar un pedido y formalizar
@@ -18,6 +20,7 @@ class Cliente {
         comprasRealizadas display: false, nullable: true
         comprasRetiradas display: false, nullable: true
         puntosDeConfianza display: false, nullable: true
+        beneficiosCumpleanios display: false, nullable: true
     }
 
     // static hasOne = [negocio: Negocio, pedido: Pedido]
@@ -45,7 +48,7 @@ class Cliente {
     
     BeneficiosCumpleanios beneficiosCumpleanios 
 
-    Cliente(String nombreCliente, String pass, Date fechaDeCumpleanios){
+    Cliente(String nombreCliente, String pass, LocalDateTime fechaDeCumpleanios){
         this.nombre = nombreCliente
         this.password = password
         
@@ -86,7 +89,7 @@ class Cliente {
      * 
      * TODO mockear dia en tests para no recibirlo por parametro?
      */
-    void ingresarNegocio(Negocio negocio, Date dia = new Date()) {
+    void ingresarNegocio(Negocio negocio, LocalDateTime dia = LocalDateTime.now()) {
         if (!negocio.estaAbierto(dia)) throw new IllegalStateException("El negocio al que se quiere ingresar no esta abierto.")
         this.setNegocioIngresado(negocio)
     }
@@ -182,7 +185,7 @@ class Cliente {
      *  - El saldo o puntos de confianza actuales es insuficiente para pagar el pedido.
      * 
      */
-    void confirmarCompraDelPedido(Date dia = new Date()) {
+    void confirmarCompraDelPedido(LocalDateTime dia = LocalDateTime.now()) {
         if (pedido.cantidadDeProductos() == 0) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que el mismo no tiene productos agregados.") 
         
         Dinero precioPedido = this.beneficiosCumpleanios.obtenerPrecioDePedidoSegunFecha(dia, this.pedido)
@@ -282,7 +285,7 @@ class Cliente {
      * TODO
      * 
      */
-    void actualizarPuntosDeConfianza(Date dia = new Date()) {
+    void actualizarPuntosDeConfianza(LocalDateTime dia = LocalDateTime.now()) {
         this.setPuntosDeConfianza(this.beneficiosCumpleanios.obtenerPuntosDeConfianzaActualizadosSegunFecha(dia, this.puntosDeConfianza))
     }
 
@@ -294,7 +297,7 @@ class Cliente {
      * prime lauti, en vez de chequear cada vez que se piden. Me parecio que queda raro asi.
      * 
      */
-    PuntosDeConfianza puntosDeConfianza(Date dia = new Date()) {
+    PuntosDeConfianza puntosDeConfianza(LocalDateTime dia = LocalDateTime.now()) {
         this.actualizarPuntosDeConfianza(dia)
         this.puntosDeConfianza
     }

@@ -1,5 +1,7 @@
 package takeawaynow
 
+import java.time.LocalDateTime
+
 /**
  * 
  * TODO
@@ -10,9 +12,9 @@ class BeneficiosCumpleanios {
     static constraints = {
     }
 
-    Date diaDeCumpleanios
-    Date diaDeCanjeDePuntos = null
-    Date diaDeCompraConBeneficios = null
+    LocalDateTime diaDeCumpleanios
+    LocalDateTime diaDeCanjeDePuntos = null
+    LocalDateTime diaDeCompraConBeneficios = null
     PuntosDeConfianza PUNTOS_POR_CUMPLEANIOS = new PuntosDeConfianza(100)
 
     /**
@@ -20,7 +22,7 @@ class BeneficiosCumpleanios {
      * TODO
      * 
      */
-    BeneficiosCumpleanios(Date diaDeCumpleanios) {
+    BeneficiosCumpleanios(LocalDateTime diaDeCumpleanios) {
         this.diaDeCumpleanios = diaDeCumpleanios
     }
 
@@ -29,7 +31,7 @@ class BeneficiosCumpleanios {
      * TODO
      * 
      */
-    PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosSegunFecha(Date dia, PuntosDeConfianza puntosDeConfianza) {
+    PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosSegunFecha(LocalDateTime dia, PuntosDeConfianza puntosDeConfianza) {
         if (!this.esDiaDeCumpleanios(dia)) return puntosDeConfianza
         if (diaDeCanjeDePuntos != null && diaDeCanjeDePuntos.year == dia.year) return puntosDeConfianza
 
@@ -42,7 +44,7 @@ class BeneficiosCumpleanios {
      * TODO
      * 
      */
-    Dinero obtenerPrecioDePedidoSegunFecha(Date dia, Pedido pedido) {
+    Dinero obtenerPrecioDePedidoSegunFecha(LocalDateTime dia, Pedido pedido) {
         if (!this.esDiaDeCumpleanios(dia)) return pedido.precio()
         if (this.diaDeCompraConBeneficios != null && this.diaDeCompraConBeneficios.year == dia.year) return puntosDeConfianza
 
@@ -55,7 +57,7 @@ class BeneficiosCumpleanios {
      * TODO
      * 
      */
-    boolean esDiaDeCumpleanios(Date dia) {
+    boolean esDiaDeCumpleanios(LocalDateTime dia) {
         dia.date == this.diaDeCumpleanios.date && dia.month == this.diaDeCumpleanios.month
     }
 

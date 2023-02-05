@@ -3,14 +3,15 @@ package takeawaynow
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 import java.time.LocalDateTime
+import java.time.Month
 
 class ClienteSpec extends Specification{
 
     Negocio negocio
     Cliente cliente
     Horario horario_apertura, horario_cierre
-    Date dia
-    Date diaDeCumpleanios
+    LocalDateTime dia
+    LocalDateTime diaDeCumpleanios
 
     def setup() {
         horario_apertura = new Horario(9,0)
@@ -19,7 +20,7 @@ class ClienteSpec extends Specification{
         // year: 2001, 
         // month: 5, 
         // dayOfMonth: 27
-        diaDeCumpleanios = new Date(2022, 5, 27, 0, 0, 0) //TODO probar sin 0 0 0 
+        diaDeCumpleanios = LocalDateTime.of(2022, Month.MAY, 27, 0, 0) //TODO probar sin 0 0 0 
         cliente = new Cliente("Messi", "campeondelmundo", diaDeCumpleanios)
         // year: 2022, 
         // month: 5, 
@@ -27,7 +28,7 @@ class ClienteSpec extends Specification{
         // hourOfDay: 12,
         // minute: 0,
         // second: 0
-        dia = new Date(2022, 5, 26, 12, 0, 0)
+        dia = LocalDateTime.of(2022, Month.MAY, 26, 12, 0, 0)
         cliente.ingresarNegocio(negocio, dia)
         cliente.darPuntosDeConfianza(new PuntosDeConfianza(30))
     }
@@ -45,7 +46,7 @@ class ClienteSpec extends Specification{
             // hourOfDay: 19,
             // minute: 0,
             // second: 0
-            Date dia_con_horario_pasado_el_cierre = new Date(2022, 5, 27, 19, 0, 0)
+            LocalDateTime dia_con_horario_pasado_el_cierre = LocalDateTime.of(2022, Month.MAY, 27, 19, 0, 0)
 
         when: "un cliente ingresa al negocio"
             cliente.ingresarNegocio(negocio, dia_con_horario_pasado_el_cierre)
