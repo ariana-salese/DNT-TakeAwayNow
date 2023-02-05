@@ -29,6 +29,23 @@ class ClienteController {
         render(view: "/cliente/login")
     }
 
+    def registrarUsuario() {
+        def nombre = params.usuario
+        def password = params.password
+        def dia = new Date(params.dia_year as Integer, params.dia_month as Integer, params.dia_day as Integer, 0, 0, 0)
+
+        //print "dia ${dia}\n"
+
+        Cliente cliente = new Cliente(nombre, password, dia)
+        if (!cliente) {
+            render "No existe el cliente ${nombre}"
+        } else {
+            //pag 70
+            cliente.save()
+            render "Bienvenido ${nombre}"
+        }
+    }
+
     def acceder() {
         def nombre = params.usuario
         def cliente = Cliente.findByNombre(nombre)

@@ -8,7 +8,7 @@
     <body>
     <div id="content" role="main">
         <div class="container">
-            <section class="row">
+            <%-- <section class="row">
                 <a href="#create-cliente" class="skip" tabindex="-1"><g:message code="default.link.skip.label" default="Skip to content&hellip;"/></a>
                 <div class="nav" role="navigation">
                     <ul>
@@ -16,7 +16,7 @@
                         <li><g:link class="list" action="index"><g:message code="default.list.label" args="[entityName]" /></g:link></li>
                     </ul>
                 </div>
-            </section>
+            </section> --%>
             <section class="row">
                 <div id="create-cliente" class="col-12 content scaffold-create" role="main">
                     <h1><g:message code="default.create.label" args="[entityName]" /></h1>
@@ -30,14 +30,33 @@
                         </g:eachError>
                     </ul>
                     </g:hasErrors>
-                    <g:form resource="${this.cliente}" method="POST">
+                    <g:form name="registrarUsuario" url="[controller: 'cliente', action: 'registrarUsuario']" update="idRespuesta">
+                        <table>
+                            <tr>
+                                <td>Usuario</td>
+                                <td><g:textField name="usuario" /></td>
+                            </tr>
+                            <tr>
+                                <td>Contrase&ntilde;a</td>
+                                <td><g:passwordField name="password" /></td>
+                            </tr>
+                            <tr>
+                                <td>Fecha de cumplea&ntilde;os</td>
+                                <td><g:datePicker name="dia" value="${new Date()}" precision="day" noSelection="['':'-Choose-']"/></td>
+                            </tr>
+                            <tr>
+                                <td colspan="2"><g:submitButton name="registrarUsuario" value="Registrar Usuario" /></td>
+                            </tr>
+                        </table>
+                    </g:form>
+                    <%-- <g:form resource="${this.cliente}" method="POST">
                         <fieldset class="form">
                             <f:all bean="cliente"/>
                         </fieldset>
                         <fieldset class="buttons">
                             <g:submitButton name="create" class="save" value="${message(code: 'default.button.create.label', default: 'Create')}" />
                         </fieldset>
-                    </g:form>
+                    </g:form> --%>
                 </div>
             </section>
         </div>

@@ -18,6 +18,7 @@ class Cliente {
         comprasRealizadas display: false, nullable: true
         comprasRetiradas display: false, nullable: true
         puntosDeConfianza display: false, nullable: true
+        beneficiosCumpleanios display: false
     }
 
     // static hasOne = [negocio: Negocio, pedido: Pedido]
@@ -34,18 +35,9 @@ class Cliente {
     Map<Integer, Compra> comprasRealizadas = [:]
     Set<Integer> comprasRetiradas = []
     PuntosDeConfianza puntosDeConfianza
-    
-    //Dinero saldo = new Dinero(0)
-    //Pedido pedido = new Pedido()
-    //def plan = new PlanRegular()
-    //Negocio negocioIngresado
-    //Map<Integer, Compra> comprasRealizadas = [:]
-    //Set<Integer> comprasRetiradas = []
-    //PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
-    
     BeneficiosCumpleanios beneficiosCumpleanios 
 
-    Cliente(String nombreCliente, String pass, Date fechaDeCumpleanios){
+    Cliente(String nombreCliente, String pass, Date diaDeCumpleanios) {
         this.nombre = nombreCliente
         this.password = password
         
@@ -53,7 +45,7 @@ class Cliente {
         this.pedido = new Pedido()
         this.plan = new PlanRegular()
         this.puntosDeConfianza = new PuntosDeConfianza(0)
-        this.beneficiosCumpleanios = new BeneficiosCumpleanios(fechaDeCumpleanios)
+        this.beneficiosCumpleanios = new BeneficiosCumpleanios(diaDeCumpleanios)
     }
     
     /**
