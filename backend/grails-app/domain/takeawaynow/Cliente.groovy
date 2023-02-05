@@ -13,13 +13,13 @@ class Cliente {
     static constraints = {
         nombre size: 5..15, blank: false, unique: true
         password password: true, size: 5..15, blank: false
-        saldo blank: false
-        pedido display: false, nullable: false
-        plan display: false, nullable: false
+        saldo display:false, nullable: true
+        pedido display: false, nullable: true
+        plan display: false, nullable: true
         negocioIngresado display: false, nullable: true
-        comprasRealizadas display: false, nullable: false
-        comprasRetiradas display: false, nullable: false
-        puntosDeConfianza display: false, nullable: false
+        comprasRealizadas display: false, nullable: true
+        comprasRetiradas display: false, nullable: true
+        puntosDeConfianza display: false, nullable: true
         beneficiosCumpleanios display: false, nullable: true
     }
 
