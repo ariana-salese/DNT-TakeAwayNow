@@ -276,6 +276,7 @@ class Cliente {
      * 
      */
     void actualizarPuntosDeConfianza(LocalDateTime dia = LocalDateTime.now()) {
+        if (!beneficiosCumpleanios) return
         this.setPuntosDeConfianza(this.beneficiosCumpleanios.obtenerPuntosDeConfianzaActualizadosSegunFecha(dia, this.puntosDeConfianza))
     }
 

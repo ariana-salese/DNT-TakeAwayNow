@@ -1,5 +1,7 @@
 package takeawaynow
 
+import java.time.LocalDateTime
+
 /**
  * 
  * El cliente es el cual ingresa a un negocio para formar un pedido y formalizar
@@ -11,48 +13,39 @@ class Cliente {
     static constraints = {
         nombre size: 5..15, blank: false, unique: true
         password password: true, size: 5..15, blank: false
-        saldo display: false, nullable: true
-        pedido display: false, nullable: true
-        plan display: false, nullable: true
+        saldo blank: false
+        pedido display: false, nullable: false
+        plan display: false, nullable: false
         negocioIngresado display: false, nullable: true
-        comprasRealizadas display: false, nullable: true
-        comprasRetiradas display: false, nullable: true
-        puntosDeConfianza display: false, nullable: true
+        comprasRealizadas display: false, nullable: false
+        comprasRetiradas display: false, nullable: false
+        puntosDeConfianza display: false, nullable: false
+        beneficiosCumpleanios display: false, nullable: true
     }
 
-    // static hasOne = [negocio: Negocio, pedido: Pedido]
     static hasOne = [saldo: Dinero]
     static hasMany = [pedido: Pedido, puntosDeConfianza: PuntosDeConfianza]
     static belongsTo = [negocioIngresado: Negocio]
 
     String nombre
     String password
-    Dinero saldo
-    Pedido pedido
-    def plan
+    BeneficiosCumpleanios beneficiosCumpleanios
     Negocio negocioIngresado
+
+    Dinero saldo = new Dinero(0)
+    Pedido pedido = new Pedido()
+    def plan = new PlanRegular()
     Map<Integer, Compra> comprasRealizadas = [:]
     Set<Integer> comprasRetiradas = []
-    PuntosDeConfianza puntosDeConfianza
-    
-    //Dinero saldo = new Dinero(0)
-    //Pedido pedido = new Pedido()
-    //def plan = new PlanRegular()
-    //Negocio negocioIngresado
-    //Map<Integer, Compra> comprasRealizadas = [:]
-    //Set<Integer> comprasRetiradas = []
-    //PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
-    
-    BeneficiosCumpleanios beneficiosCumpleanios 
+    PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
 
-    Cliente(String nombreCliente, String pass, Date fechaDeCumpleanios){
+    Cliente(String nombreCliente, String pass, LocalDateTime fechaDeCumpleanios){
         this.nombre = nombreCliente
         this.password = password
-        
-        this.saldo = new Dinero(0)
-        this.pedido = new Pedido()
-        this.plan = new PlanRegular()
-        this.puntosDeConfianza = new PuntosDeConfianza(0)
+        // this.saldo = new Dinero(0)
+        // this.pedido = new Pedido()
+        // this.plan = new PlanRegular()
+        // this.puntosDeConfianza = new PuntosDeConfianza(0)
         this.beneficiosCumpleanios = new BeneficiosCumpleanios(fechaDeCumpleanios)
     }
     
@@ -86,7 +79,7 @@ class Cliente {
      * 
      * TODO mockear dia en tests para no recibirlo por parametro?
      */
-    void ingresarNegocio(Negocio negocio, Date dia = new Date()) {
+    void ingresarNegocio(Negocio negocio, LocalDateTime dia = LocalDateTime.now()) {
         if (!negocio.estaAbierto(dia)) throw new IllegalStateException("El negocio al que se quiere ingresar no esta abierto.")
         this.setNegocioIngresado(negocio)
     }
@@ -182,7 +175,7 @@ class Cliente {
      *  - El saldo o puntos de confianza actuales es insuficiente para pagar el pedido.
      * 
      */
-    void confirmarCompraDelPedido(Date dia = new Date()) {
+    void confirmarCompraDelPedido(LocalDateTime dia = LocalDateTime.now()) {
         if (pedido.cantidadDeProductos() == 0) throw new IllegalStateException("No se puede confirmar la compra del pedido ya que el mismo no tiene productos agregados.") 
         
         Dinero precioPedido = this.beneficiosCumpleanios.obtenerPrecioDePedidoSegunFecha(dia, this.pedido)
@@ -282,7 +275,7 @@ class Cliente {
      * TODO
      * 
      */
-    void actualizarPuntosDeConfianza(Date dia = new Date()) {
+    void actualizarPuntosDeConfianza(LocalDateTime dia = LocalDateTime.now()) {
         this.setPuntosDeConfianza(this.beneficiosCumpleanios.obtenerPuntosDeConfianzaActualizadosSegunFecha(dia, this.puntosDeConfianza))
     }
 
@@ -294,7 +287,7 @@ class Cliente {
      * prime lauti, en vez de chequear cada vez que se piden. Me parecio que queda raro asi.
      * 
      */
-    PuntosDeConfianza puntosDeConfianza(Date dia = new Date()) {
+    PuntosDeConfianza puntosDeConfianza(LocalDateTime dia = LocalDateTime.now()) {
         this.actualizarPuntosDeConfianza(dia)
         this.puntosDeConfianza
     }

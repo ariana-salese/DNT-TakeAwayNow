@@ -4,6 +4,7 @@ class ClienteController {
 
     ClienteService service
     static scaffold = Cliente
+    Cliente clienteActual
 
     def index() {
         // Horario horario_apertura = new Horario(9,0)
@@ -31,12 +32,18 @@ class ClienteController {
 
     def acceder() {
         def nombre = params.usuario
-        def cliente = Cliente.findByNombre(nombre)
+        Cliente cliente = Cliente.findByNombre(nombre)
         if (!cliente) {
             render "No existe el cliente ${nombre}"
         } else {
-            render "Bienvenido ${nombre}"
+            //def lista = Cliente.list()
+            this.clienteActual = cliente
+            render(view:"/cliente/perfil", model:[cliente: this.clienteActual])
         }
+    }
+
+    def entrarACargarSaldo() {
+        render(view: "/cliente/cargarSaldo", model:[cliente: this.clienteActual])
     }
 
     def listarNegocios() {
@@ -47,6 +54,11 @@ class ClienteController {
     def verSaldo() {
         def lista = Cliente.list()
         render(template:"/cliente/saldoDisponible", model:[clientes: lista])
+    }
+
+    def cargarSaldo() {
+        def saldoACargar = params.saldoACargar as Integer
+        this.clienteActual.cargarSaldo(new Dinero(saldoACargar))
     }
 
     // def ingreso(String nombreCliente) {

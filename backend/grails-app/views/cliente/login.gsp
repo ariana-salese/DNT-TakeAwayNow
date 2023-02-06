@@ -38,6 +38,7 @@
     </head>
     <body>
         <div id="idRespuesta"></div>
+        <%-- pag 165 --%>
         <g:form name="login" url="[controller: 'cliente', action: 'acceder']" update="idRespuesta">
             <table>
                 <tr>

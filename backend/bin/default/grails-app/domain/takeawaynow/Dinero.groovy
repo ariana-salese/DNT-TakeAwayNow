@@ -8,7 +8,11 @@ package takeawaynow
  */
 class Dinero implements Comparable<Dinero> {
 
-    //static belongsTo = [cliente: Cliente]
+    static constraints = {
+        cliente nullable: true
+    }
+
+    static belongsTo = [cliente: Cliente]
     BigDecimal monto
     
 
