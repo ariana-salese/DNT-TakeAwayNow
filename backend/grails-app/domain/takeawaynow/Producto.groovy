@@ -8,6 +8,11 @@ package takeawaynow
 class Producto {
 
     static constraints = {
+        nombre nullable: false, blank: false
+        precio nullable: false, blank: false
+        cantidad nullable: false, min: 1, max: 1000
+        puntosDeConfianza display: false, nullable: true
+        almacen display: false, nullable: true
     }
 
     static belongsTo = [almacen: Almacen]

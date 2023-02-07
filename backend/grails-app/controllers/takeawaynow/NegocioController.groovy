@@ -28,7 +28,16 @@ class NegocioController {
         if (!negocio) {
             render "No existe el negocio ${nombre}"
         } else {
-            render "Bienvenido ${nombre}"
+            def id_negocio = negocio.id
+            def horario_apertura = negocio.horario_apertura
+            def horario_cierre = negocio.horario_cierre
+            render "Bievenido ${nombre} con horario de apertura ${horario_apertura} y horario de cierre ${horario_cierre}"
         }
     }
+
+    def almacen() {
+
+        // render(view: "/negocio/almacen")
+    }
+
 }

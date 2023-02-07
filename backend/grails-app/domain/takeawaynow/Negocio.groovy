@@ -10,39 +10,38 @@ class Negocio {
 
     static constraints = {
         nombre blank: false, nullable: false, unique: true
-        password blank: false, nullable: false, password: true
-        almacen display: false, nullable: true
+        almacen display: false, nullable: true, blank: true
         comprasRegistradas display: false, nullable: true
         ids_compras display: false, nullable: true
-        horario_apertura blank: false, display: false, nullable: true
-        horario_cierre blank: false, display: false, nullable: true
-        comprasRegistradas display: false, nullable: true
+        horarioApertura nullable: false, blank: false
+        horarioCierre nullable: false, blank: false
+        password blank: false, nullable: false, password: true
     }
 
-    static hasOne = [almacen: Almacen, horario_apertura: Horario, horario_cierre: Horario]
+    static hasOne = [almacen: Almacen, horarioApertura: Horario, horarioCierre: Horario]
     static hasMany = [comprasRegistradas: Compra] // Agregar clientes quizás ?
 
+    static embedded = ['horarioApertura', 'horarioCierre']
+
     String nombre
-    String password
-    Almacen almacen
+    Almacen almacen = new Almacen()
     Map<Integer, Compra> comprasRegistradas = [:]
     int ids_compras = 0
-    Horario horario_apertura
-    Horario horario_cierre
+    Horario horarioApertura
+    Horario horarioCierre
+    String password
 
     /**
     * 
     * Crea un negocio. Si el horario de apertura es mayor al de cierre se lanza un error.
     * 
     */
-    Negocio(String nombreDelNegocio, Horario horario_apertura, Horario horario_cierre) {
-        if (horario_apertura > horario_cierre) throw new IllegalStateException("El horario de apertura debe ser menor al de cierre.")
+    Negocio(String nombreDelNegocio, Horario horarioApertura, Horario horarioCierre) {
+        if (horarioApertura > horarioCierre) throw new IllegalStateException("El horario de apertura debe ser menor al de cierre.")
 
         this.nombre = nombreDelNegocio
-        this.horario_apertura = new Horario(9,0)
-        this.horario_cierre = new Horario(18,0)
-
-        this.almacen = new Almacen() 
+        this.horarioApertura = new Horario(9,0)
+        this.horarioCierre = new Horario(18,0)
     }
 
     /**
@@ -67,7 +66,7 @@ class Negocio {
 
         Horario hora_actual = new Horario(hora, minutos)
 
-        !(hora_actual > horario_cierre || hora_actual < horario_apertura)
+        !(hora_actual > horarioCierre || hora_actual < horarioApertura)
     }
 
     /**

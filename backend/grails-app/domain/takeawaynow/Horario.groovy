@@ -8,6 +8,9 @@ package takeawaynow
 class Horario implements Comparable<Horario> {
 
     static constraints = {
+        hora blank: false, nullable: false, min: 0, max: 24
+        minutos blank: false, nullable: false, min: 0, max: 59
+        negocio display: false, nullable: true
     }
 
     static belongsTo = [negocio: Negocio]

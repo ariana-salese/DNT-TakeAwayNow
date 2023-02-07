@@ -13,7 +13,7 @@
             <table>
                 <tr>
                     <td>Ingrese el sado a cargar</td>
-                    <td><g:textField name="saldoACargar"/></td>
+                    <td><g:field type="number" name="saldoACargar"/></td>
                 </tr>
                 <tr>
                     <td colspan="2"><g:submitButton name="cargarSaldo" value="Cargar" /></td>

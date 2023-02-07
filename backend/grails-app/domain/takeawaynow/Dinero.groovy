@@ -9,7 +9,8 @@ package takeawaynow
 class Dinero implements Comparable<Dinero> {
 
     static constraints = {
-        cliente nullable: true
+        monto nullable: false, blank: false
+        cliente display:false, nullable: true
     }
 
     static belongsTo = [cliente: Cliente]

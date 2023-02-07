@@ -8,6 +8,7 @@ package takeawaynow
 class Almacen {
 
     static constraints = {
+        negocio display: false, nullable: true, blank: true
     }
 
     static hasMany = [productos: Producto]
