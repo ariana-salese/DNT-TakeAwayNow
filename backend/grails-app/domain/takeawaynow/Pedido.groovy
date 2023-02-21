@@ -42,12 +42,26 @@ class Pedido {
      * 
      */
     void quitar(String nombreProducto, int cantidadPorQuitar) {
-        if (cantidadPorQuitar > productos[nombreProducto].cantidad) {
-            throw new IllegalStateException("No se pueden quitar más ${nombreProducto}s de los que hay en el pedido.")
-        } else if (cantidadPorQuitar == productos[nombreProducto].cantidad) {
-            this.productos.remove(nombreProducto)
-        } else {
-            productos[nombreProducto].cantidad -= cantidadPorQuitar
+        if (!productos[nombreProducto] && !productosPorPuntosDeConfianza[nombreProducto]) {
+            throw new IllegalStateException("No se puede quitar ${nombreProducto} porque no esta en el pedido.")
+        }
+
+        if (productos[nombreProducto]) {
+            if (cantidadPorQuitar > productos[nombreProducto].getCantidad()) {
+                throw new IllegalStateException("No se puede quitar ${cantidadPorQuitar nombreProducto} porque no hay suficientes.")
+            } else if (cantidadPorQuitar == productos[nombreProducto].cantidad) {
+                this.productos.remove(nombreProducto)
+            } else {
+                productos[nombreProducto].cantidad -= cantidadPorQuitar
+            }
+        } else if (productosPorPuntosDeConfianza[nombreProducto]) {
+            if (cantidadPorQuitar > productosPorPuntosDeConfianza[nombreProducto].getCantidad()) {
+                throw new IllegalStateException("No se puede quitar ${cantidadPorQuitar nombreProducto} porque no hay suficientes.")
+            } else if (cantidadPorQuitar == productosPorPuntosDeConfianza[nombreProducto].cantidad) {
+                this.productosPorPuntosDeConfianza.remove(nombreProducto)
+            } else {
+                productosPorPuntosDeConfianza[nombreProducto].cantidad -= cantidadPorQuitar
+            }
         }
     }
 

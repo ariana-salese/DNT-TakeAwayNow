@@ -96,7 +96,7 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
     //TODO los test de arriba creo que testean cosas de mas, estamos testeando cliente y negocio al pp,
     //me pa que solo deberiamos usar un pedido porque estamos testeando pedido y no necesitamos a los otro
 
-    void "Un pedido con productos agregado por puntos de confianza tiene valor correcto"() {
+    void "Un pedido con productos agregados por puntos de confianza tiene valor correcto"() {
         given: "Un pedido"
             Pedido pedido = new Pedido()
 
@@ -126,7 +126,7 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
             pedido.puntos() == new PuntosDeConfianza(150)
     }
 
-    void "Agregar un producto no canjeable por puntos de confianza, por puntos de confianza, lanza error"() {
+    void "Agregar un producto no canjeable por puntos de confianza, lanza error"() {
         given: "Un pedido"
             Pedido pedido = new Pedido()
 
@@ -136,5 +136,49 @@ class PedidoSpec extends Specification implements DomainUnitTest<Pedido> {
         then: "Se lanza error"
             pedido.cantidadDeProductos() == 0
             IllegalStateException exception = thrown()
+            exception.message == "No se puede canjear chicle por puntos de confianza."
+    }
+    
+    void "Quitar un producto de un pedido, lo quita"() {
+        given: "Un pedido"
+            Pedido pedido = new Pedido()
+
+        when: "Se agrega un producto (uno para pagar con dinero y otro con puntos de confianza)"
+            pedido.agregarPorPuntosDeConfianza(alfajor)
+            pedido.agregar(pancho)
+            pedido.quitar("alfajor", 1)
+            pedido.quitar("pancho", 1)
+
+        then: "La cantidad de productos del pedido y el valor del mismo es el adecuado"
+            pedido.cantidadDeProductos() == 0
+            pedido.precio() == new Dinero(0)
+    }
+
+    void "Quitar un producto que no esta en el pedido, lanza error"() {
+        given: "Un pedido"
+            Pedido pedido = new Pedido()
+
+        when: "Se agregan dos productos a cambio de puntos y uno a cambio de dinero"
+            pedido.agregarPorPuntosDeConfianza(pancho)
+            pedido.agregarPorPuntosDeConfianza(alfajor)
+            pedido.agregar(gaseosa)
+            pedido.quitar("chicle", 1)
+
+        then: "Se lanza error"
+            pedido.cantidadDeProductos() == 3
+            IllegalStateException exception = thrown()
+            exception.message == "No se puede quitar chicle porque no esta en el pedido."
+    }
+    
+    void "Se distinguen los productos agregados para comprar con dinero y puntos de confianza"() {
+        given: "Un pedido"
+            Pedido pedido = new Pedido()
+
+        when: "Se agregan un producto a cambio de puntos y uno a cambio de dinero"
+            pedido.agregarPorPuntosDeConfianza(pancho)
+            pedido.agregar(gaseosa)
+
+        then: "Se lanza error"
+            pedido.cantidadDeProductosPorDinero() == 1
     }
 }

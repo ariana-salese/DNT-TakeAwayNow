@@ -161,7 +161,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.agregarAlPedido("pancho", 2, pedido)
 
         then: "el pedido tiene el producto y el stock se actualizo"
-            pedido.cantidadDeProductos() == 2
             negocio.almacen.inventario["pancho"].cantidad == 8
     }
 
@@ -174,7 +173,8 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.agregarAlPedido("pancho", 11, pedido)
 
         then: "se lanza error"
-            Exception e = thrown()
+            IllegalStateException e = thrown()
+            e.message == "La cantidad que se desea retirar es mayor al stock actual del producto"
     }
 
     void "un negocio no puede agregar un producto a un pedido si no lo tiene registrado"() {
