@@ -186,7 +186,11 @@ class Negocio {
      */
     void marcarCompraCancelada(int id) {
         if (!comprasRegistradas[id]) throw new Exception("No se encuentra registrada una compra con el ID indicado.")
-        if (comprasRegistradas[id].estado != Compra.EstadoDeCompra.RETIRADA) throw new Exception("No se puede marcar dicha compra como CANCELADA ya que la misma no se encontraba RETIRADA.")
+        if (![  
+                Compra.EstadoDeCompra.AGUARDANDO_PREPARACION,
+                Compra.EstadoDeCompra.EN_PREPARACION,
+                Compra.EstadoDeCompra.LISTA_PARA_RETIRAR
+            ].contains(comprasRegistradas[id].estado)) throw new Exception("No se puede marcar dicha compra como CANCELADA ya que la misma no se encontraba AGUARDANDO_PREPARACION, EN_PREPARACION ni LISTA_PARA_RETIRAR.")
         comprasRegistradas[id].estado = Compra.EstadoDeCompra.CANCELADA
     }
 
