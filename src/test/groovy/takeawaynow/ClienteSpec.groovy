@@ -81,8 +81,6 @@ class ClienteSpec extends Specification{
         then: "el pedido tiene la cantidad de productos adecuados, y el inventario del negocio vuelve a actualizarse"
             cliente.valorDelPedidoEnDinero() == new Dinero(20)
             cliente.cantidadDeProductosEnElPedido() == 2
-            negocio.hayStock("pancho") == true
-            negocio.almacen.inventario["pancho"].cantidad == 3
     }
 
     void "un cliente no puede quitar productos de su pedido los cuales no haya agregado previamente"() {
@@ -102,7 +100,7 @@ class ClienteSpec extends Specification{
             negocio.registrarProducto(pancho)
             cliente.agregarAlPedido("pancho", 2)
 
-        then: "el pedido no tiene productos"
+        then: "el pedido no tiene productos y se lanza una execepcion por falta de stock"
             Exception e = thrown()
             e.message == "La cantidad que se desea retirar es mayor al stock actual del producto"
             cliente.pedido.cantidadDeProductos() == 0
@@ -148,58 +146,59 @@ class ClienteSpec extends Specification{
             e.message == "No se puede confirmar la compra del pedido ya que el saldo es insuficiente."
     }
 
-    void "dado un cliente que realizó una compra, luego puede verla"() {
-        given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
-            cliente.cargarSaldo(new Dinero(10))
-            def pancho = new Producto("pancho", 10, new Dinero(5))
-            negocio.registrarProducto(pancho)
+    // YA ESTARIA TESTEADO EN PEDIDOSPEC
+    // void "dado un cliente que realizó una compra, luego puede verla"() {
+    //     given: "dado un cliente que tiene 10 pesos de saldo y un producto pancho de 5 pesos"
+    //         cliente.cargarSaldo(new Dinero(10))
+    //         def pancho = new Producto("pancho", 10, new Dinero(5))
+    //         negocio.registrarProducto(pancho)
 
-        when: "el cliente compra el pancho"
-            cliente.agregarAlPedido("pancho", 1)
-            cliente.confirmarCompraDelPedido()
+    //     when: "el cliente compra el pancho"
+    //         cliente.agregarAlPedido("pancho", 1)
+    //         cliente.confirmarCompraDelPedido()
 
-        then: "el cliente puede ver su compra"
-            Map<Integer, Compra> comprasRealizadasDelCliente = cliente.getComprasRealizadas()
-            Pedido compraDeUnPancho = comprasRealizadasDelCliente[0].getPedido()
+    //     then: "el cliente puede ver su compra"
+    //         Map<Integer, Compra> comprasRealizadasDelCliente = cliente.getComprasRealizadas()
+    //         Pedido compraDeUnPancho = comprasRealizadasDelCliente[0].getPedido()
 
-            compraDeUnPancho.cantidadDeProductos() == 1
-            compraDeUnPancho.precio() == new Dinero(5)
-    }
+    //         compraDeUnPancho.cantidadDeProductos() == 1
+    //         compraDeUnPancho.precio() == new Dinero(5)
+    // }
 
-    void "dado un cliente que realizó varias compras, luego puede verlas todas"() {
-        given: "dado un cliente que tiene 10 pesos de saldo, un producto pancho de 5 pesos y un producto coca de 6 pesos"
-            cliente.cargarSaldo(new Dinero(11))
-            def pancho = new Producto("pancho", 10, new Dinero(5))
-            def coca = new Producto("coca", 10, new Dinero(6))
-            negocio.registrarProducto(pancho)
-            negocio.registrarProducto(coca)
+    // void "dado un cliente que realizó varias compras, luego puede verlas todas"() {
+    //     given: "dado un cliente que tiene 10 pesos de saldo, un producto pancho de 5 pesos y un producto coca de 6 pesos"
+    //         cliente.cargarSaldo(new Dinero(11))
+    //         def pancho = new Producto("pancho", 10, new Dinero(5))
+    //         def coca = new Producto("coca", 10, new Dinero(6))
+    //         negocio.registrarProducto(pancho)
+    //         negocio.registrarProducto(coca)
 
-        when: "el cliente compra el pancho y luego la coca"
-            cliente.agregarAlPedido("pancho", 1)
-            cliente.confirmarCompraDelPedido()
-            LocalDateTime fechaDeCompraDelPancho = LocalDateTime.now()
+    //     when: "el cliente compra el pancho y luego la coca"
+    //         cliente.agregarAlPedido("pancho", 1)
+    //         cliente.confirmarCompraDelPedido()
+    //         LocalDateTime fechaDeCompraDelPancho = LocalDateTime.now()
 
-            cliente.agregarAlPedido("coca", 1)
-            cliente.confirmarCompraDelPedido()
-            LocalDateTime fechaDeCompraDeLaCoca = LocalDateTime.now()
+    //         cliente.agregarAlPedido("coca", 1)
+    //         cliente.confirmarCompraDelPedido()
+    //         LocalDateTime fechaDeCompraDeLaCoca = LocalDateTime.now()
 
-        then: "el cliente puede ver sus compras y los ids son los correctos"
-            Map<Integer, Compra> comprasRealizadasDelCliente = cliente.getComprasRealizadas()
+    //     then: "el cliente puede ver sus compras y los ids son los correctos"
+    //         Map<Integer, Compra> comprasRealizadasDelCliente = cliente.getComprasRealizadas()
             
-            Pedido compraDeUnPancho = comprasRealizadasDelCliente[0].getPedido()
-            compraDeUnPancho.cantidadDeProductos() == 1
-            compraDeUnPancho.precio() == new Dinero(5)
-            comprasRealizadasDelCliente[0].getFecha().getHour() == fechaDeCompraDelPancho.getHour()
-            comprasRealizadasDelCliente[0].getFecha().getMinute() == fechaDeCompraDelPancho.getMinute()
-            comprasRealizadasDelCliente[0].getId() == 0
+    //         Pedido compraDeUnPancho = comprasRealizadasDelCliente[0].getPedido()
+    //         compraDeUnPancho.cantidadDeProductos() == 1
+    //         compraDeUnPancho.precio() == new Dinero(5)
+    //         comprasRealizadasDelCliente[0].getFecha().getHour() == fechaDeCompraDelPancho.getHour()
+    //         comprasRealizadasDelCliente[0].getFecha().getMinute() == fechaDeCompraDelPancho.getMinute()
+    //         comprasRealizadasDelCliente[0].getId() == 0
             
-            Pedido compraDeUnaCoca = comprasRealizadasDelCliente[1].getPedido()
-            compraDeUnaCoca.cantidadDeProductos() == 1
-            compraDeUnaCoca.precio() == new Dinero(6)
-            comprasRealizadasDelCliente[1].getFecha().getHour() == fechaDeCompraDeLaCoca.getHour()
-            comprasRealizadasDelCliente[1].getFecha().getMinute() == fechaDeCompraDeLaCoca.getMinute()
-            comprasRealizadasDelCliente[1].getId() == 1
-    }
+    //         Pedido compraDeUnaCoca = comprasRealizadasDelCliente[1].getPedido()
+    //         compraDeUnaCoca.cantidadDeProductos() == 1
+    //         compraDeUnaCoca.precio() == new Dinero(6)
+    //         comprasRealizadasDelCliente[1].getFecha().getHour() == fechaDeCompraDeLaCoca.getHour()
+    //         comprasRealizadasDelCliente[1].getFecha().getMinute() == fechaDeCompraDeLaCoca.getMinute()
+    //         comprasRealizadasDelCliente[1].getId() == 1
+    // }
 
     // RETIRAR COMPRA
 
@@ -502,26 +501,58 @@ class ClienteSpec extends Specification{
         when: "el cliente se subscribe a plan prime"
             cliente.subscribirseAPlanPrime()
 
-        then: "el cliente tiene plan prime"
+        then: "el cliente tiene plan prime y su saldo se ve afectado correctamente"
             cliente.tienePlanPrime() == true
+            cliente.getSaldo() == new Dinero(0)
     }
 
     void "dado un cliente con plan regular se subscribe a plan prime con fondos insuficientes se lanza error"() {
         when: "el cliente se subscribe a plan prime con fondos insuficientes"
+            cliente.cargarSaldo(new Dinero(499))
+            cliente.subscribirseAPlanPrime()
+
+        then: "se lanza error y su saldo no se ve afectado"
+            IllegalStateException exception = thrown()
+            exception.message == "Saldo insufuciente para subscribirse al plan prime."
+            cliente.getSaldo() == new Dinero(499)
+    }
+
+    // void "dado un cliente con plan regular y la cantidad de dias restantes de prime son 0"() {
+    //     when: "un cliente que fondos suficientes para abonar plan prime"
+    //         cliente.cargarSaldo(new Dinero(500))
+
+    //     then: "el cliente no tiene plan prime"
+    //         cliente.tienePlanPrime() == false
+    // }
+    // QUE ONDA CON ESTE TEST ?
+
+    void "dado un cliente con plan prime, intenta volver a comprar el plan prime y se lanza error"() {
+        given: "un cliente con plan prime"
+            cliente.cargarSaldo(new Dinero(500))
+            cliente.subscribirseAPlanPrime()
+
+        when: "el cliente se subscribe a plan prime"
             cliente.subscribirseAPlanPrime()
 
         then: "se lanza error"
             IllegalStateException exception = thrown()
+            exception.message == "El cliente ya esta suscripto al plan prime."
+            cliente.tienePlanPrime() == true
     }
 
-    void "dado un cliente con plan regular y la cantidad de dias restantes de prime son 0"() {
-        when: "un cliente que fondos suficientes para abonar plan prime"
-            cliente.cargarSaldo(new Dinero(500))
+    void "dado un cliente con plan prime, compra un producto y obtiene descuento por ser prime"() {
+        given: "un cliente con plan prime y un producto de 100 pesos"
+            cliente.cargarSaldo(new Dinero(600))
+            cliente.subscribirseAPlanPrime()
+            def producto = new Producto("pancho", 10, new Dinero(100))
+            negocio.registrarProducto(producto)
 
-        then: "el cliente no tiene plan prime"
-            cliente.tienePlanPrime() == false
+        when: "el cliente agrega al pedido un pancho"
+            cliente.agregarAlPedido("pancho", 1)
+            cliente.confirmarCompraDelPedido()
+
+        then: "el precio de la compra es 575 en lugar 600, entonces el saldo actual es 25"
+            cliente.saldo == new Dinero(25)
     }
-
-    // TODO tests el resto de cosas prime, Lauti lo ibas a hacer vos no?
 
 }

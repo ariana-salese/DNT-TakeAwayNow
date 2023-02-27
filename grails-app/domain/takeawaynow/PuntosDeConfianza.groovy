@@ -72,7 +72,7 @@ class PuntosDeConfianza implements Comparable<PuntosDeConfianza> {
      * 
      */
     PuntosDeConfianza minus(PuntosDeConfianza otro) {
-        if (this.cantidad - otro.cantidad < 0) return new PuntosDeConfianza(0)
+        if (this.cantidad - otro.cantidad < 0) throw new IllegalStateException("No hay puntos de confianza suficientes para canjear.")
         new PuntosDeConfianza(this.cantidad - otro.cantidad)
     }
 

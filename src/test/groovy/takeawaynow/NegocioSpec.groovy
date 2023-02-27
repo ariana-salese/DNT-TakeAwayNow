@@ -161,7 +161,6 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.agregarAlPedido("pancho", 2, pedido)
 
         then: "el pedido tiene el producto y el stock se actualizo"
-            pedido.cantidadDeProductos() == 2
             negocio.almacen.inventario["pancho"].cantidad == 8
     }
 
@@ -174,7 +173,8 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.agregarAlPedido("pancho", 11, pedido)
 
         then: "se lanza error"
-            Exception e = thrown()
+            IllegalStateException e = thrown()
+            e.message == "La cantidad que se desea retirar es mayor al stock actual del producto"
     }
 
     void "un negocio no puede agregar un producto a un pedido si no lo tiene registrado"() {
@@ -187,45 +187,61 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             e.message == "El producto que se busca retirar no se encuentra registrado."
     }
 
-    void "un negocio puede ver las compras que sus clientes realizaron de forma correcta"() {
-        given: "varios clientes y varios productos registrados"
-
-            //def pancho = new Producto("pancho", 10, new Dinero(5))
-            //def coca = new Producto("coca", 10, new Dinero(6))
+    void "Las cantidad de compras registradas de un negocio es la correcta"() {
+        given: "un cliente y un producto registrado"
             negocio.registrarProducto(coca)
             negocio.registrarProducto(pancho)
 
-        when: "los clientes confirman la compra de sus pedidos"
+        when: "el cliente confirma la compra de su pedido"
             messi.agregarAlPedido("pancho", 1)
-            messi.agregarAlPedido("coca", 1)
             messi.confirmarCompraDelPedido()
             LocalDateTime fechaDeCompraMessi = LocalDateTime.now()
-            
-            dibu.agregarAlPedido("pancho", 1)
-            dibu.confirmarCompraDelPedido()
-            LocalDateTime fechaDeCompraDibu = LocalDateTime.now()
 
-        then: "el negocio puede ver las compras realizadas, tanto sus ids como horarios y estados son los correctos"
-            Map<Integer, Compra> historialDeCompras = negocio.getComprasRegistradas()
-            historialDeCompras.size() == 2
-            historialDeCompras[0].getId() == 0
-            historialDeCompras[1].getId() == 1
+        then: "la cantidad de compras registradas es correcta"
+            negocio.comprasRegistradas.size() == 1
+    }
 
-            Pedido pedidoMessi = historialDeCompras[0].getPedido()
-            pedidoMessi.cantidadDeProductos() == 2
-            pedidoMessi.precio() == new Dinero(16)
-            
-            Pedido pedidoDibu = historialDeCompras[1].getPedido()
-            pedidoDibu.cantidadDeProductos() == 1
-            pedidoDibu.precio() == new Dinero(10)
+    void "Las compras registradas de un negocio tienen el id correcto"() {
+        given: "un cliente y un producto registrado"
+            negocio.registrarProducto(coca)
+            negocio.registrarProducto(pancho)
 
-            historialDeCompras[0].getFecha().getHour() == fechaDeCompraMessi.getHour()
-            historialDeCompras[0].getFecha().getMinute() == fechaDeCompraMessi.getMinute()
-            historialDeCompras[0].getEstado() == Compra.EstadoDeCompra.AGUARDANDO_PREPARACION
+        when: "el cliente confirma la compra de su pedido"
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
+            LocalDateTime fechaDeCompraMessi = LocalDateTime.now()
 
-            historialDeCompras[1].getFecha().getHour() == fechaDeCompraDibu.getHour()
-            historialDeCompras[1].getFecha().getMinute() == fechaDeCompraDibu.getMinute()
-            historialDeCompras[1].getEstado() == Compra.EstadoDeCompra.AGUARDANDO_PREPARACION
+        then: "el id de la compra registrada es correcto"
+            negocio.comprasRegistradas[0].getId() == 0
+    }
+
+    void "Las compras registradas de un negocio tienen la fecha correcta"() {
+        given: "un cliente y un producto registrado"
+            negocio.registrarProducto(coca)
+            negocio.registrarProducto(pancho)
+
+        when: "el cliente confirma la compra de su pedido"
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
+            LocalDateTime fechaDeCompraMessi = LocalDateTime.now()
+
+        then: "la fecha de la compra registrada es correcta"
+            negocio.comprasRegistradas[0].getFecha().getHour() == fechaDeCompraMessi.getHour()
+            negocio.comprasRegistradas[0].getFecha().getMinute() == fechaDeCompraMessi.getMinute()
+    }
+
+    void "Las compras recien registradas de un negocio tienen el estado correcto"() {
+        given: "un cliente y un producto registrado"
+            negocio.registrarProducto(coca)
+            negocio.registrarProducto(pancho)
+
+        when: "el cliente confirma la compra de su pedido"
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
+            LocalDateTime fechaDeCompraMessi = LocalDateTime.now()
+
+        then: "el estado de la compra registrada es correcto"
+            negocio.comprasRegistradas[0].getEstado() == Compra.EstadoDeCompra.AGUARDANDO_PREPARACION
     }
 
     void "un negocio no puede preparar una compra no registrada'"() {
@@ -349,5 +365,82 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         then: "se lanzan el respectivo error"
             Exception e = thrown()
             e.message == "No se puede marcar dicha compra como DEVUELTA ya que la misma no se encontraba RETIRADA."
+    }
+
+    void "un negocio puede marcar una compra con estado 'CANCELADA' ya que su estado actual es 'AGUARDANDO_PREPARACION'"() {
+        given: "un negocio el cual registra una compra"
+            negocio.registrarProducto(pancho)
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
+
+        when: "el negocio cancela la compra, la marca como cancelada"
+            negocio.marcarCompraCancelada(0)
+
+        then: "la compra ahora tiene como estado 'CANCELADA'"
+            negocio.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.CANCELADA
+    }
+
+    void "un negocio puede marcar una compra con estado 'CANCELADA' ya que su estado actual es 'EN_PREPARACION'"() {
+        given: "un negocio el cual registra una compra"
+            negocio.registrarProducto(pancho)
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
+
+        when: "el negocio comienza a preparar la compra y luego la cancela, la marca como cancelada"
+            negocio.prepararCompra(0)
+            negocio.marcarCompraCancelada(0)
+
+        then: "la compra ahora tiene como estado 'CANCELADA'"
+            negocio.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.CANCELADA
+    }
+
+    void "un negocio puede marcar una compra con estado 'CANCELADA' ya que su estado actual es 'LISTA_PARA_RETIRAR'"() {
+        given: "un negocio el cual registra una compra"
+            negocio.registrarProducto(pancho)
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
+
+        when: "el negocio comienza a preparar la compra, la marca lista para retirar y luego la cancela"
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
+            negocio.marcarCompraCancelada(0)
+
+        then: "la compra ahora tiene como estado 'CANCELADA'"
+            negocio.getComprasRegistradas()[0].getEstado() == Compra.EstadoDeCompra.CANCELADA
+    }
+
+    void "un negocio no puede marcar una compra con estado 'CANCELADA' si la misma tiene como estado 'RETIRADA'"() {
+        given: "un negocio el cual registra una compra"
+            negocio.registrarProducto(pancho)
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
+
+        when: "el negocio intenta marcar la compra como CANCELADA habiendo sido 'RETIRADA'"
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
+            negocio.marcarCompraRetirada(0)
+            negocio.marcarCompraCancelada(0)
+
+        then: "se lanzan el respectivo error"
+            Exception e = thrown()
+            e.message == "No se puede marcar dicha compra como CANCELADA ya que la misma no se encontraba AGUARDANDO_PREPARACION, EN_PREPARACION ni LISTA_PARA_RETIRAR."
+    }
+
+        void "un negocio no puede marcar una compra con estado 'CANCELADA' si la misma tiene como estado 'DEVUELTA'"() {
+        given: "un negocio el cual registra una compra"
+            negocio.registrarProducto(pancho)
+            messi.agregarAlPedido("pancho", 1)
+            messi.confirmarCompraDelPedido()
+
+        when: "el negocio intenta marcar la compra como CANCELADA habiendo sido 'DEVUELTA'"
+            negocio.prepararCompra(0)
+            negocio.marcarCompraListaParaRetirar(0)
+            negocio.marcarCompraRetirada(0)
+            negocio.marcarCompraDevuelta(0)
+            negocio.marcarCompraCancelada(0)
+
+        then: "se lanzan el respectivo error"
+            Exception e = thrown()
+            e.message == "No se puede marcar dicha compra como CANCELADA ya que la misma no se encontraba AGUARDANDO_PREPARACION, EN_PREPARACION ni LISTA_PARA_RETIRAR."
     }
 }

@@ -22,12 +22,21 @@ class PlanPrime implements PlanDeCliente {
 
     /**
      * 
+     * Retorna un error ya que un cliente con plan prime quiere subscribirse nuevamente.
+     * 
+    */
+    PlanPrime subscribirseAPlanPrime(Dinero saldoCliente) {
+        throw new IllegalStateException("El cliente ya esta suscripto al plan prime.")
+    }
+
+    /**
+     * 
      * Retorna el saldo indicado actualizado segun el precio de la compra. Al saldo
      * original se le restara el precio de la compra con un descuento.
      * 
     */
     Dinero obtenerSaldoActualizadoPorCompra(Dinero precio, Dinero saldoCliente) {
-        saldoCliente - (precio * (1 - this.DESCUENTO))
+        saldoCliente - (precio * new Dinero(1 - this.DESCUENTO))
     }
 
     /**
@@ -37,22 +46,14 @@ class PlanPrime implements PlanDeCliente {
      * 
     */
     PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(Compra compra, PuntosDeConfianza puntosDeConfianzaCliente) {
-        puntosDeConfianzaCliente - compra.puntos()
+        puntosDeConfianzaCliente - compra.getPedido().puntos()
     }
 
-    /**
-     * 
-     * Retorna un error ya que un cliente con plan prime quiere subscribirse nuevamente.
-     * 
-    */
-    PlanPrime subscribirseAPlanPrime(Dinero saldoCliente) {
-        throw new IllegalStateException("El cliente ya esta subscribido al plan prime.")
-    }
 
     /**
      * 
      * Obtiene el saldo indicado actualizado por subscribirse al plan prime. EL saldo final
-     * sera el inicla disminuido el precio del plan prime. 
+     * sera el incial disminuido el precio del plan prime. 
      * 
     */
     Dinero obtenerSaldoActualizadoPorSubscripcion(Dinero saldoCliente) {
