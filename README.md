@@ -36,12 +36,10 @@ sdk current (para chequear que las versiones hayan sido establecidas correctamen
 
 ## Correr pruebas
 ```
-cd backend
 grails test-app
 ```
 
-## Correr backend
+## Correr
 ```
-cd backend
 grails run-app
 ```
