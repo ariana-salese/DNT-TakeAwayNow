@@ -11,4 +11,8 @@ class ClienteService {
             render(template: "NegociosDisponibles", model: [negocio:negocio])
         }
     }
+
+    def guardarCliente(Cliente cliente) {
+        cliente.save()
+    }
 }

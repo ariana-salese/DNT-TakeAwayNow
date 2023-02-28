@@ -2,17 +2,14 @@ package takeawaynow
 
 class ClienteController {
 
-    ClienteService service
+    ClienteService service = new ClienteService() // vemos que en algunos repositorios 
+                                    // esto = new ClienteService() no lo incluyen pero sino nos lanza error
     static scaffold = Cliente
 
     def index() {
         def lista = Cliente.list()
         render(view: "/cliente/index", model: [clienteList: lista])
     }
-
-    // def home() {
-    //     render "<h1>Real Programmers do not eat Quiche</h1>"
-    // }
 
     def login() {
         render(view: "/cliente/login")
@@ -24,7 +21,6 @@ class ClienteController {
         if (!cliente) {
             render "No existe el cliente ${nombre}"
         } else {
-            //def lista = Cliente.list()
             String dniString = cliente.dni as String
             response.setCookie('dni', dniString)
             render(view:"/cliente/perfil", model:[cliente: cliente])
@@ -33,9 +29,7 @@ class ClienteController {
 
     def entrarACargarSaldo() {
         def dni = request.getCookie('dni')
-        // print "!!!! DNI: ${dni}\n"
         Cliente cliente = Cliente.findByDni(dni as Long)
-        // print "!!!! Nombre del cliente: ${cliente.nombre}\n"
         render(view: "/cliente/cargarSaldo", model:[cliente: cliente])
     }
 
@@ -51,13 +45,10 @@ class ClienteController {
 
     def cargarSaldo() {
         def dni = request.getCookie('dni')
-        print "!!!! cargar saldo dni: ${dni}\n"
         Cliente cliente = Cliente.findByDni(dni as Long)
-        print "!!!! Nombre del cliente cargar salgo: ${cliente.nombre}\n"
         def saldoACargar = params.saldoACargar as Integer
-        print "!!!! Saldo: ${saldoACargar}\n"
         cliente.cargarSaldo(new Dinero(saldoACargar))
-        cliente.save()
+        service.guardarCliente(cliente)
         render(view:"/cliente/perfil", model:[cliente: cliente])
     }
 }
