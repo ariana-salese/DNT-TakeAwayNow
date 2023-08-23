@@ -38,6 +38,7 @@ sdk current (para chequear que las versiones hayan sido establecidas correctamen
 ```
 cd backend
 grails test-app
+grails open test-report
 ```
 
 ## Correr backend
