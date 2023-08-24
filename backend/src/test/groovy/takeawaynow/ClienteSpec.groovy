@@ -1,6 +1,6 @@
 package takeawaynow
 
-import grails.testing.gorm.DomainUnitTest
+
 import spock.lang.Specification
 import java.time.LocalDateTime
 import java.time.Month
@@ -71,7 +71,7 @@ class ClienteSpec extends Specification{
 
     void "un cliente puede agregar y quitar productos con stock al pedido"() {
         given: "un cliente que quiere un producto con stock"
-            def pancho = new Producto("pancho", 5, new Dinero(10))
+            def pancho = new Producto("pancho", 5, new Dinero(10 as BigDecimal))
             negocio.registrarProducto(pancho)
 
         when: "el cliente agrega dos productos al pedido"
@@ -79,10 +79,10 @@ class ClienteSpec extends Specification{
             cliente.quitarDelPedido("pancho", 3)
 
         then: "el pedido tiene la cantidad de productos adecuados, y el inventario del negocio vuelve a actualizarse"
-            cliente.valorDelPedidoEnDinero() == new Dinero(20)
+            cliente.valorDelPedidoEnDinero() == new Dinero(20 as BigDecimal)
             cliente.cantidadDeProductosEnElPedido() == 2
-            negocio.hayStock("pancho") == true
-            negocio.almacen.inventario["pancho"].cantidad == 3
+            negocio.hayStock("pancho")
+            negocio.almacen.obtenerCantidadDe("pancho") == 3
     }
 
     void "un cliente no puede quitar productos de su pedido los cuales no haya agregado previamente"() {
@@ -159,7 +159,7 @@ class ClienteSpec extends Specification{
             cliente.confirmarCompraDelPedido()
 
         then: "el cliente puede ver su compra"
-            Map<Integer, Compra> comprasRealizadasDelCliente = cliente.getComprasRealizadas()
+            Set<Compra> comprasRealizadasDelCliente = cliente.comprasRealizadas
             Pedido compraDeUnPancho = comprasRealizadasDelCliente[0].getPedido()
 
             compraDeUnPancho.cantidadDeProductos() == 1
@@ -184,7 +184,7 @@ class ClienteSpec extends Specification{
             LocalDateTime fechaDeCompraDeLaCoca = LocalDateTime.now()
 
         then: "el cliente puede ver sus compras y los ids son los correctos"
-            Map<Integer, Compra> comprasRealizadasDelCliente = cliente.getComprasRealizadas()
+            Set<Compra> comprasRealizadasDelCliente = cliente.comprasRealizadas
             
             Pedido compraDeUnPancho = comprasRealizadasDelCliente[0].getPedido()
             compraDeUnPancho.cantidadDeProductos() == 1
@@ -299,7 +299,7 @@ class ClienteSpec extends Specification{
         then: "pierde un punto de confianza, obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
             cliente.getPuntosDeConfianza().cantidad == puntosObtenidosPreviamente.cantidad - 1
             cliente.getSaldo().getMonto() == saldoPreCompra.getMonto()
-            negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+            negocio.almacen.obtenerCantidadDe("pancho") == 10
     }
 
     void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra en preparación entonces pierde varios punto de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
@@ -321,8 +321,8 @@ class ClienteSpec extends Specification{
 
         then: "pierde puntos de confianza (cantidad total de productos en la compra), no obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
             cliente.puntosDeConfianza.cantidad == puntosObtenidosPreviamente.cantidad - 4
-            cliente.getSaldo().getMonto() == saldoPreCompra.getMonto() - cliente.getComprasRealizadas()[0].getPedido().precio().getMonto()
-            negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+            cliente.saldo.monto == saldoPreCompra.monto - cliente.comprasRealizadas[0].pedido.precio().monto
+            negocio.almacen.obtenerCantidadDe("pancho") == 10
     }
 
     void "dado un cliente que realizó una compra y la cancela cuando la misma se encuentra lista para retirar entonces pierde todos sus puntos de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza"() {
@@ -346,7 +346,7 @@ class ClienteSpec extends Specification{
         then: "pierde todos sus puntos de confianza, no obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10)"
             cliente.getPuntosDeConfianza().cantidad == 0
             cliente.getSaldo().getMonto() == saldoPreCompra.getMonto() - cliente.getComprasRealizadas()[0].getPedido().precio().getMonto()
-            negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+            negocio.almacen.obtenerCantidadDe("pancho") == 10
     }
 
     // DEVOLUCION DE COMPRA
@@ -359,8 +359,8 @@ class ClienteSpec extends Specification{
             cliente.cargarSaldo(new Dinero(20))
             cliente.agregarAlPedido("pancho", 4)
             
-            Dinero saldoPreCompra = cliente.getSaldo()
-            int puntosObtenidosPreviamente = cliente.getPuntosDeConfianza().cantidad
+            Dinero saldoPreCompra = cliente.saldo
+            int puntosObtenidosPreviamente = cliente.puntosDeConfianza.cantidad
 
             cliente.confirmarCompraDelPedido()
             negocio.prepararCompra(0)
@@ -368,12 +368,12 @@ class ClienteSpec extends Specification{
             cliente.retirarCompra(0)
 
         when: "el cliente solicita la devolución de la compra"
-            cliente.solicitarDevoluciónDelPedido(0)
+            cliente.solicitarDevolucionDeLaCompra(0)
 
         then: "obtiene nuevamente su dinero y el stock de dichos productos se actualiza (el stock de los panchos post cancelación es 10) y sus puntos de confianza no se modifican"
             cliente.puntosDeConfianza.cantidad == puntosObtenidosPreviamente
-            cliente.getSaldo() == new Dinero(20)
-            negocio.getAlmacen().getInventario()["pancho"].getCantidad() == 10
+            cliente.saldo == new Dinero(20)
+            negocio.almacen.obtenerCantidadDe("pancho") == 10
     }
 
     // COMPRAS CON CANJE PUNTOS DE CONFIANZA
@@ -486,8 +486,8 @@ class ClienteSpec extends Specification{
             cliente.confirmarCompraDelPedido(diaDeCumpleanios)
 
         then: "el precio de la compra es 20 entonces el saldo actual es 30"
-            Map<Integer, Compra> comprasRealizadasDelCliente = cliente.getComprasRealizadas()
-            Pedido pedido = comprasRealizadasDelCliente[0].getPedido()
+            Set<Compra> comprasRealizadasDelCliente = cliente.comprasRealizadas
+            Pedido pedido = comprasRealizadasDelCliente[0].pedido
 
             pedido.cantidadDeProductos() == 2
             cliente.saldo == new Dinero(30)

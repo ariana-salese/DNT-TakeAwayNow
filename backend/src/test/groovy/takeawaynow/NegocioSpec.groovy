@@ -63,14 +63,13 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.registrarProducto(dona)
 
         then: "hay stock del productos registrados y sus precios son los correctos"
-            def inventario = negocio.almacen.inventario
             //chequea precio
-            inventario["dona"].precio == precioDona
-            inventario["pancho"].precio == precioPancho
+            negocio.almacen.obtenerPrecioDe("dona") == precioDona
+            negocio.almacen.obtenerPrecioDe("pancho") == precioPancho
             //chequea stock
-            negocio.hayStock("dona") == true
-            negocio.hayStock("pancho") == true
-            inventario.size() == 2
+            negocio.hayStock("dona")
+            negocio.hayStock("pancho")
+            negocio.almacen.inventario.size() == 2
     }
 
     void "un negocio puede actualizar el precio de un producto ya registrado"() {
@@ -82,7 +81,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.actualizarPrecio("pancho", nuevoPrecioPancho)
 
         then: "el precio fue actualizado"
-            negocio.almacen.inventario["pancho"].precio == nuevoPrecioPancho
+            negocio.almacen.obtenerPrecioDe("pancho") == nuevoPrecioPancho
     }
 
     void "un negocio no puede actualizar el precio de un producto como igual a cero"() {
@@ -96,7 +95,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         then: "el precio no fue actualizado y se lanzo error"
             Exception e = thrown()
             e.message == "No se puede actualizar el precio a un precio menor o igual a cero."
-            negocio.almacen.inventario["pancho"].precio == precioPancho
+            negocio.almacen.obtenerPrecioDe("pancho") == precioPancho
     }
 
     void "un negocio no puede actualizar el precio de un producto que no tiene registrado"() {    
@@ -116,7 +115,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.ingresarStock("pancho", 5)
 
         then: "el stock se incremento"
-            negocio.almacen.inventario["pancho"].cantidad == 15
+            negocio.almacen.obtenerCantidadDe("pancho") == 15
     }
 
     void "un negocio no puede ingresar nuevo stock de un producto que no tiene registrado"() {
@@ -162,7 +161,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
         then: "el pedido tiene el producto y el stock se actualizo"
             pedido.cantidadDeProductos() == 2
-            negocio.almacen.inventario["pancho"].cantidad == 8
+            negocio.almacen.obtenerCantidadDe("pancho") == 8
     }
 
     void "un negocio no puede agregar un producto a un pedido si no hay suficiente stock"() {

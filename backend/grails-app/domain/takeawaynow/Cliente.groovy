@@ -25,7 +25,7 @@ class Cliente {
 
     // static hasOne = [negocio: Negocio, pedido: Pedido]
     static hasOne = [saldo: Dinero]
-    static hasMany = [pedido: Pedido, puntosDeConfianza: PuntosDeConfianza]
+    static hasMany = [pedido: Pedido, puntosDeConfianza: PuntosDeConfianza, comprasRealizadas: Compra]
     static belongsTo = [negocioIngresado: Negocio]
 
     String nombre
@@ -34,18 +34,9 @@ class Cliente {
     Pedido pedido
     def plan
     Negocio negocioIngresado
-    Map<Integer, Compra> comprasRealizadas = [:]
+    Set<Compra> comprasRealizadas = []
     Set<Integer> comprasRetiradas = []
     PuntosDeConfianza puntosDeConfianza
-    
-    //Dinero saldo = new Dinero(0)
-    //Pedido pedido = new Pedido()
-    //def plan = new PlanRegular()
-    //Negocio negocioIngresado
-    //Map<Integer, Compra> comprasRealizadas = [:]
-    //Set<Integer> comprasRetiradas = []
-    //PuntosDeConfianza puntosDeConfianza = new PuntosDeConfianza(0)
-    
     BeneficiosCumpleanios beneficiosCumpleanios 
 
     Cliente(String nombreCliente, String pass, LocalDateTime fechaDeCumpleanios){
@@ -198,7 +189,7 @@ class Cliente {
         this.setSaldo(this.plan.obtenerSaldoActualizadoPorCompra(precioPedido, this.saldo))
         this.setPuntosDeConfianza(this.plan.obtenerPuntosDeConfianzaActualizadosPorCompraConfirmada(compraRealizada, this.puntosDeConfianza))
         
-        this.comprasRealizadas[compraRealizada.getId()] = compraRealizada
+        this.comprasRealizadas.add(compraRealizada)
         this.pedido = new Pedido()
     }
 
@@ -211,13 +202,20 @@ class Cliente {
      * 
      */
     void retirarCompra(int id) {
-        if (!this.comprasRealizadas[id]) throw new Exception("No se encuentra una compra realizada con el ID indicado.")
-        if (this.comprasRetiradas.contains(id)) throw new Exception("Dicha compra ya fue retirada previamente.")
-        if (this.negocioIngresado.estadoDeCompra(id) != Compra.EstadoDeCompra.LISTA_PARA_RETIRAR) throw new Exception("La compra aún no está lista para retirar, su estado actual es ${this.negocioIngresado.estadoDeCompra(id)}.")
+        Compra compraParaRetirar
+        for (compra in comprasRealizadas) {
+            if (compra.id == id) {
+                compraParaRetirar = compra
+                if (this.comprasRetiradas.contains(id)) throw new Exception("Dicha compra ya fue retirada previamente.")
+                if (this.negocioIngresado.estadoDeCompra(id) != Compra.EstadoDeCompra.LISTA_PARA_RETIRAR) throw new Exception("La compra aún no está lista para retirar, su estado actual es ${this.negocioIngresado.estadoDeCompra(id)}.")
 
-        this.negocioIngresado.marcarCompraRetirada(id)
-        this.comprasRetiradas.add(id)
-        this.setPuntosDeConfianza(this.plan.obtenerPuntosDeConfianzaActualizadosPorCompraRetirada(this.comprasRealizadas[id], this.puntosDeConfianza))
+                this.negocioIngresado.marcarCompraRetirada(id)
+                this.comprasRetiradas.add(id)
+                this.setPuntosDeConfianza(this.plan.obtenerPuntosDeConfianzaActualizadosPorCompraRetirada(compraParaRetirar, this.puntosDeConfianza))
+                return
+            }
+        }
+        throw new Exception("No se encuentra una compra realizada con el ID indicado.")
     }
 
     /**
@@ -233,26 +231,32 @@ class Cliente {
      * 
      */
     void cancelarCompra(int id) {
-        if (!this.comprasRealizadas[id]) throw new Exception("No se encuentra una compra realizada con el ID indicado.")
+        Compra compraParaCancelar
+        for (compra in comprasRealizadas) {
+            if (compra.id == id) {
+                compraParaCancelar = compra
+                Compra.EstadoDeCompra estadoDeCompra = this.negocioIngresado.estadoDeCompra(id)
+                switch(estadoDeCompra) {
+                    case Compra.EstadoDeCompra.AGUARDANDO_PREPARACION:
+                        this.setPuntosDeConfianza(this.puntosDeConfianza - 1)
+                        this.setSaldo(this.saldo + compraParaCancelar.pedido.precio())
+                        this.negocioIngresado.reingresarStockDelPedido(id)
+                        break
 
-        Compra.EstadoDeCompra estadoDeCompra = this.negocioIngresado.estadoDeCompra(id)
-        switch(estadoDeCompra) {
-            case Compra.EstadoDeCompra.AGUARDANDO_PREPARACION:
-                this.setPuntosDeConfianza(this.puntosDeConfianza - 1) 
-                this.setSaldo(this.saldo + this.comprasRealizadas[id].getPedido().precio())
-                this.negocioIngresado.reingresarStockDelPedido(id)
-                break
+                    case Compra.EstadoDeCompra.EN_PREPARACION:
+                        this.setPuntosDeConfianza(this.plan.eliminarPuntosPorCompra(compraParaCancelar, this.puntosDeConfianza))
+                        this.negocioIngresado.reingresarStockDelPedido(id)
+                        break
 
-            case Compra.EstadoDeCompra.EN_PREPARACION:
-                this.setPuntosDeConfianza(this.plan.eliminarPuntosPorCompra(this.comprasRealizadas[id], this.puntosDeConfianza))
-                this.negocioIngresado.reingresarStockDelPedido(id)
-                break
-
-            case Compra.EstadoDeCompra.LISTA_PARA_RETIRAR:
-                this.setPuntosDeConfianza(new PuntosDeConfianza(0))
-                this.negocioIngresado.reingresarStockDelPedido(id)
-                break
+                    case Compra.EstadoDeCompra.LISTA_PARA_RETIRAR:
+                        this.setPuntosDeConfianza(new PuntosDeConfianza(0))
+                        this.negocioIngresado.reingresarStockDelPedido(id)
+                        break
+                }
+                return
+            }
         }
+        throw new Exception("No se encuentra una compra realizada con el ID indicado.")
     }
 
     /**
@@ -263,12 +267,18 @@ class Cliente {
      * TODO cambiar nombre a devolverCompra? 
      * 
      */
-    void solicitarDevoluciónDelPedido(int id) {
-        if (!this.comprasRealizadas[id]) throw new Exception("No se encuentra una compra realizada con el ID indicado.")
-        
-        this.negocioIngresado.devolucionDelPedido(id)
-        this.setPuntosDeConfianza(this.plan.eliminarPuntosPorCompra(this.comprasRealizadas[id], this.puntosDeConfianza))
-        this.setSaldo(this.saldo + this.comprasRealizadas[id].getPedido().precio())
+    void solicitarDevolucionDeLaCompra(int id) {
+        Compra compraParaDevolver
+        for (compra in comprasRealizadas) {
+            if (compra.id == id) {
+                compraParaDevolver = compra
+                this.negocioIngresado.devolucionDelPedido(id)
+                this.setPuntosDeConfianza(this.plan.eliminarPuntosPorCompra(compraParaDevolver, this.puntosDeConfianza))
+                this.setSaldo(this.saldo + this.comprasRealizadas[id].getPedido().precio())
+                return
+            }
+        }
+        throw new Exception("No se encuentra una compra realizada con el ID indicado.")
     }
 
     /**

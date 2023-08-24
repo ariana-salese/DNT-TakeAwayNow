@@ -2,10 +2,8 @@ package takeawaynow
 
 import java.time.LocalDateTime
 /**
-* 
-* El negocio provee productos para ser comprados por clientes 
-* 
-*/
+* El negocio provee productos para ser comprados por clientes
+**/
 class Negocio {
 
     static constraints = {
@@ -89,7 +87,7 @@ class Negocio {
      */
     void ingresarStock(String nombreDelProducto, int nuevoStock) {
         if (nuevoStock <= 0) throw new IllegalStateException("No se puede ingresar un stock menor o igual a cero.")
-        this.almacen.actulizarStock(nombreDelProducto, nuevoStock)
+        this.almacen.actualizarStock(nombreDelProducto, nuevoStock)
     }
 
     /**
@@ -128,8 +126,8 @@ class Negocio {
      * 
      */
     void reingresarStockDelPedido(int id) {
-        Map<String, Producto> productos = this.comprasRegistradas[id].getPedido().getProductos()
-        productos.each{ _, producto -> this.ingresarStock(producto.getNombre(), producto.getCantidad()) }
+        Set<Producto> productos = this.comprasRegistradas[id].getPedido().getProductos()
+        productos.each{ producto -> this.ingresarStock(producto.getNombre(), producto.getCantidad()) }
     }
 
 
