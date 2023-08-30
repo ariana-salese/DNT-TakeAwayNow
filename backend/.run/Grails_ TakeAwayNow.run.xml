@@ -1,0 +1,13 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="Grails: TakeAwayNow" type="GrailsRunConfigurationType" factoryName="Grails" singleton="false">
+    <setting name="vmparams" value="" />
+    <setting name="cmdLine" value="run-app" />
+    <env name="JAVA_HOME" value="C:\Program Files (x86)\Java\jre1.8.0_241" />
+    <setting name="passParentEnv" value="true" />
+    <setting name="grailsApplicationRoot" value="" />
+    <setting name="launchBrowser" value="true" />
+    <setting name="launchBrowserUrl" value="" />
+    <setting name="depsClasspath" value="false" />
+    <method v="2" />
+  </configuration>
+</component>

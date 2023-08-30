@@ -3,6 +3,8 @@ package takeawaynow
 import grails.testing.gorm.DomainUnitTest
 import spock.lang.Specification
 import java.time.LocalDateTime
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.Month
 
 class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
@@ -16,13 +18,13 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
     Producto pancho
     Producto dona
     Producto coca
-    Horario horario_apertura, horario_cierre
+    LocalTime horario_apertura, horario_cierre
     LocalDateTime dia
 
     def setup() {
-        horario_apertura = new Horario(9,0)
-        horario_cierre = new Horario(18,0)
-        LocalDateTime diaDeCumpleanios = LocalDateTime.of(2001, Month.MAY, 27, 0, 0)
+        horario_apertura = LocalTime.of(9,0)
+        horario_cierre = LocalTime.of(18,0)
+        LocalDate diaDeCumpleanios = LocalDate.of(2022, Month.JUNE, 24)
         negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
         messi = new Cliente("Messi", "campeondelmundo", diaDeCumpleanios)
         dibu = new Cliente("Dibu", "if***youtwice", diaDeCumpleanios)
@@ -63,14 +65,13 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.registrarProducto(dona)
 
         then: "hay stock del productos registrados y sus precios son los correctos"
-            def inventario = negocio.almacen.inventario
             //chequea precio
-            inventario["dona"].precio == precioDona
-            inventario["pancho"].precio == precioPancho
+            negocio.almacen.obtenerPrecioDe("dona") == precioDona
+            negocio.almacen.obtenerPrecioDe("pancho") == precioPancho
             //chequea stock
-            negocio.hayStock("dona") == true
-            negocio.hayStock("pancho") == true
-            inventario.size() == 2
+            negocio.hayStock("dona")
+            negocio.hayStock("pancho")
+            negocio.almacen.inventario.size() == 2
     }
 
     void "un negocio puede actualizar el precio de un producto ya registrado"() {
@@ -82,7 +83,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.actualizarPrecio("pancho", nuevoPrecioPancho)
 
         then: "el precio fue actualizado"
-            negocio.almacen.inventario["pancho"].precio == nuevoPrecioPancho
+            negocio.almacen.obtenerPrecioDe("pancho") == nuevoPrecioPancho
     }
 
     void "un negocio no puede actualizar el precio de un producto como igual a cero"() {
@@ -96,7 +97,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
         then: "el precio no fue actualizado y se lanzo error"
             Exception e = thrown()
             e.message == "No se puede actualizar el precio a un precio menor o igual a cero."
-            negocio.almacen.inventario["pancho"].precio == precioPancho
+            negocio.almacen.obtenerPrecioDe("pancho") == precioPancho
     }
 
     void "un negocio no puede actualizar el precio de un producto que no tiene registrado"() {    
@@ -116,7 +117,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             negocio.ingresarStock("pancho", 5)
 
         then: "el stock se incremento"
-            negocio.almacen.inventario["pancho"].cantidad == 15
+            negocio.almacen.obtenerCantidadDe("pancho") == 15
     }
 
     void "un negocio no puede ingresar nuevo stock de un producto que no tiene registrado"() {
@@ -162,7 +163,7 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
 
         then: "el pedido tiene el producto y el stock se actualizo"
             pedido.cantidadDeProductos() == 2
-            negocio.almacen.inventario["pancho"].cantidad == 8
+            negocio.almacen.obtenerCantidadDe("pancho") == 8
     }
 
     void "un negocio no puede agregar un producto a un pedido si no hay suficiente stock"() {
@@ -219,12 +220,12 @@ class NegocioSpec extends Specification implements DomainUnitTest<Negocio> {
             pedidoDibu.cantidadDeProductos() == 1
             pedidoDibu.precio() == new Dinero(10)
 
-            historialDeCompras[0].getFecha().getHour() == fechaDeCompraMessi.getHour()
-            historialDeCompras[0].getFecha().getMinute() == fechaDeCompraMessi.getMinute()
+            historialDeCompras[0].getInstanteDeCompra().getHour() == fechaDeCompraMessi.getHour()
+            historialDeCompras[0].getInstanteDeCompra().getMinute() == fechaDeCompraMessi.getMinute()
             historialDeCompras[0].getEstado() == Compra.EstadoDeCompra.AGUARDANDO_PREPARACION
 
-            historialDeCompras[1].getFecha().getHour() == fechaDeCompraDibu.getHour()
-            historialDeCompras[1].getFecha().getMinute() == fechaDeCompraDibu.getMinute()
+            historialDeCompras[1].getInstanteDeCompra().getHour() == fechaDeCompraDibu.getHour()
+            historialDeCompras[1].getInstanteDeCompra().getMinute() == fechaDeCompraDibu.getMinute()
             historialDeCompras[1].getEstado() == Compra.EstadoDeCompra.AGUARDANDO_PREPARACION
     }
 

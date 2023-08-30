@@ -25,19 +25,19 @@ class Compra {
 
     Pedido pedido
     EstadoDeCompra estado
-    LocalDateTime fecha
+    LocalDateTime instanteDeCompra
     int id
 
     /**
      * 
-     * Crea una compra con el pedido y id dado. Se guarda la fecha en la que se crea y se
+     * Crea una compra con el pedido y id dado. Se guarda el instante de compra en el que se crea y se
      * setea su estado como "aguardando preparacion".
      * 
      */
     Compra(Pedido pedido, int id) {
         this.pedido = pedido
         this.estado = EstadoDeCompra.AGUARDANDO_PREPARACION
-        this.fecha = LocalDateTime.now()
+        this.instanteDeCompra = LocalDateTime.now()
         this.id = id
     }
 

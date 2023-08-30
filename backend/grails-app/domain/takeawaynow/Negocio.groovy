@@ -1,11 +1,10 @@
 package takeawaynow
 
 import java.time.LocalDateTime
+import java.time.LocalTime
 /**
-* 
-* El negocio provee productos para ser comprados por clientes 
-* 
-*/
+* El negocio provee productos para ser comprados por clientes
+**/
 class Negocio {
 
     static constraints = {
@@ -19,7 +18,7 @@ class Negocio {
         comprasRegistradas display: false, nullable: true
     }
 
-    static hasOne = [almacen: Almacen, horario_apertura: Horario, horario_cierre: Horario]
+    static hasOne = [almacen: Almacen, horario_apertura: LocalTime, horario_cierre: LocalTime]
     static hasMany = [comprasRegistradas: Compra] // Agregar clientes quizás ?
 
     String nombre
@@ -27,20 +26,20 @@ class Negocio {
     Almacen almacen
     Map<Integer, Compra> comprasRegistradas = [:]
     int ids_compras = 0
-    Horario horario_apertura
-    Horario horario_cierre
+    LocalTime horario_apertura
+    LocalTime horario_cierre
 
     /**
     * 
     * Crea un negocio. Si el horario de apertura es mayor al de cierre se lanza un error.
     * 
     */
-    Negocio(String nombreDelNegocio, Horario horario_apertura, Horario horario_cierre) {
+    Negocio(String nombreDelNegocio, LocalTime horario_apertura, LocalTime horario_cierre) {
         if (horario_apertura > horario_cierre) throw new IllegalStateException("El horario de apertura debe ser menor al de cierre.")
 
         this.nombre = nombreDelNegocio
-        this.horario_apertura = new Horario(9,0)
-        this.horario_cierre = new Horario(18,0)
+        this.horario_apertura = LocalTime.of(9,0)
+        this.horario_cierre = LocalTime.of(18,0)
 
         this.almacen = new Almacen() 
     }
@@ -65,7 +64,7 @@ class Negocio {
         int hora = dia.getHour()
         int minutos = dia.getMinute()
 
-        Horario hora_actual = new Horario(hora, minutos)
+        LocalTime hora_actual = LocalTime.of(hora, minutos)
 
         !(hora_actual > horario_cierre || hora_actual < horario_apertura)
     }
@@ -89,7 +88,7 @@ class Negocio {
      */
     void ingresarStock(String nombreDelProducto, int nuevoStock) {
         if (nuevoStock <= 0) throw new IllegalStateException("No se puede ingresar un stock menor o igual a cero.")
-        this.almacen.actulizarStock(nombreDelProducto, nuevoStock)
+        this.almacen.actualizarStock(nombreDelProducto, nuevoStock)
     }
 
     /**
@@ -128,8 +127,8 @@ class Negocio {
      * 
      */
     void reingresarStockDelPedido(int id) {
-        Map<String, Producto> productos = this.comprasRegistradas[id].getPedido().getProductos()
-        productos.each{ _, producto -> this.ingresarStock(producto.getNombre(), producto.getCantidad()) }
+        Set<Producto> productos = this.comprasRegistradas[id].getPedido().getProductos()
+        productos.each{ producto -> this.ingresarStock(producto.getNombre(), producto.getCantidad()) }
     }
 
 

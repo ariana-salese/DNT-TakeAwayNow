@@ -10,9 +10,9 @@ class Producto {
     static constraints = {
     }
 
-    static belongsTo = [almacen: Almacen]
+    static belongsTo = [almacen: Almacen, pedido: Pedido]
 
-    static embedded = ['precio']
+    //static embedded = ['precio']
 
     String nombre
     Dinero precio
@@ -35,18 +35,14 @@ class Producto {
     }
 
     /**
-     * 
-     * TODO
-     * 
+     * Devuelve el precio del Producto en función de la cantidad del mismo.
      */
     Dinero precioSegunCantidad() {
         this.precio * this.cantidad
     }
 
     /**
-     * 
-     * TODO
-     * 
+     * Devuelve los PuntosDeConfianza del Producto en función de la cantidad del mismo.
      */
     PuntosDeConfianza puntosDeConfianzaSegunCantidad() {
         this.puntosDeConfianza * this.cantidad
@@ -64,11 +60,9 @@ class Producto {
     }
 
     /**
-     * 
-     * TODO
-     * 
+     * Devuelve un booleano indicando si es canjeable por PuntosDeConfianza
      */
     boolean esCanjeablePorPuntosDeConfianza() {
-        this.puntosDeConfianza != new PuntosDeConfianza(0) //TODO usar null?
+        this.puntosDeConfianza != new PuntosDeConfianza(0)
     }
 }
