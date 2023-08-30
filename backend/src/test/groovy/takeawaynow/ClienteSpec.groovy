@@ -3,24 +3,26 @@ package takeawaynow
 
 import spock.lang.Specification
 import java.time.LocalDateTime
+import java.time.LocalDate
+import java.time.LocalTime
 import java.time.Month
 
 class ClienteSpec extends Specification{
 
     Negocio negocio
     Cliente cliente
-    Horario horario_apertura, horario_cierre
+    LocalTime horario_apertura, horario_cierre
     LocalDateTime dia
-    LocalDateTime diaDeCumpleanios
+    LocalDate diaDeCumpleanios
 
     def setup() {
-        horario_apertura = new Horario(9,0)
-        horario_cierre = new Horario(18,0)
+        horario_apertura = LocalTime.of(9,0)
+        horario_cierre = LocalTime.of(18,0)
         negocio = new Negocio("Buffet Paseo Colón", horario_apertura, horario_cierre)
         // year: 2001, 
         // month: 5, 
         // dayOfMonth: 27
-        diaDeCumpleanios = LocalDateTime.of(2022, Month.MAY, 27, 0, 0) //TODO probar sin 0 0 0 
+        diaDeCumpleanios = LocalDate.of(2022, Month.MAY, 27) //TODO probar sin 0 0 0 
         cliente = new Cliente("Messi", "campeondelmundo", diaDeCumpleanios)
         // year: 2022, 
         // month: 5, 
@@ -189,15 +191,15 @@ class ClienteSpec extends Specification{
             Pedido compraDeUnPancho = comprasRealizadasDelCliente[0].getPedido()
             compraDeUnPancho.cantidadDeProductos() == 1
             compraDeUnPancho.precio() == new Dinero(5)
-            comprasRealizadasDelCliente[0].getFecha().getHour() == fechaDeCompraDelPancho.getHour()
-            comprasRealizadasDelCliente[0].getFecha().getMinute() == fechaDeCompraDelPancho.getMinute()
+            comprasRealizadasDelCliente[0].getInstanteDeCompra().getHour() == fechaDeCompraDelPancho.getHour()
+            comprasRealizadasDelCliente[0].getInstanteDeCompra().getMinute() == fechaDeCompraDelPancho.getMinute()
             comprasRealizadasDelCliente[0].getId() == 0
             
             Pedido compraDeUnaCoca = comprasRealizadasDelCliente[1].getPedido()
             compraDeUnaCoca.cantidadDeProductos() == 1
             compraDeUnaCoca.precio() == new Dinero(6)
-            comprasRealizadasDelCliente[1].getFecha().getHour() == fechaDeCompraDeLaCoca.getHour()
-            comprasRealizadasDelCliente[1].getFecha().getMinute() == fechaDeCompraDeLaCoca.getMinute()
+            comprasRealizadasDelCliente[1].getInstanteDeCompra().getHour() == fechaDeCompraDeLaCoca.getHour()
+            comprasRealizadasDelCliente[1].getInstanteDeCompra().getMinute() == fechaDeCompraDeLaCoca.getMinute()
             comprasRealizadasDelCliente[1].getId() == 1
     }
 
@@ -469,7 +471,7 @@ class ClienteSpec extends Specification{
             PuntosDeConfianza puntosDeConfianzaPrevios = cliente.puntosDeConfianza(dia)
 
         then: "el dia de su cumpleanios tiene 100 puntos mas"
-            cliente.puntosDeConfianza(diaDeCumpleanios) == puntosDeConfianzaPrevios + 100
+            cliente.puntosDeConfianza(diaDeCumpleanios.atStartOfDay()) == puntosDeConfianzaPrevios + 100
     }
 
     void "dado un cliente que realizó una compra en el dia de su cumpleanios entonces el producto de menor precio se desconto"() {
@@ -483,7 +485,7 @@ class ClienteSpec extends Specification{
         when: "el cliente agrega al pedido un agua y un pancho"
             cliente.agregarAlPedido("pancho", 1)
             cliente.agregarAlPedido("agua", 1)
-            cliente.confirmarCompraDelPedido(diaDeCumpleanios)
+            cliente.confirmarCompraDelPedido(diaDeCumpleanios.atStartOfDay())
 
         then: "el precio de la compra es 20 entonces el saldo actual es 30"
             Set<Compra> comprasRealizadasDelCliente = cliente.comprasRealizadas

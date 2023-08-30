@@ -1,5 +1,6 @@
 package takeawaynow
 
+import java.time.LocalDate
 import java.time.LocalDateTime
 
 /**
@@ -12,7 +13,7 @@ class BeneficiosCumpleanios {
     static constraints = {
     }
 
-    LocalDateTime diaDeCumpleanios
+    LocalDate diaDeCumpleanios
     LocalDateTime diaDeCanjeDePuntos = null
     LocalDateTime diaDeCompraConBeneficios = null
     PuntosDeConfianza PUNTOS_POR_CUMPLEANIOS = new PuntosDeConfianza(100)
@@ -22,7 +23,7 @@ class BeneficiosCumpleanios {
      * TODO
      * 
      */
-    BeneficiosCumpleanios(LocalDateTime diaDeCumpleanios) {
+    BeneficiosCumpleanios(LocalDate diaDeCumpleanios) {
         this.diaDeCumpleanios = diaDeCumpleanios
     }
 
@@ -32,7 +33,7 @@ class BeneficiosCumpleanios {
      * 
      */
     PuntosDeConfianza obtenerPuntosDeConfianzaActualizadosSegunFecha(LocalDateTime dia, PuntosDeConfianza puntosDeConfianza) {
-        if (!this.esDiaDeCumpleanios(dia)) return puntosDeConfianza
+        if (!this.esDiaDeCumpleanios(dia.toLocalDate())) return puntosDeConfianza
         if (diaDeCanjeDePuntos != null && diaDeCanjeDePuntos.year == dia.year) return puntosDeConfianza
 
         this.diaDeCanjeDePuntos = dia
@@ -45,7 +46,7 @@ class BeneficiosCumpleanios {
      * 
      */
     Dinero obtenerPrecioDePedidoSegunFecha(LocalDateTime dia, Pedido pedido) {
-        if (!this.esDiaDeCumpleanios(dia)) return pedido.precio()
+        if (!this.esDiaDeCumpleanios(dia.toLocalDate())) return pedido.precio()
         if (this.diaDeCompraConBeneficios != null && this.diaDeCompraConBeneficios.year == dia.year) return puntosDeConfianza
 
         this.diaDeCompraConBeneficios = dia
@@ -57,8 +58,9 @@ class BeneficiosCumpleanios {
      * TODO
      * 
      */
-    boolean esDiaDeCumpleanios(LocalDateTime dia) {
-        dia.date == this.diaDeCumpleanios.date && dia.month == this.diaDeCumpleanios.month
+    boolean esDiaDeCumpleanios(LocalDate dia) {
+        dia.dayOfMonth == this.diaDeCumpleanios.dayOfMonth && dia.month == this.diaDeCumpleanios.month 
+        //dia.date == this.diaDeCumpleanios.date && dia.month == this.diaDeCumpleanios.month
     }
 
 }

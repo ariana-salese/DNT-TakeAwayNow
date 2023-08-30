@@ -1,6 +1,7 @@
 package takeawaynow
 
 import java.time.LocalDateTime
+import java.time.LocalDate
 
 /**
  * 
@@ -39,7 +40,7 @@ class Cliente {
     PuntosDeConfianza puntosDeConfianza
     BeneficiosCumpleanios beneficiosCumpleanios 
 
-    Cliente(String nombreCliente, String pass, LocalDateTime fechaDeCumpleanios){
+    Cliente(String nombreCliente, String pass, LocalDate fechaDeCumpleanios){
         this.nombre = nombreCliente
         this.password = password
         

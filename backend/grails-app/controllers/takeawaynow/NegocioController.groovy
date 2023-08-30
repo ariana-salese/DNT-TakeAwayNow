@@ -1,5 +1,7 @@
 package takeawaynow
 
+import java.time.LocalTime
+
 class NegocioController {
 
     static scaffold = Negocio
@@ -10,7 +12,7 @@ class NegocioController {
     }
 
     def ingreso(String nombreNegocio) {
-        new Negocio(nombreNegocio, new Horario(9, 0), new Horario(18, 0)).save()
+        new Negocio(nombreNegocio, LocalTime.of(9, 0), LocalTime.of(18, 0)).save()
         render "Hola negocio ${nombreNegocio}"
     }
 
